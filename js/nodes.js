@@ -46,6 +46,7 @@ class NodeManager {
                 const rect = this.canvas.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
+                console.log('🎯 Drop detected:', { nodeType, x, y });
                 this.createNode(nodeType, x, y);
             }
         });
@@ -140,19 +141,16 @@ class NodeManager {
         const nodeId = `node_${this.nodeIdCounter++}`;
         const nodeData = this.getNodeTemplate(type);
         
-        // Преобразуем экранные координаты в мировые
+        // Преобразуем экранные координаты относительно canvas в мировые координаты
         let worldX = screenX;
         let worldY = screenY;
         
+        // Если canvas-manager доступен, используем его преобразования
         if (window.canvasManager) {
             const worldCoords = window.canvasManager.screenToWorld(screenX, screenY);
             worldX = worldCoords.x;
             worldY = worldCoords.y;
         }
-        
-        // Добавляем смещение для центрирования в виртуальном пространстве
-        worldX += window.canvasManager?.virtualCenterX || 0;
-        worldY += window.canvasManager?.virtualCenterY || 0;
         
         const nodeElement = this.createElement(nodeId, nodeData, worldX, worldY);
         this.nodesLayer.appendChild(nodeElement);
