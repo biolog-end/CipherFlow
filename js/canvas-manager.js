@@ -159,9 +159,9 @@ class CanvasManager {
     
     centerView() {
         const rect = this.canvas.getBoundingClientRect();
-        // Центрируем вид на виртуальном центре пространства
-        this.offsetX = rect.width / 2 - this.virtualCenterX * this.scale;
-        this.offsetY = rect.height / 2 - this.virtualCenterY * this.scale;
+        // Центрируем вид на начальной позиции (0, 0)
+        this.offsetX = 0;
+        this.offsetY = 0;
         this.updateTransform();
     }
     
