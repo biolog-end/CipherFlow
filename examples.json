@@ -1,0 +1,371 @@
+{
+  "examples": {
+    "simple-caesar": {
+      "name": "Простой шифр Цезаря",
+      "description": "Базовый пример шифрования текста с помощью шифра Цезаря",
+      "version": "1.0",
+      "created": "2024-08-21T21:00:00.000Z",
+      "nodes": [
+        {
+          "id": "node_0",
+          "type": "input",
+          "x": 100,
+          "y": 150,
+          "data": {
+            "title": "Ввод текста",
+            "icon": "fas fa-sign-in-alt",
+            "fields": [
+              {
+                "name": "text",
+                "type": "textarea",
+                "label": "Текст",
+                "value": "Привет мир!",
+                "rows": 3
+              }
+            ],
+            "hasInput": false,
+            "hasOutput": true
+          }
+        },
+        {
+          "id": "node_1",
+          "type": "caesar",
+          "x": 350,
+          "y": 150,
+          "data": {
+            "title": "Шифр Цезаря",
+            "icon": "fas fa-exchange-alt",
+            "fields": [
+              {
+                "name": "shift",
+                "type": "number",
+                "label": "Сдвиг",
+                "value": 3,
+                "min": 1,
+                "max": 25
+              }
+            ],
+            "hasInput": true,
+            "hasOutput": true
+          }
+        },
+        {
+          "id": "node_2",
+          "type": "output",
+          "x": 600,
+          "y": 150,
+          "data": {
+            "title": "Вывод текста",
+            "icon": "fas fa-sign-out-alt",
+            "fields": [],
+            "hasInput": true,
+            "hasOutput": false
+          }
+        }
+      ],
+      "connections": [
+        {
+          "id": "connection_0",
+          "from": "node_0",
+          "to": "node_1"
+        },
+        {
+          "id": "connection_1",
+          "from": "node_1",
+          "to": "node_2"
+        }
+      ]
+    },
+    "complex-chain": {
+      "name": "Сложная цепочка преобразований",
+      "description": "Демонстрация комплексного шифрования с несколькими этапами обработки",
+      "version": "1.0",
+      "created": "2024-08-21T21:00:00.000Z",
+      "nodes": [
+        {
+          "id": "node_0",
+          "type": "input",
+          "x": 50,
+          "y": 200,
+          "data": {
+            "title": "Ввод текста",
+            "icon": "fas fa-sign-in-alt",
+            "fields": [
+              {
+                "name": "text",
+                "type": "textarea",
+                "label": "Текст",
+                "value": "Секретное сообщение 123",
+                "rows": 3
+              }
+            ],
+            "hasInput": false,
+            "hasOutput": true
+          }
+        },
+        {
+          "id": "node_1",
+          "type": "numbers-to-words",
+          "x": 250,
+          "y": 100,
+          "data": {
+            "title": "Числа в слова",
+            "icon": "fas fa-hashtag",
+            "fields": [
+              {
+                "name": "language",
+                "type": "select",
+                "label": "Язык",
+                "value": "ru",
+                "options": [
+                  {"value": "ru", "label": "Русский"},
+                  {"value": "en", "label": "English"},
+                  {"value": "mix", "label": "Перемешать"}
+                ]
+              },
+              {
+                "name": "mode",
+                "type": "select",
+                "label": "Направление",
+                "value": "to_words",
+                "options": [
+                  {"value": "to_words", "label": "В слова"},
+                  {"value": "to_numbers", "label": "В числа"}
+                ]
+              }
+            ],
+            "hasInput": true,
+            "hasOutput": true
+          }
+        },
+        {
+          "id": "node_2",
+          "type": "caesar",
+          "x": 250,
+          "y": 300,
+          "data": {
+            "title": "Шифр Цезаря",
+            "icon": "fas fa-exchange-alt",
+            "fields": [
+              {
+                "name": "shift",
+                "type": "number",
+                "label": "Сдвиг",
+                "value": 5,
+                "min": 1,
+                "max": 25
+              }
+            ],
+            "hasInput": true,
+            "hasOutput": true
+          }
+        },
+        {
+          "id": "node_3",
+          "type": "morse",
+          "x": 450,
+          "y": 200,
+          "data": {
+            "title": "Код Морзе",
+            "icon": "fas fa-broadcast-tower",
+            "fields": [
+              {
+                "name": "mode",
+                "type": "select",
+                "label": "Режим",
+                "value": "encode",
+                "options": [
+                  {"value": "encode", "label": "Кодировать"},
+                  {"value": "decode", "label": "Декодировать"}
+                ]
+              }
+            ],
+            "hasInput": true,
+            "hasOutput": true
+          }
+        },
+        {
+          "id": "node_4",
+          "type": "output",
+          "x": 650,
+          "y": 200,
+          "data": {
+            "title": "Вывод текста",
+            "icon": "fas fa-sign-out-alt",
+            "fields": [],
+            "hasInput": true,
+            "hasOutput": false
+          }
+        }
+      ],
+      "connections": [
+        {
+          "id": "connection_0",
+          "from": "node_0",
+          "to": "node_1"
+        },
+        {
+          "id": "connection_1",
+          "from": "node_1",
+          "to": "node_2"
+        },
+        {
+          "id": "connection_2",
+          "from": "node_2",
+          "to": "node_3"
+        },
+        {
+          "id": "connection_3",
+          "from": "node_3",
+          "to": "node_4"
+        }
+      ]
+    },
+    "advanced-text-processing": {
+      "name": "Продвинутая обработка текста",
+      "description": "Пример использования различных преобразований текста",
+      "version": "1.0",
+      "created": "2024-08-21T21:00:00.000Z",
+      "nodes": [
+        {
+          "id": "node_0",
+          "type": "input",
+          "x": 50,
+          "y": 200,
+          "data": {
+            "title": "Ввод текста",
+            "icon": "fas fa-sign-in-alt",
+            "fields": [
+              {
+                "name": "text",
+                "type": "textarea",
+                "label": "Текст",
+                "value": "Hello World 2024!",
+                "rows": 3
+              }
+            ],
+            "hasInput": false,
+            "hasOutput": true
+          }
+        },
+        {
+          "id": "node_1",
+          "type": "case-transform",
+          "x": 250,
+          "y": 100,
+          "data": {
+            "title": "Регистр",
+            "icon": "fas fa-text-height",
+            "fields": [
+              {
+                "name": "mode",
+                "type": "select",
+                "label": "Режим",
+                "value": "upper",
+                "options": [
+                  {"value": "upper", "label": "ВЕРХНИЙ"},
+                  {"value": "lower", "label": "нижний"},
+                  {"value": "title", "label": "Заглавные"},
+                  {"value": "toggle", "label": "иНВЕРТИРОВАТЬ"}
+                ]
+              }
+            ],
+            "hasInput": true,
+            "hasOutput": true
+          }
+        },
+        {
+          "id": "node_2",
+          "type": "math",
+          "x": 250,
+          "y": 300,
+          "data": {
+            "title": "Математика",
+            "icon": "fas fa-calculator",
+            "fields": [
+              {
+                "name": "operation",
+                "type": "select",
+                "label": "Операция",
+                "value": "multiply",
+                "options": [
+                  {"value": "add", "label": "Прибавить"},
+                  {"value": "subtract", "label": "Вычесть"},
+                  {"value": "multiply", "label": "Умножить"},
+                  {"value": "divide", "label": "Разделить"}
+                ]
+              },
+              {
+                "name": "value",
+                "type": "number",
+                "label": "Значение",
+                "value": 2
+              }
+            ],
+            "hasInput": true,
+            "hasOutput": true
+          }
+        },
+        {
+          "id": "node_3",
+          "type": "reverse",
+          "x": 450,
+          "y": 200,
+          "data": {
+            "title": "Обратить текст",
+            "icon": "fas fa-undo",
+            "fields": [
+              {
+                "name": "mode",
+                "type": "select",
+                "label": "Режим",
+                "value": "words",
+                "options": [
+                  {"value": "full", "label": "Полностью"},
+                  {"value": "words", "label": "По словам"}
+                ]
+              }
+            ],
+            "hasInput": true,
+            "hasOutput": true
+          }
+        },
+        {
+          "id": "node_4",
+          "type": "output",
+          "x": 650,
+          "y": 200,
+          "data": {
+            "title": "Вывод текста",
+            "icon": "fas fa-sign-out-alt",
+            "fields": [],
+            "hasInput": true,
+            "hasOutput": false
+          }
+        }
+      ],
+      "connections": [
+        {
+          "id": "connection_0",
+          "from": "node_0",
+          "to": "node_1"
+        },
+        {
+          "id": "connection_1",
+          "from": "node_1",
+          "to": "node_2"
+        },
+        {
+          "id": "connection_2",
+          "from": "node_2",
+          "to": "node_3"
+        },
+        {
+          "id": "connection_3",
+          "from": "node_3",
+          "to": "node_4"
+        }
+      ]
+    }
+  }
+}

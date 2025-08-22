@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CipherFlow - Нодовый Шифратор</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Заголовок -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-project-diagram"></i>
+                    <span>CipherFlow</span>
+                </div>
+                <div class="controls">
+                    <div class="mode-toggle">
+                        <span class="mode-label">Шифрование</span>
+                        <label class="switch">
+                            <input type="checkbox" id="modeSwitch">
+                            <span class="slider">
+                                <i class="fas fa-lock"></i>
+                                <i class="fas fa-unlock"></i>
+                            </span>
+                        </label>
+                        <span class="mode-label">Расшифровка</span>
+                    </div>
+                    <div class="file-controls">
+                        <button class="btn btn-outline" id="loadBtn">
+                            <i class="fas fa-folder-open"></i>
+                            Загрузить схему
+                        </button>
+                        <button class="btn btn-outline" id="saveBtn">
+                            <i class="fas fa-save"></i>
+                            Сохранить схему
+                        </button>
+                        <button class="btn btn-primary" id="clearBtn">
+                            <i class="fas fa-trash"></i>
+                            Очистить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Панель нодов -->
+            <aside class="nodes-panel">
+                <h3>Ноды шифрования</h3>
+                <div class="node-categories">
+                    <div class="category">
+                        <h4>Входные/Выходные</h4>
+                        <div class="node-item" data-type="input">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Ввод текста</span>
+                        </div>
+                        <div class="node-item" data-type="output">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Вывод текста</span>
+                        </div>
+                    </div>
+                    
+                    <div class="category">
+                        <h4>Классические шифры</h4>
+                        <div class="node-item" data-type="caesar">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span>Шифр Цезаря</span>
+                        </div>
+                        <div class="node-item" data-type="morse">
+                            <i class="fas fa-broadcast-tower"></i>
+                            <span>Код Морзе</span>
+                        </div>
+                    </div>
+                    
+                    <div class="category">
+                        <h4>Преобразования</h4>
+                        <div class="node-item" data-type="numbers-to-words">
+                            <i class="fas fa-hashtag"></i>
+                            <span>Числа в слова</span>
+                        </div>
+                        <div class="node-item" data-type="math">
+                            <i class="fas fa-calculator"></i>
+                            <span>Математика</span>
+                        </div>
+                        <div class="node-item" data-type="reverse">
+                            <i class="fas fa-undo"></i>
+                            <span>Обратить текст</span>
+                        </div>
+                        <div class="node-item" data-type="case-transform">
+                            <i class="fas fa-text-height"></i>
+                            <span>Регистр</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Рабочая область -->
+            <main class="workspace">
+                <div class="canvas" id="canvas">
+                    <div class="canvas-background"></div>
+                    <svg class="connections-layer" id="connections"></svg>
+                    <div class="nodes-layer" id="nodesLayer"></div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Нижняя панель с вводом/выводом -->
+        <footer class="input-output-panel">
+            <div class="input-section">
+                <label for="inputText">Входной текст:</label>
+                <textarea id="inputText" placeholder="Введите текст для шифрования..."></textarea>
+            </div>
+            <div class="output-section">
+                <label for="outputText">Результат:</label>
+                <textarea id="outputText" readonly placeholder="Результат появится здесь..."></textarea>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Скрытый input для загрузки файлов -->
+    <input type="file" id="fileInput" accept=".json" style="display: none;">
+
+    <script src="js/nodes.js"></script>
+    <script src="js/connections.js"></script>
+    <script src="js/cipher-engine.js"></script>
+    <script src="js/file-manager.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
