@@ -465,7 +465,7 @@ class NodeManager {
                 inputPoint.dataset.type = 'input';
                 inputPoint.dataset.inputName = input.name;
                 // Опускаем входы ниже, чтобы не накладывались на заголовок
-                inputPoint.style.top = `${60 + index * 35}px`;
+                inputPoint.style.top = `${80 + index * 35}px`;
                 if (input.color) {
                     inputPoint.style.backgroundColor = input.color;
                 }
@@ -477,7 +477,7 @@ class NodeManager {
                 label.style.position = 'absolute';
                 label.style.left = '25px';
                 // Также опускаем labels
-                label.style.top = `${55 + index * 35}px`;
+                label.style.top = `${75 + index * 35}px`;
                 label.style.fontSize = '0.75rem';
                 label.style.color = 'var(--text-muted)';
                 label.style.userSelect = 'none';
