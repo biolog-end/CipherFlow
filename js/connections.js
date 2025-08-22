@@ -59,6 +59,7 @@ class ConnectionManager {
         modeSwitch.addEventListener('change', (e) => {
             this.reverseMode = e.target.checked;
             this.updateAllConnectionDirections();
+            this.swapInputOutputFields();
         });
         
         // Обработка кликов по соединительным линиям для удаления
@@ -66,7 +67,48 @@ class ConnectionManager {
             if (e.target.classList.contains('connection-line')) {
                 const connectionId = e.target.dataset.connectionId;
                 if (connectionId) {
-                    this.removeConnection(connectionId);
+                    // Показываем подтверждение удаления
+                    if (confirm('Удалить соединение?')) {
+                        this.removeConnection(connectionId);
+                    }
+                }
+            }
+        });
+        
+        // Добавляем hover эффект для соединений
+        this.svg.addEventListener('mouseover', (e) => {
+            if (e.target.classList.contains('connection-line')) {
+                e.target.style.strokeWidth = '3';
+                e.target.style.cursor = 'pointer';
+                
+                // Показываем подсказку
+                const tooltip = document.createElement('div');
+                tooltip.className = 'connection-tooltip';
+                tooltip.textContent = 'Нажмите для удаления соединения';
+                tooltip.style.cssText = `
+                    position: fixed;
+                    left: ${e.clientX + 10}px;
+                    top: ${e.clientY - 30}px;
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    pointer-events: none;
+                    z-index: 1000;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                `;
+                document.body.appendChild(tooltip);
+                e.target._tooltip = tooltip;
+            }
+        });
+        
+        this.svg.addEventListener('mouseout', (e) => {
+            if (e.target.classList.contains('connection-line')) {
+                e.target.style.strokeWidth = '2';
+                if (e.target._tooltip) {
+                    e.target._tooltip.remove();
+                    delete e.target._tooltip;
                 }
             }
         });
@@ -413,6 +455,63 @@ class ConnectionManager {
     
     getAllConnections() {
         return Array.from(this.connections.values());
+    }
+    
+    swapInputOutputFields() {
+        const inputText = document.getElementById('inputText');
+        const outputText = document.getElementById('outputText');
+        const inputLabel = inputText.previousElementSibling;
+        const outputLabel = outputText.previousElementSibling;
+        
+        if (this.reverseMode) {
+            // В режиме дешифрации: поле вывода становится вводом, поле ввода становится выводом
+            inputText.readOnly = true;
+            outputText.readOnly = false;
+            inputText.placeholder = 'Результат появится здесь...';
+            outputText.placeholder = 'Введите зашифрованный текст...';
+            inputLabel.textContent = 'Результат:';
+            outputLabel.textContent = 'Зашифрованный текст:';
+            
+            // Переносим содержимое из поля ввода в поле "вывода" (которое теперь ввод)
+            if (outputText.value === '') {
+                outputText.value = inputText.value;
+                inputText.value = '';
+            }
+            
+            // Добавляем обработчик для нового поля ввода (бывшего вывода)
+            outputText.removeEventListener('input', this.handleDecryptModeInput);
+            outputText.addEventListener('input', this.handleDecryptModeInput.bind(this));
+            
+        } else {
+            // В обычном режиме: восстанавливаем исходное состояние
+            inputText.readOnly = false;
+            outputText.readOnly = true;
+            inputText.placeholder = 'Введите текст для шифрования...';
+            outputText.placeholder = 'Результат появится здесь...';
+            inputLabel.textContent = 'Входной текст:';
+            outputLabel.textContent = 'Результат:';
+            
+            // Переносим содержимое обратно
+            if (inputText.value === '') {
+                inputText.value = outputText.value;
+                outputText.value = '';
+            }
+            
+            // Убираем обработчик с поля вывода
+            outputText.removeEventListener('input', this.handleDecryptModeInput);
+        }
+        
+        // Запускаем выполнение цепочки
+        if (window.cipherEngine) {
+            window.cipherEngine.executeChain();
+        }
+    }
+    
+    handleDecryptModeInput() {
+        // В режиме дешифрации входные данные берутся из поля outputText
+        if (window.cipherEngine) {
+            window.cipherEngine.executeChain();
+        }
     }
 }
 

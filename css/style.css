@@ -636,3 +636,108 @@ input:checked + .slider {
     from { opacity: 0; transform: translateX(-20px); }
     to { opacity: 1; transform: translateX(0); }
 }
+
+/* === Управление канвасом === */
+.canvas-controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 0.5rem;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+}
+
+.canvas-control-btn {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 14px;
+}
+
+.canvas-control-btn:hover {
+    background: var(--accent-primary);
+    color: var(--text-primary);
+    border-color: var(--accent-primary);
+    transform: translateY(-1px);
+}
+
+.canvas-control-btn:active {
+    transform: translateY(0);
+}
+
+.zoom-level {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    min-width: 40px;
+    text-align: center;
+}
+
+/* === Стили для соединений === */
+.connection-line {
+    transition: stroke-width 0.2s ease;
+}
+
+.connection-line:hover {
+    stroke-width: 3 !important;
+    cursor: pointer;
+}
+
+.connection-tooltip {
+    position: fixed;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    border: 1px solid var(--border-color);
+}
+
+/* === Улучшения для нодов === */
+.canvas-node {
+    transition: transform 0.1s ease-out;
+}
+
+.canvas-node.dragging {
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* === Адаптивные улучшения === */
+@media (max-width: 768px) {
+    .canvas-controls {
+        top: 0.5rem;
+        right: 0.5rem;
+        padding: 0.25rem;
+        gap: 0.25rem;
+    }
+    
+    .canvas-control-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+    
+    .zoom-level {
+        font-size: 10px;
+        min-width: 35px;
+    }
+}

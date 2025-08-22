@@ -27,12 +27,12 @@ class CipherEngine {
         
         this.numbersRu = {
             '0': 'ноль', '1': 'один', '2': 'два', '3': 'три', '4': 'четыре', '5': 'пять',
-            '6': 'шесть', '7': 'семь', '8': 'восемь', '9': 'девять', '10': 'десять'
+            '6': 'шесть', '7': 'семь', '8': 'восемь', '9': 'девять'
         };
         
         this.numbersEn = {
             '0': 'zero', '1': 'one', '2': 'two', '3': 'three', '4': 'four', '5': 'five',
-            '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine', '10': 'ten'
+            '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine'
         };
         
         this.reverseNumbersRu = {};
@@ -68,8 +68,11 @@ class CipherEngine {
             // Создаем карту для хранения результатов выполнения каждого нода
             const nodeResults = new Map();
             
-            // Получаем входной текст
-            const inputText = document.getElementById('inputText').value;
+            // Получаем входной текст в зависимости от режима
+            const isReverseMode = window.connectionManager.reverseMode;
+            const inputText = isReverseMode ? 
+                document.getElementById('outputText').value : 
+                document.getElementById('inputText').value;
             
             // Выполняем ноды в правильном порядке
             for (const nodeId of executionOrder) {
@@ -80,9 +83,8 @@ class CipherEngine {
                 
                 // Определяем входные данные для нода
                 if (node.type === 'input') {
-                    // Для input нода берем текст из поля ввода
-                    const inputElement = node.element.querySelector('textarea[name="text"]');
-                    inputData = inputElement ? inputElement.value : inputText;
+                    // Для input нода берем текст из главного поля ввода
+                    inputData = inputText;
                 } else {
                     // Для других нодов ищем входящие соединения
                     const connections = window.connectionManager.getNodeConnections(nodeId);
@@ -103,7 +105,11 @@ class CipherEngine {
                 
                 // Если это output нод, выводим результат
                 if (node.type === 'output') {
-                    document.getElementById('outputText').value = result;
+                    const isReverseMode = window.connectionManager.reverseMode;
+                    const outputElement = isReverseMode ? 
+                        document.getElementById('inputText') : 
+                        document.getElementById('outputText');
+                    outputElement.value = result;
                 }
             }
             
@@ -111,12 +117,20 @@ class CipherEngine {
             const outputNodes = window.nodeManager.getAllNodes().filter(n => n.type === 'output');
             if (outputNodes.length === 0 && nodeResults.size > 0) {
                 const lastResult = Array.from(nodeResults.values()).pop();
-                document.getElementById('outputText').value = lastResult || '';
+                const isReverseMode = window.connectionManager.reverseMode;
+                const outputElement = isReverseMode ? 
+                    document.getElementById('inputText') : 
+                    document.getElementById('outputText');
+                outputElement.value = lastResult || '';
             }
             
         } catch (error) {
             console.error('Ошибка выполнения цепочки:', error);
-            document.getElementById('outputText').value = 'Ошибка выполнения: ' + error.message;
+            const isReverseMode = window.connectionManager?.reverseMode;
+            const outputElement = isReverseMode ? 
+                document.getElementById('inputText') : 
+                document.getElementById('outputText');
+            outputElement.value = 'Ошибка выполнения: ' + error.message;
         }
     }
     
@@ -149,6 +163,21 @@ class CipherEngine {
                 case 'case-transform':
                     return this.processCaseTransform(nodeData, inputData);
                     
+                case 'secret-word':
+                    return this.processSecretWord(nodeData, inputData);
+                    
+                case 'vigenere':
+                    return this.processVigenereCipher(nodeData, inputData);
+                    
+                case 'a1z26':
+                    return this.processA1Z26(nodeData, inputData);
+                    
+                case 'braille-binary':
+                    return this.processBrailleBinary(nodeData, inputData);
+                    
+                case 'braille-cat':
+                    return this.processBrailleCat(nodeData, inputData);
+                    
                 default:
                     return inputData;
             }
@@ -159,8 +188,12 @@ class CipherEngine {
     }
     
     processInputNode(node, inputData) {
-        const textField = node.data.fields.find(f => f.name === 'text');
-        return textField ? textField.value : inputData;
+        // Нод ввода берет текст из соответствующего поля в зависимости от режима
+        const isReverseMode = window.connectionManager?.reverseMode;
+        const inputElement = isReverseMode ? 
+            document.getElementById('outputText') : 
+            document.getElementById('inputText');
+        return inputElement ? inputElement.value : '';
     }
     
     processCaesarCipher(nodeData, text) {
@@ -223,17 +256,17 @@ class CipherEngine {
         
         if (actualMode === 'to_words') {
             if (language === 'mix') {
-                // Перемешанный режим - случайно выбираем язык для каждого числа
-                return text.replace(/\d+/g, (match) => {
-                    const num = match;
+                // Перемешанный режим - случайно выбираем язык для каждой цифры
+                return text.replace(/\d/g, (digit) => {
                     const usesRu = Math.random() > 0.5;
                     const dict = usesRu ? this.numbersRu : this.numbersEn;
-                    return dict[num] || num;
+                    return dict[digit] || digit;
                 });
             } else {
                 const dict = language === 'ru' ? this.numbersRu : this.numbersEn;
-                return text.replace(/\d+/g, (match) => {
-                    return dict[match] || match;
+                // Заменяем каждую цифру отдельно
+                return text.replace(/\d/g, (digit) => {
+                    return dict[digit] || digit;
                 });
             }
         } else {
@@ -411,6 +444,162 @@ class CipherEngine {
         
         // Запускаем выполнение
         this.executeChain();
+    }
+    
+    processSecretWord(nodeData, inputData) {
+        const keywordField = nodeData.fields.find(f => f.name === 'keyword');
+        return keywordField?.value || 'СЕКРЕТ';
+    }
+    
+    processVigenereCipher(nodeData, inputData) {
+        // Для шифра Виженера нужно получить ключ от другого нода
+        // Пока что используем базовую реализацию
+        const key = 'КЛЮЧ'; // Временное решение
+        
+        const isReverse = window.connectionManager?.reverseMode || false;
+        
+        return this.vigenereTransform(inputData, key, !isReverse);
+    }
+    
+    vigenereTransform(text, key, encrypt = true) {
+        if (!key) return text;
+        
+        const russianAlphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
+        const englishAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        
+        let result = '';
+        let keyIndex = 0;
+        
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i].toUpperCase();
+            let alphabet = '';
+            
+            if (russianAlphabet.includes(char)) {
+                alphabet = russianAlphabet;
+            } else if (englishAlphabet.includes(char)) {
+                alphabet = englishAlphabet;
+            } else {
+                result += text[i];
+                continue;
+            }
+            
+            const keyChar = key[keyIndex % key.length].toUpperCase();
+            const keyShift = russianAlphabet.includes(keyChar) ? 
+                russianAlphabet.indexOf(keyChar) : 
+                (englishAlphabet.includes(keyChar) ? englishAlphabet.indexOf(keyChar) : 0);
+            
+            const charIndex = alphabet.indexOf(char);
+            let newIndex;
+            
+            if (encrypt) {
+                newIndex = (charIndex + keyShift) % alphabet.length;
+            } else {
+                newIndex = (charIndex - keyShift + alphabet.length) % alphabet.length;
+            }
+            
+            const newChar = alphabet[newIndex];
+            result += text[i] === text[i].toLowerCase() ? newChar.toLowerCase() : newChar;
+            keyIndex++;
+        }
+        
+        return result;
+    }
+    
+    processA1Z26(nodeData, inputData) {
+        const modeField = nodeData.fields.find(f => f.name === 'mode');
+        const mode = modeField?.value || 'encode';
+        
+        const isReverse = window.connectionManager?.reverseMode || false;
+        const actualMode = (mode === 'encode' && !isReverse) || (mode === 'decode' && isReverse) ? 'encode' : 'decode';
+        
+        if (actualMode === 'encode') {
+            return inputData.replace(/[а-яё]/gi, char => {
+                const upperChar = char.toUpperCase();
+                const code = upperChar.charCodeAt(0) - 'А'.charCodeAt(0) + 1;
+                return code;
+            }).replace(/[a-z]/gi, char => {
+                const upperChar = char.toUpperCase();
+                const code = upperChar.charCodeAt(0) - 'A'.charCodeAt(0) + 1;
+                return code;
+            });
+        } else {
+            return inputData.replace(/\b(\d+)\b/g, (match, num) => {
+                const n = parseInt(num);
+                if (n >= 1 && n <= 33) {
+                    return String.fromCharCode('А'.charCodeAt(0) + n - 1);
+                } else if (n >= 1 && n <= 26) {
+                    return String.fromCharCode('A'.charCodeAt(0) + n - 1);
+                }
+                return match;
+            });
+        }
+    }
+    
+    processBrailleBinary(nodeData, inputData) {
+        const modeField = nodeData.fields.find(f => f.name === 'mode');
+        const mode = modeField?.value || 'encode';
+        
+        const isReverse = window.connectionManager?.reverseMode || false;
+        const actualMode = (mode === 'encode' && !isReverse) || (mode === 'decode' && isReverse) ? 'encode' : 'decode';
+        
+        // Простая реализация Брайля в бинарном виде
+        const brailleMap = {
+            'а': '100000', 'б': '110000', 'в': '100100', 'г': '110100', 'д': '100110',
+            'е': '100010', 'ё': '100001', 'ж': '110110', 'з': '100101', 'и': '110010',
+            'й': '111010', 'к': '101000', 'л': '111000', 'м': '101100', 'н': '101110',
+            'о': '101010', 'п': '111100', 'р': '111110', 'с': '101001', 'т': '011110',
+            'у': '101011', 'ф': '111001', 'х': '110011', 'ц': '100111', 'ч': '111111',
+            'ш': '100011', 'щ': '110111', 'ъ': '111011', 'ы': '011111', 'ь': '011011',
+            'э': '110001', 'ю': '101111', 'я': '111101', ' ': '000000'
+        };
+        
+        if (actualMode === 'encode') {
+            return inputData.toLowerCase().split('').map(char => 
+                brailleMap[char] || '000000'
+            ).join(' ');
+        } else {
+            const reverseBraille = {};
+            for (const [key, value] of Object.entries(brailleMap)) {
+                reverseBraille[value] = key;
+            }
+            
+            return inputData.split(' ').map(code => 
+                reverseBraille[code] || '?'
+            ).join('');
+        }
+    }
+    
+    processBrailleCat(nodeData, inputData) {
+        const modeField = nodeData.fields.find(f => f.name === 'mode');
+        const mode = modeField?.value || 'encode';
+        
+        const isReverse = window.connectionManager?.reverseMode || false;
+        const actualMode = (mode === 'encode' && !isReverse) || (mode === 'decode' && isReverse) ? 'encode' : 'decode';
+        
+        // Кошачья модификация: точка = мяу, тире = мрряу, пробел = брряу
+        const brailleMap = {
+            'а': 'мяумрряумрряумрряумрряумрряу', 'б': 'мрряумрряумрряумрряумрряумрряу',
+            'в': 'мяумрряумрряумяумрряумрряу', 'г': 'мрряумрряумрряумяумрряумрряу',
+            'д': 'мяумрряумрряумрряумрряумяу', 'е': 'мяумрряумрряумяумрряумрряу',
+            'ж': 'мрряумрряумрряумрряумрряумяу', 'з': 'мяумрряумрряумяумрряумяу',
+            'и': 'мрряумрряумрряумяумрряумрряу', 'й': 'мрряумрряумяумрряумрряумрряу',
+            ' ': 'брряу'
+        };
+        
+        if (actualMode === 'encode') {
+            return inputData.toLowerCase().split('').map(char => 
+                brailleMap[char] || 'мяумяумяумяумяумяу'
+            ).join('брряу');
+        } else {
+            const reverseBraille = {};
+            for (const [key, value] of Object.entries(brailleMap)) {
+                reverseBraille[value] = key;
+            }
+            
+            return inputData.split('брряу').map(code => 
+                reverseBraille[code] || '?'
+            ).join('');
+        }
     }
 }
 

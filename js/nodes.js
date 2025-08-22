@@ -137,15 +137,7 @@ class NodeManager {
             'input': {
                 title: 'Ввод текста',
                 icon: 'fas fa-sign-in-alt',
-                fields: [
-                    { 
-                        name: 'text', 
-                        type: 'textarea', 
-                        label: 'Текст',
-                        value: 'Введите текст...',
-                        rows: 3
-                    }
-                ],
+                fields: [],
                 hasInput: false,
                 hasOutput: true
             },
@@ -282,6 +274,82 @@ class NodeManager {
                 ],
                 hasInput: true,
                 hasOutput: true
+            },
+            'secret-word': {
+                title: 'Секретное слово',
+                icon: 'fas fa-key',
+                fields: [
+                    {
+                        name: 'keyword',
+                        type: 'text',
+                        label: 'Ключевое слово',
+                        value: 'СЕКРЕТ'
+                    }
+                ],
+                hasInput: false,
+                hasOutput: true
+            },
+            'vigenere': {
+                title: 'Шифр Виженера',
+                icon: 'fas fa-shield-alt',
+                fields: [],
+                hasInput: true,
+                hasOutput: true,
+                multipleInputs: ['text', 'key']
+            },
+            'a1z26': {
+                title: 'Шифр A1Z26',
+                icon: 'fas fa-sort-numeric-up',
+                fields: [
+                    {
+                        name: 'mode',
+                        type: 'select',
+                        label: 'Режим',
+                        value: 'encode',
+                        options: [
+                            { value: 'encode', label: 'Буквы → Числа' },
+                            { value: 'decode', label: 'Числа → Буквы' }
+                        ]
+                    }
+                ],
+                hasInput: true,
+                hasOutput: true
+            },
+            'braille-binary': {
+                title: 'Брайль (Бинарный)',
+                icon: 'fas fa-braille',
+                fields: [
+                    {
+                        name: 'mode',
+                        type: 'select',
+                        label: 'Режим',
+                        value: 'encode',
+                        options: [
+                            { value: 'encode', label: 'Текст → Бинарный Брайль' },
+                            { value: 'decode', label: 'Бинарный Брайль → Текст' }
+                        ]
+                    }
+                ],
+                hasInput: true,
+                hasOutput: true
+            },
+            'braille-cat': {
+                title: 'Брайль (Кошачий)',
+                icon: 'fas fa-cat',
+                fields: [
+                    {
+                        name: 'mode',
+                        type: 'select',
+                        label: 'Режим',
+                        value: 'encode',
+                        options: [
+                            { value: 'encode', label: 'Текст → Кошачий Брайль' },
+                            { value: 'decode', label: 'Кошачий Брайль → Текст' }
+                        ]
+                    }
+                ],
+                hasInput: true,
+                hasOutput: true
             }
         };
         
@@ -292,8 +360,7 @@ class NodeManager {
         const nodeElement = document.createElement('div');
         nodeElement.className = 'canvas-node';
         nodeElement.dataset.nodeId = nodeId;
-        nodeElement.style.left = x + 'px';
-        nodeElement.style.top = y + 'px';
+        nodeElement.style.transform = `translate(${x}px, ${y}px)`;
         
         // Создаем заголовок
         const header = document.createElement('div');
@@ -420,17 +487,39 @@ class NodeManager {
             y: e.clientY - rect.top
         };
         
+        let animationFrameId;
+        let pendingUpdate = false;
+        
         const moveHandler = (e) => {
             if (this.draggedNode) {
                 const x = e.clientX - canvasRect.left - this.dragOffset.x;
                 const y = e.clientY - canvasRect.top - this.dragOffset.y;
                 
-                this.moveNode(nodeId, x, y);
+                // Обновляем позицию немедленно для плавности
+                this.updateNodePosition(nodeId, x, y);
+                
+                // Планируем обновление соединений через requestAnimationFrame
+                if (!pendingUpdate) {
+                    pendingUpdate = true;
+                    animationFrameId = requestAnimationFrame(() => {
+                        if (this.draggedNode && window.connectionManager) {
+                            window.connectionManager.updateConnections(nodeId);
+                        }
+                        pendingUpdate = false;
+                    });
+                }
             }
         };
         
         const upHandler = () => {
             this.draggedNode = null;
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            // Финальное обновление соединений
+            if (window.connectionManager) {
+                window.connectionManager.updateConnections(nodeId);
+            }
             document.removeEventListener('mousemove', moveHandler);
             document.removeEventListener('mouseup', upHandler);
         };
@@ -439,7 +528,7 @@ class NodeManager {
         document.addEventListener('mouseup', upHandler);
     }
     
-    moveNode(nodeId, x, y) {
+    updateNodePosition(nodeId, x, y) {
         const node = this.nodes.get(nodeId);
         if (!node) return;
         
@@ -452,8 +541,11 @@ class NodeManager {
         
         node.x = x;
         node.y = y;
-        node.element.style.left = x + 'px';
-        node.element.style.top = y + 'px';
+        node.element.style.transform = `translate(${x}px, ${y}px)`;
+    }
+    
+    moveNode(nodeId, x, y) {
+        this.updateNodePosition(nodeId, x, y);
         
         // Обновляем соединения
         if (window.connectionManager) {
