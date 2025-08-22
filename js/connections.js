@@ -9,11 +9,18 @@ class ConnectionManager {
         this.tempConnection = null;
         this.reverseMode = false;
         
+        // Переменные для резки соединений
+        this.isCutting = false;
+        this.cutPath = [];
+        this.cutTrail = null;
+        this.lastCutPosition = null;
+        
         this.svg = document.getElementById('connections');
         this.canvas = document.getElementById('canvas');
         
         this.initializeConnectionHandlers();
         this.bindEvents();
+        this.initializeCuttingMode();
     }
     
     initializeConnectionHandlers() {
@@ -607,6 +614,280 @@ class ConnectionManager {
         // Запускаем выполнение цепочки после переключения режима
         if (window.cipherEngine) {
             window.cipherEngine.executeChain();
+        }
+    }
+    
+    // === Методы для резки соединений ===
+    
+    initializeCuttingMode() {
+        // Обработка нажатия Alt для начала резки
+        document.addEventListener('keydown', (e) => {
+            if (e.altKey && !this.isCutting && !this.isConnecting) {
+                this.startCuttingMode();
+            }
+        });
+        
+        // Обработка отпускания Alt для завершения резки
+        document.addEventListener('keyup', (e) => {
+            if (!e.altKey && this.isCutting) {
+                this.endCuttingMode();
+            }
+        });
+        
+        // Обработка движения мыши в режиме резки
+        this.canvas.addEventListener('mousemove', (e) => {
+            if (this.isCutting) {
+                this.updateCutTrail(e);
+                this.checkConnectionIntersections(e);
+            }
+        });
+        
+        // Начало резки при клике с Alt
+        this.canvas.addEventListener('mousedown', (e) => {
+            if (e.altKey && !this.isConnecting) {
+                e.preventDefault();
+                this.startCuttingPath(e);
+            }
+        });
+        
+        // Завершение резки при отпускании мыши
+        this.canvas.addEventListener('mouseup', (e) => {
+            if (this.isCutting) {
+                this.endCuttingPath();
+            }
+        });
+    }
+    
+    startCuttingMode() {
+        this.isCutting = true;
+        this.canvas.style.cursor = 'crosshair';
+        document.body.style.cursor = 'crosshair';
+        
+        // Добавляем визуальную подсказку
+        this.showCuttingHint();
+    }
+    
+    endCuttingMode() {
+        this.isCutting = false;
+        this.canvas.style.cursor = '';
+        document.body.style.cursor = '';
+        this.removeCutTrail();
+        this.hideCuttingHint();
+    }
+    
+    startCuttingPath(e) {
+        if (!this.isCutting) return;
+        
+        const rect = this.canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        this.cutPath = [{ x, y }];
+        this.lastCutPosition = { x, y };
+        this.createCutTrail();
+    }
+    
+    updateCutTrail(e) {
+        if (!this.isCutting || !this.cutTrail) return;
+        
+        const rect = this.canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Добавляем точку в путь только если достаточно переместились
+        if (this.lastCutPosition) {
+            const dx = x - this.lastCutPosition.x;
+            const dy = y - this.lastCutPosition.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance > 5) { // Минимальное расстояние для добавления точки
+                this.cutPath.push({ x, y });
+                this.lastCutPosition = { x, y };
+                this.redrawCutTrail();
+            }
+        }
+    }
+    
+    createCutTrail() {
+        this.cutTrail = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        this.cutTrail.setAttribute('stroke', '#ef4444');
+        this.cutTrail.setAttribute('stroke-width', '3');
+        this.cutTrail.setAttribute('stroke-dasharray', '8,4');
+        this.cutTrail.setAttribute('fill', 'none');
+        this.cutTrail.setAttribute('opacity', '0.8');
+        this.cutTrail.style.filter = 'drop-shadow(0 0 4px rgba(239, 68, 68, 0.5))';
+        this.cutTrail.style.pointerEvents = 'none';
+        
+        // Анимация пунктира
+        this.cutTrail.style.animation = 'dash-animation 1s linear infinite';
+        
+        this.svg.appendChild(this.cutTrail);
+    }
+    
+    redrawCutTrail() {
+        if (!this.cutTrail || this.cutPath.length < 2) return;
+        
+        let pathData = `M ${this.cutPath[0].x} ${this.cutPath[0].y}`;
+        for (let i = 1; i < this.cutPath.length; i++) {
+            pathData += ` L ${this.cutPath[i].x} ${this.cutPath[i].y}`;
+        }
+        
+        this.cutTrail.setAttribute('d', pathData);
+    }
+    
+    removeCutTrail() {
+        if (this.cutTrail) {
+            this.svg.removeChild(this.cutTrail);
+            this.cutTrail = null;
+        }
+        this.cutPath = [];
+        this.lastCutPosition = null;
+    }
+    
+    endCuttingPath() {
+        if (!this.isCutting) return;
+        
+        // Проверяем пересечения с соединениями
+        this.cutConnections();
+        
+        // Удаляем след резки с задержкой для визуального эффекта
+        setTimeout(() => {
+            this.removeCutTrail();
+        }, 200);
+    }
+    
+    checkConnectionIntersections(e) {
+        // Проверяем пересечения в реальном времени для визуального фидбека
+        const rect = this.canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+        // Подсвечиваем соединения, которые будут разрезаны
+        this.connections.forEach((connection, connectionId) => {
+            const line = document.querySelector(`[data-connection-id="${connectionId}"]`);
+            if (line && this.isLineIntersectingPath(line, this.cutPath)) {
+                line.style.stroke = '#ef4444';
+                line.style.strokeWidth = '4';
+                line.style.filter = 'drop-shadow(0 0 6px rgba(239, 68, 68, 0.8))';
+            } else if (line) {
+                // Восстанавливаем стиль
+                line.style.stroke = '';
+                line.style.strokeWidth = '';
+                line.style.filter = '';
+            }
+        });
+    }
+    
+    cutConnections() {
+        const connectionsToRemove = [];
+        
+        this.connections.forEach((connection, connectionId) => {
+            const line = document.querySelector(`[data-connection-id="${connectionId}"]`);
+            if (line && this.isLineIntersectingPath(line, this.cutPath)) {
+                connectionsToRemove.push(connectionId);
+            }
+        });
+        
+        // Удаляем пересекаемые соединения с анимацией
+        connectionsToRemove.forEach(connectionId => {
+            const line = document.querySelector(`[data-connection-id="${connectionId}"]`);
+            if (line) {
+                // Анимация исчезновения
+                line.style.transition = 'opacity 0.3s ease-out, stroke-width 0.3s ease-out';
+                line.style.opacity = '0';
+                line.style.strokeWidth = '0';
+                
+                setTimeout(() => {
+                    this.removeConnection(connectionId);
+                }, 300);
+            } else {
+                this.removeConnection(connectionId);
+            }
+        });
+        
+        if (connectionsToRemove.length > 0) {
+            console.log(`🔪 Разрезано соединений: ${connectionsToRemove.length}`);
+        }
+    }
+    
+    isLineIntersectingPath(lineElement, path) {
+        if (path.length < 2) return false;
+        
+        // Получаем координаты линии из SVG
+        const x1 = parseFloat(lineElement.getAttribute('x1'));
+        const y1 = parseFloat(lineElement.getAttribute('y1'));
+        const x2 = parseFloat(lineElement.getAttribute('x2'));
+        const y2 = parseFloat(lineElement.getAttribute('y2'));
+        
+        // Проверяем пересечение линии с каждым сегментом пути резки
+        for (let i = 1; i < path.length; i++) {
+            const px1 = path[i - 1].x;
+            const py1 = path[i - 1].y;
+            const px2 = path[i].x;
+            const py2 = path[i].y;
+            
+            if (this.lineIntersection(x1, y1, x2, y2, px1, py1, px2, py2)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    lineIntersection(x1, y1, x2, y2, x3, y3, x4, y4) {
+        // Алгоритм проверки пересечения двух отрезков
+        const denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+        
+        if (Math.abs(denominator) < 0.0001) {
+            return false; // Линии параллельны
+        }
+        
+        const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denominator;
+        const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denominator;
+        
+        return t >= 0 && t <= 1 && u >= 0 && u <= 1;
+    }
+    
+    showCuttingHint() {
+        // Создаем подсказку для режима резки
+        if (document.querySelector('.cutting-hint')) return;
+        
+        const hint = document.createElement('div');
+        hint.className = 'cutting-hint';
+        hint.innerHTML = `
+            <i class="fas fa-cut"></i>
+            Режим резки активен - проведите линию через соединения
+        `;
+        hint.style.cssText = `
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            z-index: 10000;
+            pointer-events: none;
+            animation: slideDown 0.3s ease-out;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        `;
+        
+        document.body.appendChild(hint);
+    }
+    
+    hideCuttingHint() {
+        const hint = document.querySelector('.cutting-hint');
+        if (hint) {
+            hint.style.animation = 'slideUp 0.3s ease-out forwards';
+            setTimeout(() => {
+                if (hint.parentNode) {
+                    hint.parentNode.removeChild(hint);
+                }
+            }, 300);
         }
     }
 }

@@ -54,7 +54,8 @@ class CipherFlowApp {
                     nodeManager: window.nodeManager,
                     connectionManager: window.connectionManager,
                     cipherEngine: window.cipherEngine,
-                    fileManager: window.fileManager
+                    fileManager: window.fileManager,
+                    canvasManager: window.canvasManager
                 };
                 
                 return Promise.resolve();
@@ -503,6 +504,40 @@ class CipherFlowApp {
             return this.components.cipherEngine.exportScheme();
         }
         return null;
+    }
+    
+    // Тестовый метод для добавления нодов
+    addTestNodes() {
+        if (!this.components.nodeManager) {
+            console.error('❌ nodeManager не доступен');
+            return;
+        }
+        
+        console.log('🔧 Создаю тестовый нод input...');
+        const inputId = this.components.nodeManager.createNode('input', 200, 150);
+        console.log('✅ Создан input нод:', inputId);
+        
+        console.log('🔧 Создаю тестовый нод caesar...');
+        const caesarId = this.components.nodeManager.createNode('caesar', 400, 150);
+        console.log('✅ Создан caesar нод:', caesarId);
+        
+        console.log('🔧 Создаю тестовый нод output...');
+        const outputId = this.components.nodeManager.createNode('output', 600, 150);
+        console.log('✅ Создан output нод:', outputId);
+        
+        console.log('📊 Общее количество нодов:', this.components.nodeManager.getAllNodes().length);
+        
+        // Проверим, есть ли элементы в DOM
+        const nodesInDOM = document.querySelectorAll('.canvas-node');
+        console.log('🎨 Ноды в DOM:', nodesInDOM.length);
+        nodesInDOM.forEach((node, index) => {
+            console.log(`Нод ${index + 1}:`, {
+                id: node.dataset.nodeId,
+                transform: node.style.transform,
+                visible: getComputedStyle(node).display !== 'none',
+                className: node.className
+            });
+        });
     }
 }
 

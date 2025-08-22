@@ -19,35 +19,16 @@ class NodeManager {
         const nodeItems = document.querySelectorAll('.node-item');
         
         nodeItems.forEach(item => {
-            item.addEventListener('dragstart', (e) => {
-                const nodeType = item.dataset.type;
-                e.dataTransfer.setData('application/node-type', nodeType);
-                e.dataTransfer.effectAllowed = 'copy';
-            });
+            // Отключаем стандартный drag & drop для избежания дублирования
+            item.draggable = false;
             
-            // Альтернативный способ перетаскивания для лучшей поддержки
+            // Используем только кастомный механизм перетаскивания
             item.addEventListener('mousedown', (e) => {
                 if (e.button === 0) { // Левая кнопка мыши
+                    e.preventDefault(); // Предотвращаем выделение текста
                     this.startNodeDrag(item, e);
                 }
             });
-        });
-        
-        // Обработка сброса на canvas
-        this.canvas.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'copy';
-        });
-        
-        this.canvas.addEventListener('drop', (e) => {
-            e.preventDefault();
-            const nodeType = e.dataTransfer.getData('application/node-type');
-            if (nodeType) {
-                const rect = this.canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                this.createNode(nodeType, x, y);
-            }
         });
     }
     
@@ -72,6 +53,13 @@ class NodeManager {
         
         document.body.appendChild(clone);
         
+        // Резервный таймер для удаления клона на случай зависания
+        const failsafeTimer = setTimeout(() => {
+            if (clone && clone.parentNode) {
+                clone.parentNode.removeChild(clone);
+            }
+        }, 10000); // 10 секунд максимум
+        
         let currentX = e.clientX;
         let currentY = e.clientY;
         
@@ -91,25 +79,42 @@ class NodeManager {
         };
         
         const finishDrag = (e) => {
-            clone.style.transition = 'opacity 0.2s, transform 0.2s';
-            clone.style.opacity = '0';
-            clone.style.transform = 'rotate(0deg) scale(0.8)';
+            // Очищаем резервный таймер
+            clearTimeout(failsafeTimer);
             
-            setTimeout(() => {
-                document.body.removeChild(clone);
-            }, 200);
-            
+            // Сразу удаляем обработчики событий
             document.removeEventListener('mousemove', moveHandler);
             document.removeEventListener('mouseup', finishDrag);
             
             // Проверим, попали ли мы на canvas
             const canvasRect = this.canvas.getBoundingClientRect();
-            if (e.clientX >= canvasRect.left && e.clientX <= canvasRect.right &&
-                e.clientY >= canvasRect.top && e.clientY <= canvasRect.bottom) {
+            const droppedOnCanvas = e.clientX >= canvasRect.left && e.clientX <= canvasRect.right &&
+                                   e.clientY >= canvasRect.top && e.clientY <= canvasRect.bottom;
+            
+            if (droppedOnCanvas) {
                 const x = e.clientX - canvasRect.left;
                 const y = e.clientY - canvasRect.top;
+                
+                // Анимация успешного создания нода
+                clone.style.transition = 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                clone.style.opacity = '0';
+                clone.style.transform = 'rotate(0deg) scale(1.2)';
+                clone.style.filter = 'blur(2px)';
+                
                 this.createNode(item.dataset.type, x, y);
+            } else {
+                // Анимация возврата при неуспешном дропе
+                clone.style.transition = 'all 0.2s ease-out';
+                clone.style.opacity = '0';
+                clone.style.transform = 'rotate(0deg) scale(0.8)';
             }
+            
+            // Гарантированное удаление клона через короткое время
+            setTimeout(() => {
+                if (clone && clone.parentNode) {
+                    clone.parentNode.removeChild(clone);
+                }
+            }, 300);
         };
         
         // Начальная позиция
@@ -140,19 +145,16 @@ class NodeManager {
         const nodeId = `node_${this.nodeIdCounter++}`;
         const nodeData = this.getNodeTemplate(type);
         
-        // Преобразуем экранные координаты в мировые
+        // Преобразуем экранные координаты относительно canvas в мировые координаты
         let worldX = screenX;
         let worldY = screenY;
         
+        // Если canvas-manager доступен, используем его преобразования
         if (window.canvasManager) {
             const worldCoords = window.canvasManager.screenToWorld(screenX, screenY);
             worldX = worldCoords.x;
             worldY = worldCoords.y;
         }
-        
-        // Добавляем смещение для центрирования в виртуальном пространстве
-        worldX += window.canvasManager?.virtualCenterX || 0;
-        worldY += window.canvasManager?.virtualCenterY || 0;
         
         const nodeElement = this.createElement(nodeId, nodeData, worldX, worldY);
         this.nodesLayer.appendChild(nodeElement);
@@ -460,7 +462,8 @@ class NodeManager {
                 inputPoint.dataset.nodeId = nodeId;
                 inputPoint.dataset.type = 'input';
                 inputPoint.dataset.inputName = input.name;
-                inputPoint.style.top = `${40 + index * 30}px`;
+                // Опускаем входы ниже, чтобы не накладывались на заголовок
+                inputPoint.style.top = `${60 + index * 35}px`;
                 if (input.color) {
                     inputPoint.style.backgroundColor = input.color;
                 }
@@ -471,10 +474,12 @@ class NodeManager {
                 label.textContent = input.label;
                 label.style.position = 'absolute';
                 label.style.left = '25px';
-                label.style.top = `${35 + index * 30}px`;
+                // Также опускаем labels
+                label.style.top = `${55 + index * 35}px`;
                 label.style.fontSize = '0.75rem';
                 label.style.color = 'var(--text-muted)';
                 label.style.userSelect = 'none';
+                label.style.whiteSpace = 'nowrap';
                 
                 nodeElement.appendChild(inputPoint);
                 nodeElement.appendChild(label);

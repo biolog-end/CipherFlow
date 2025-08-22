@@ -339,7 +339,7 @@ input:checked + .slider {
 
 /* Нод с множественными входами */
 .canvas-node.has-multiple-inputs {
-    min-height: 120px;
+    min-height: 150px;
 }
 
 .canvas-node:hover {
@@ -773,5 +773,90 @@ input:checked + .slider {
     .zoom-level {
         font-size: 10px;
         min-width: 35px;
+    }
+}
+
+/* === Стили для резки соединений === */
+
+/* Анимация пунктирной линии резки */
+@keyframes dash-animation {
+    0% {
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dashoffset: 12;
+    }
+}
+
+/* Анимации для подсказки режима резки */
+@keyframes slideDown {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    0% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+}
+
+/* Стиль курсора в режиме резки */
+.canvas.cutting-mode {
+    cursor: crosshair !important;
+}
+
+.canvas.cutting-mode * {
+    cursor: crosshair !important;
+}
+
+/* Подсветка соединений при наведении в режиме резки */
+.connection-line.cut-highlight {
+    stroke: #ef4444 !important;
+    stroke-width: 4 !important;
+    filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.8)) !important;
+    animation: pulse-red 1s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-red {
+    0% {
+        opacity: 0.8;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Стили для подсказки резки */
+.cutting-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cutting-hint i {
+    font-size: 1rem;
+    animation: rotate-cut 2s ease-in-out infinite;
+}
+
+@keyframes rotate-cut {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-10deg);
+    }
+    75% {
+        transform: rotate(10deg);
     }
 }
