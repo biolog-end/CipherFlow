@@ -146,9 +146,11 @@ class NodeManager {
         const nodeData = this.getNodeTemplate(type);
         
         // Преобразуем экранные координаты относительно canvas в мировые координаты
+        // Преобразуем экранные координаты относительно canvas в мировые координаты
         let worldX = screenX;
         let worldY = screenY;
         
+        // Если canvas-manager доступен, используем его преобразования
         // Если canvas-manager доступен, используем его преобразования
         if (window.canvasManager) {
             const worldCoords = window.canvasManager.screenToWorld(screenX, screenY);
