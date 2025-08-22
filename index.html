@@ -74,6 +74,18 @@
                             <i class="fas fa-broadcast-tower"></i>
                             <span>Код Морзе</span>
                         </div>
+                        <div class="node-item" data-type="secret-word">
+                            <i class="fas fa-key"></i>
+                            <span>Секретное слово</span>
+                        </div>
+                        <div class="node-item" data-type="vigenere">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Шифр Виженера</span>
+                        </div>
+                        <div class="node-item" data-type="a1z26">
+                            <i class="fas fa-sort-numeric-up"></i>
+                            <span>Шифр A1Z26</span>
+                        </div>
                     </div>
                     
                     <div class="category">
@@ -94,12 +106,32 @@
                             <i class="fas fa-text-height"></i>
                             <span>Регистр</span>
                         </div>
+                        <div class="node-item" data-type="braille-binary">
+                            <i class="fas fa-braille"></i>
+                            <span>Морзе (Бинарный)</span>
+                        </div>
+                        <div class="node-item" data-type="braille-cat">
+                            <i class="fas fa-cat"></i>
+                            <span>Морзе (Кошачий)</span>
+                        </div>
                     </div>
                 </div>
             </aside>
 
             <!-- Рабочая область -->
             <main class="workspace">
+                <div class="canvas-controls">
+                    <button class="canvas-control-btn" id="zoomInBtn" title="Увеличить">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                    <button class="canvas-control-btn" id="zoomOutBtn" title="Уменьшить">
+                        <i class="fas fa-search-minus"></i>
+                    </button>
+                    <button class="canvas-control-btn" id="resetZoomBtn" title="Сбросить масштаб">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </button>
+                    <span class="zoom-level" id="zoomLevel">100%</span>
+                </div>
                 <div class="canvas" id="canvas">
                     <div class="canvas-background"></div>
                     <svg class="connections-layer" id="connections"></svg>
@@ -128,6 +160,7 @@
     <script src="js/connections.js"></script>
     <script src="js/cipher-engine.js"></script>
     <script src="js/file-manager.js"></script>
+    <script src="js/canvas-manager.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

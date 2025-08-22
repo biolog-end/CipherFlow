@@ -59,6 +59,7 @@ class ConnectionManager {
         modeSwitch.addEventListener('change', (e) => {
             this.reverseMode = e.target.checked;
             this.updateAllConnectionDirections();
+            this.swapInputOutputFields();
         });
         
         // Обработка кликов по соединительным линиям для удаления
@@ -66,7 +67,48 @@ class ConnectionManager {
             if (e.target.classList.contains('connection-line')) {
                 const connectionId = e.target.dataset.connectionId;
                 if (connectionId) {
-                    this.removeConnection(connectionId);
+                    // Показываем подтверждение удаления
+                    if (confirm('Удалить соединение?')) {
+                        this.removeConnection(connectionId);
+                    }
+                }
+            }
+        });
+        
+        // Добавляем hover эффект для соединений
+        this.svg.addEventListener('mouseover', (e) => {
+            if (e.target.classList.contains('connection-line')) {
+                e.target.style.strokeWidth = '3';
+                e.target.style.cursor = 'pointer';
+                
+                // Показываем подсказку
+                const tooltip = document.createElement('div');
+                tooltip.className = 'connection-tooltip';
+                tooltip.textContent = 'Нажмите для удаления соединения';
+                tooltip.style.cssText = `
+                    position: fixed;
+                    left: ${e.clientX + 10}px;
+                    top: ${e.clientY - 30}px;
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    pointer-events: none;
+                    z-index: 1000;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                `;
+                document.body.appendChild(tooltip);
+                e.target._tooltip = tooltip;
+            }
+        });
+        
+        this.svg.addEventListener('mouseout', (e) => {
+            if (e.target.classList.contains('connection-line')) {
+                e.target.style.strokeWidth = '2';
+                if (e.target._tooltip) {
+                    e.target._tooltip.remove();
+                    delete e.target._tooltip;
                 }
             }
         });
@@ -87,8 +129,12 @@ class ConnectionManager {
         const startRect = this.startPoint.getBoundingClientRect();
         const canvasRect = this.canvas.getBoundingClientRect();
         
-        const startX = startRect.left + startRect.width / 2 - canvasRect.left;
-        const startY = startRect.top + startRect.height / 2 - canvasRect.top;
+        // Учитываем масштабирование канваса
+        const scale = window.canvasManager ? window.canvasManager.getScale() : 1;
+        const offset = window.canvasManager ? window.canvasManager.getOffset() : { x: 0, y: 0 };
+        
+        const startX = (startRect.left + startRect.width / 2 - canvasRect.left - offset.x) / scale;
+        const startY = (startRect.top + startRect.height / 2 - canvasRect.top - offset.y) / scale;
         
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         path.classList.add('connection-line', 'temporary');
@@ -107,8 +153,13 @@ class ConnectionManager {
         if (!this.tempConnection) return;
         
         const canvasRect = this.canvas.getBoundingClientRect();
-        const endX = e.clientX - canvasRect.left;
-        const endY = e.clientY - canvasRect.top;
+        
+        // Учитываем масштабирование канваса
+        const scale = window.canvasManager ? window.canvasManager.getScale() : 1;
+        const offset = window.canvasManager ? window.canvasManager.getOffset() : { x: 0, y: 0 };
+        
+        const endX = (e.clientX - canvasRect.left - offset.x) / scale;
+        const endY = (e.clientY - canvasRect.top - offset.y) / scale;
         
         const pathData = this.createBezierPath(
             this.tempConnection.startX,
@@ -234,14 +285,30 @@ class ConnectionManager {
     }
     
     updateConnectionPath(connection) {
-        const fromRect = connection.from.element.getBoundingClientRect();
-        const toRect = connection.to.element.getBoundingClientRect();
+        const fromNode = window.nodeManager.nodes.get(connection.from.nodeId);
+        const toNode = window.nodeManager.nodes.get(connection.to.nodeId);
+        
+        if (!fromNode || !toNode) return;
+        
+        // Используем позиции нодов напрямую, без учета трансформации
+        // так как SVG тоже трансформируется
+        const fromPoint = connection.from.element;
+        const toPoint = connection.to.element;
+        
+        // Получаем позиции элементов относительно canvas
+        const fromPointRect = fromPoint.getBoundingClientRect();
+        const toPointRect = toPoint.getBoundingClientRect();
         const canvasRect = this.canvas.getBoundingClientRect();
         
-        const fromX = fromRect.left + fromRect.width / 2 - canvasRect.left;
-        const fromY = fromRect.top + fromRect.height / 2 - canvasRect.top;
-        const toX = toRect.left + toRect.width / 2 - canvasRect.left;
-        const toY = toRect.top + toRect.height / 2 - canvasRect.top;
+        // Учитываем масштабирование канваса
+        const scale = window.canvasManager ? window.canvasManager.getScale() : 1;
+        const offset = window.canvasManager ? window.canvasManager.getOffset() : { x: 0, y: 0 };
+        
+        // Вычисляем позиции в системе координат SVG (до трансформации)
+        const fromX = (fromPointRect.left + fromPointRect.width / 2 - canvasRect.left - offset.x) / scale;
+        const fromY = (fromPointRect.top + fromPointRect.height / 2 - canvasRect.top - offset.y) / scale;
+        const toX = (toPointRect.left + toPointRect.width / 2 - canvasRect.left - offset.x) / scale;
+        const toY = (toPointRect.top + toPointRect.height / 2 - canvasRect.top - offset.y) / scale;
         
         let pathData;
         if (this.reverseMode) {
@@ -345,7 +412,8 @@ class ConnectionManager {
             if (connection.to.nodeId === nodeId) {
                 nodeConnections.inputs.push({
                     connectionId: connection.id,
-                    fromNodeId: connection.from.nodeId
+                    fromNodeId: connection.from.nodeId,
+                    inputName: connection.to.element.dataset.inputName || 'default'
                 });
             }
             
@@ -413,6 +481,63 @@ class ConnectionManager {
     
     getAllConnections() {
         return Array.from(this.connections.values());
+    }
+    
+    swapInputOutputFields() {
+        const inputText = document.getElementById('inputText');
+        const outputText = document.getElementById('outputText');
+        const inputLabel = inputText.previousElementSibling;
+        const outputLabel = outputText.previousElementSibling;
+        
+        if (this.reverseMode) {
+            // В режиме дешифрации: поле вывода становится вводом, поле ввода становится выводом
+            inputText.readOnly = true;
+            outputText.readOnly = false;
+            inputText.placeholder = 'Результат появится здесь...';
+            outputText.placeholder = 'Введите зашифрованный текст...';
+            inputLabel.textContent = 'Результат:';
+            outputLabel.textContent = 'Зашифрованный текст:';
+            
+            // Переносим содержимое из поля ввода в поле "вывода" (которое теперь ввод)
+            const tempValue = inputText.value;
+            inputText.value = outputText.value;
+            outputText.value = tempValue;
+            
+            // Добавляем обработчик для нового поля ввода (бывшего вывода)
+            if (!this.handleDecryptModeInput) {
+                this.handleDecryptModeInput = () => {
+                    if (window.cipherEngine) {
+                        window.cipherEngine.executeChain();
+                    }
+                };
+            }
+            outputText.removeEventListener('input', this.handleDecryptModeInput);
+            outputText.addEventListener('input', this.handleDecryptModeInput);
+            
+        } else {
+            // В обычном режиме: восстанавливаем исходное состояние
+            inputText.readOnly = false;
+            outputText.readOnly = true;
+            inputText.placeholder = 'Введите текст для шифрования...';
+            outputText.placeholder = 'Результат появится здесь...';
+            inputLabel.textContent = 'Входной текст:';
+            outputLabel.textContent = 'Результат:';
+            
+            // Переносим содержимое обратно
+            const tempValue = outputText.value;
+            outputText.value = inputText.value;
+            inputText.value = tempValue;
+            
+            // Удаляем обработчик с поля вывода
+            if (this.handleDecryptModeInput) {
+                outputText.removeEventListener('input', this.handleDecryptModeInput);
+            }
+        }
+        
+        // Запускаем выполнение цепочки после переключения режима
+        if (window.cipherEngine) {
+            window.cipherEngine.executeChain();
+        }
     }
 }
 

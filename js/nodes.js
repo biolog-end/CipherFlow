@@ -137,15 +137,7 @@ class NodeManager {
             'input': {
                 title: 'Ввод текста',
                 icon: 'fas fa-sign-in-alt',
-                fields: [
-                    { 
-                        name: 'text', 
-                        type: 'textarea', 
-                        label: 'Текст',
-                        value: 'Введите текст...',
-                        rows: 3
-                    }
-                ],
+                fields: [],
                 hasInput: false,
                 hasOutput: true
             },
@@ -282,6 +274,85 @@ class NodeManager {
                 ],
                 hasInput: true,
                 hasOutput: true
+            },
+            'secret-word': {
+                title: 'Секретное слово',
+                icon: 'fas fa-key',
+                fields: [
+                    {
+                        name: 'keyword',
+                        type: 'text',
+                        label: 'Ключевое слово',
+                        value: 'СЕКРЕТ'
+                    }
+                ],
+                hasInput: false,
+                hasOutput: true
+            },
+            'vigenere': {
+                title: 'Шифр Виженера',
+                icon: 'fas fa-shield-alt',
+                fields: [],
+                hasInput: false,
+                hasOutput: true,
+                multipleInputs: [
+                    { name: 'key', label: 'Ключ', color: '#f59e0b' },
+                    { name: 'text', label: 'Текст', color: '#3b82f6' }
+                ]
+            },
+            'a1z26': {
+                title: 'Шифр A1Z26',
+                icon: 'fas fa-sort-numeric-up',
+                fields: [
+                    {
+                        name: 'mode',
+                        type: 'select',
+                        label: 'Режим',
+                        value: 'encode',
+                        options: [
+                            { value: 'encode', label: 'Буквы → Числа' },
+                            { value: 'decode', label: 'Числа → Буквы' }
+                        ]
+                    }
+                ],
+                hasInput: true,
+                hasOutput: true
+            },
+            'braille-binary': {
+                title: 'Морзе (Бинарный)',
+                icon: 'fas fa-braille',
+                fields: [
+                    {
+                        name: 'mode',
+                        type: 'select',
+                        label: 'Режим',
+                        value: 'encode',
+                        options: [
+                            { value: 'encode', label: 'Текст → Бинарный код' },
+                            { value: 'decode', label: 'Бинарный код → Текст' }
+                        ]
+                    }
+                ],
+                hasInput: true,
+                hasOutput: true
+            },
+            'braille-cat': {
+                title: 'Морзе (Кошачий)',
+                icon: 'fas fa-cat',
+                fields: [
+                    {
+                        name: 'mode',
+                        type: 'select',
+                        label: 'Режим',
+                        value: 'encode',
+                        options: [
+                            { value: 'encode', label: 'Текст → Кошачий код' },
+                            { value: 'decode', label: 'Кошачий код → Текст' }
+                        ]
+                    }
+                ],
+                hasInput: true,
+                hasOutput: true
             }
         };
         
@@ -292,8 +363,7 @@ class NodeManager {
         const nodeElement = document.createElement('div');
         nodeElement.className = 'canvas-node';
         nodeElement.dataset.nodeId = nodeId;
-        nodeElement.style.left = x + 'px';
-        nodeElement.style.top = y + 'px';
+        nodeElement.style.transform = `translate(${x}px, ${y}px)`;
         
         // Создаем заголовок
         const header = document.createElement('div');
@@ -326,6 +396,35 @@ class NodeManager {
             inputPoint.dataset.nodeId = nodeId;
             inputPoint.dataset.type = 'input';
             nodeElement.appendChild(inputPoint);
+        }
+        
+        // Добавляем множественные входы (для шифра Виженера)
+        if (nodeData.multipleInputs && Array.isArray(nodeData.multipleInputs)) {
+            nodeData.multipleInputs.forEach((input, index) => {
+                const inputPoint = document.createElement('div');
+                inputPoint.className = 'connection-point input multiple';
+                inputPoint.dataset.nodeId = nodeId;
+                inputPoint.dataset.type = 'input';
+                inputPoint.dataset.inputName = input.name;
+                inputPoint.style.top = `${40 + index * 30}px`;
+                if (input.color) {
+                    inputPoint.style.backgroundColor = input.color;
+                }
+                
+                // Добавляем label для входа
+                const label = document.createElement('span');
+                label.className = 'input-label';
+                label.textContent = input.label;
+                label.style.position = 'absolute';
+                label.style.left = '25px';
+                label.style.top = `${35 + index * 30}px`;
+                label.style.fontSize = '0.75rem';
+                label.style.color = 'var(--text-muted)';
+                label.style.userSelect = 'none';
+                
+                nodeElement.appendChild(inputPoint);
+                nodeElement.appendChild(label);
+            });
         }
         
         if (nodeData.hasOutput) {
@@ -420,26 +519,61 @@ class NodeManager {
             y: e.clientY - rect.top
         };
         
-        const moveHandler = (e) => {
-            if (this.draggedNode) {
-                const x = e.clientX - canvasRect.left - this.dragOffset.x;
-                const y = e.clientY - canvasRect.top - this.dragOffset.y;
-                
-                this.moveNode(nodeId, x, y);
+        let animationFrameId = null;
+        let lastMouseX = e.clientX;
+        let lastMouseY = e.clientY;
+        let isDragging = true;
+        
+        // Функция обновления позиции через requestAnimationFrame
+        const updatePosition = () => {
+            if (!isDragging || !this.draggedNode) return;
+            
+            const x = lastMouseX - canvasRect.left - this.dragOffset.x;
+            const y = lastMouseY - canvasRect.top - this.dragOffset.y;
+            
+            // Обновляем позицию нода
+            this.updateNodePosition(nodeId, x, y);
+            
+            // Обновляем соединения
+            if (window.connectionManager) {
+                window.connectionManager.updateConnections(nodeId);
             }
+            
+            // Планируем следующий кадр
+            animationFrameId = requestAnimationFrame(updatePosition);
+        };
+        
+        const moveHandler = (e) => {
+            // Сохраняем позицию мыши
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
         };
         
         const upHandler = () => {
+            isDragging = false;
             this.draggedNode = null;
+            
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            
+            // Финальное обновление соединений
+            if (window.connectionManager) {
+                window.connectionManager.updateConnections(nodeId);
+            }
+            
             document.removeEventListener('mousemove', moveHandler);
             document.removeEventListener('mouseup', upHandler);
         };
+        
+        // Запускаем цикл анимации
+        animationFrameId = requestAnimationFrame(updatePosition);
         
         document.addEventListener('mousemove', moveHandler);
         document.addEventListener('mouseup', upHandler);
     }
     
-    moveNode(nodeId, x, y) {
+    updateNodePosition(nodeId, x, y) {
         const node = this.nodes.get(nodeId);
         if (!node) return;
         
@@ -452,8 +586,11 @@ class NodeManager {
         
         node.x = x;
         node.y = y;
-        node.element.style.left = x + 'px';
-        node.element.style.top = y + 'px';
+        node.element.style.transform = `translate(${x}px, ${y}px)`;
+    }
+    
+    moveNode(nodeId, x, y) {
+        this.updateNodePosition(nodeId, x, y);
         
         // Обновляем соединения
         if (window.connectionManager) {
