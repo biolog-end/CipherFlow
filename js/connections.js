@@ -569,7 +569,7 @@ class ConnectionManager {
         const outputSection = document.getElementById('outputSection');
         
         if (this.reverseMode) {
-            // В режиме дешифровки: поле вывода становится вводом, поле ввода становится выводом
+            // В режиме дешифровки меняем роли полей
             inputText.readOnly = true;
             outputText.readOnly = false;
             inputText.placeholder = 'Дешифрованный текст появится здесь...';
@@ -581,10 +581,8 @@ class ConnectionManager {
             inputSection.classList.add('decrypt-result');
             outputSection.classList.add('decrypt-input');
             
-            // Переносим содержимое из поля ввода в поле "вывода" (которое теперь ввод)
-            const tempValue = inputText.value;
-            inputText.value = outputText.value;
-            outputText.value = tempValue;
+            // НЕ меняем содержимое полей местами - просто оставляем как есть
+            // Поле outputText теперь становится полем ввода
             
             // Добавляем обработчик для нового поля ввода (бывшего вывода)
             if (!this.handleDecryptModeInput) {
@@ -610,10 +608,7 @@ class ConnectionManager {
             inputSection.classList.remove('decrypt-result');
             outputSection.classList.remove('decrypt-input');
             
-            // Переносим содержимое обратно
-            const tempValue = outputText.value;
-            outputText.value = inputText.value;
-            inputText.value = tempValue;
+            // НЕ меняем содержимое полей местами
             
             // Удаляем обработчик с поля вывода
             if (this.handleDecryptModeInput) {

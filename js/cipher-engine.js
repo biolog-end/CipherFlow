@@ -74,12 +74,13 @@ class CipherEngine {
             // Создаем карту для хранения результатов выполнения каждого нода
             const nodeResults = new Map();
             
-            // Получаем входной текст в зависимости от режима
-            // В режиме дешифровки источником данных является outputText (зашифрованный текст)
-            // В обычном режиме источником данных является inputText
-            const inputText = isReverseMode ? 
-                document.getElementById('outputText').value : 
-                document.getElementById('inputText').value;
+            // Определяем источник ввода
+            // В обычном режиме: inputText - источник
+            // В режиме дешифрования: outputText - источник (так как в это поле вводится зашифрованный текст)
+            const inputElement = isReverseMode ? 
+                document.getElementById('outputText') : 
+                document.getElementById('inputText');
+            const inputText = inputElement ? inputElement.value : '';
             
             // Выполняем ноды в правильном порядке
             for (const nodeId of executionOrder) {
@@ -87,70 +88,49 @@ class CipherEngine {
                 if (!node) continue;
                 
                 let inputData = '';
+                const connections = window.connectionManager.getNodeConnections(nodeId);
                 
-                // В режиме дешифрования меняем логику input/output
-                if (isReverseMode) {
-                    if (node.type === 'output') {
-                        // В режиме дешифрования output становится входом
+                // Определяем, откуда брать данные для нода
+                if (node.type === 'input') {
+                    // Input нод в обычном режиме берет данные из поля
+                    // В режиме дешифрования это выходной нод
+                    if (!isReverseMode) {
                         inputData = inputText;
-                    } else if (node.type === 'input') {
-                        // В режиме дешифрования input становится выходом
-                        const connections = window.connectionManager.getNodeConnections(nodeId);
-                        if (connections.outputs.length > 0) {
-                            const sourceNodeId = connections.outputs[0].toNodeId;
-                            inputData = nodeResults.get(sourceNodeId) || '';
-                        }
-                    } else if (node.data.multipleInputs) {
-                        // Для нодов с множественными входами в режиме дешифрования
-                        const connections = window.connectionManager.getNodeConnections(nodeId);
-                        inputData = {};
-                        
-                        // В режиме дешифрования берем данные от выходных соединений
-                        connections.outputs.forEach(conn => {
-                            const targetNodeId = conn.toNodeId;
-                            const targetNode = window.nodeManager.nodes.get(targetNodeId);
-                            if (targetNode) {
-                                // Определяем какой это вход у исходного нода
-                                const targetConnections = window.connectionManager.getNodeConnections(targetNodeId);
-                                const inputConnection = targetConnections.inputs.find(ic => ic.fromNodeId === nodeId);
-                                const inputName = inputConnection?.inputName || 'default';
-                                inputData[inputName] = nodeResults.get(targetNodeId) || '';
-                            }
-                        });
                     } else {
-                        // Для других нодов в режиме дешифрования
-                        const connections = window.connectionManager.getNodeConnections(nodeId);
-                        
-                        if (connections.outputs.length > 0) {
-                            // В режиме дешифрования берем данные от выходного нода
-                            const targetNodeId = connections.outputs[0].toNodeId;
-                            inputData = nodeResults.get(targetNodeId) || '';
-                        } else if (node.data.hasOutput) {
-                            inputData = '';
-                        }
-                    }
-                } else {
-                    // Обычный режим шифрования
-                    if (node.type === 'input') {
-                        inputData = inputText;
-                    } else if (node.data.multipleInputs) {
-                        const connections = window.connectionManager.getNodeConnections(nodeId);
-                        inputData = {};
-                        
-                        connections.inputs.forEach(conn => {
-                            const inputName = conn.inputName || 'default';
-                            const sourceNodeId = conn.fromNodeId;
-                            inputData[inputName] = nodeResults.get(sourceNodeId) || '';
-                        });
-                    } else {
-                        const connections = window.connectionManager.getNodeConnections(nodeId);
-                        
+                        // В режиме дешифрования берем данные от предыдущего нода
                         if (connections.inputs.length > 0) {
                             const sourceNodeId = connections.inputs[0].fromNodeId;
                             inputData = nodeResults.get(sourceNodeId) || '';
-                        } else if (node.data.hasInput) {
-                            inputData = '';
                         }
+                    }
+                } else if (node.type === 'output') {
+                    // Output нод в обычном режиме получает данные от предыдущего
+                    // В режиме дешифрования это входной нод
+                    if (!isReverseMode) {
+                        // В обычном режиме берем данные от предыдущего нода
+                        if (connections.inputs.length > 0) {
+                            const sourceNodeId = connections.inputs[0].fromNodeId;
+                            inputData = nodeResults.get(sourceNodeId) || '';
+                        }
+                    } else {
+                        // В режиме дешифрования берем данные из поля
+                        inputData = inputText;
+                    }
+                } else if (node.data.multipleInputs) {
+                    // Ноды с множественными входами
+                    inputData = {};
+                    connections.inputs.forEach(conn => {
+                        const inputName = conn.inputName || 'default';
+                        const sourceNodeId = conn.fromNodeId;
+                        inputData[inputName] = nodeResults.get(sourceNodeId) || '';
+                    });
+                } else {
+                    // Обычные ноды обработки данных
+                    if (connections.inputs.length > 0) {
+                        const sourceNodeId = connections.inputs[0].fromNodeId;
+                        inputData = nodeResults.get(sourceNodeId) || '';
+                    } else if (node.data.hasInput) {
+                        inputData = '';
                     }
                 }
                 
@@ -160,10 +140,15 @@ class CipherEngine {
                 
                 // Выводим результат в соответствующее поле
                 if ((node.type === 'output' && !isReverseMode) || (node.type === 'input' && isReverseMode)) {
+                    // Определяем поле для вывода
+                    // В обычном режиме: результат в outputText
+                    // В режиме дешифрования: результат в inputText
                     const outputElement = isReverseMode ? 
-                        document.getElementById('inputText') :  // В режиме дешифровки результат в inputText (дешифрованный)
-                        document.getElementById('outputText');  // В обычном режиме результат в outputText
-                    outputElement.value = result;
+                        document.getElementById('inputText') : 
+                        document.getElementById('outputText');
+                    if (outputElement) {
+                        outputElement.value = result;
+                    }
                 }
             }
             
@@ -176,7 +161,9 @@ class CipherEngine {
                 const outputElement = isReverseMode ? 
                     document.getElementById('inputText') : 
                     document.getElementById('outputText');
-                outputElement.value = lastResult || '';
+                if (outputElement) {
+                    outputElement.value = lastResult || '';
+                }
             }
             
         } catch (error) {
@@ -198,7 +185,17 @@ class CipherEngine {
                     return this.processInputNode(node, inputData);
                     
                 case 'output':
-                    return inputData;
+                    // В обычном режиме output нод просто возвращает данные
+                    // В режиме дешифрования output нод становится входной точкой
+                    const isReverseMode = window.connectionManager?.reverseMode;
+                    if (isReverseMode) {
+                        // В режиме дешифрования output нод берет данные из поля outputText
+                        const outputElement = document.getElementById('outputText');
+                        return outputElement ? outputElement.value : '';
+                    } else {
+                        // В обычном режиме output нод просто возвращает данные
+                        return inputData;
+                    }
                     
                 case 'caesar':
                     return this.processCaesarCipher(nodeData, inputData);
@@ -243,14 +240,19 @@ class CipherEngine {
     }
     
     processInputNode(node, inputData) {
-        // Нод ввода берет текст из соответствующего поля в зависимости от режима
+        // В режиме дешифрования, input нод работает как выход
+        // и должен вернуть данные, которые ему передали
         const isReverseMode = window.connectionManager?.reverseMode;
-        // В режиме дешифровки источник данных - outputText (зашифрованный текст)
-        // В обычном режиме источник данных - inputText
-        const inputElement = isReverseMode ? 
-            document.getElementById('outputText') : 
-            document.getElementById('inputText');
-        return inputElement ? inputElement.value : '';
+        
+        if (isReverseMode) {
+            // В режиме дешифрования input нод - это конечная точка
+            // Он просто возвращает то, что ему передали
+            return inputData;
+        } else {
+            // В обычном режиме input нод берет данные из поля ввода
+            const inputElement = document.getElementById('inputText');
+            return inputElement ? inputElement.value : '';
+        }
     }
     
     processCaesarCipher(nodeData, text) {
