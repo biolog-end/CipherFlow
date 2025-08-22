@@ -22,7 +22,23 @@ class ConnectionManager {
             const connectionPoint = e.target.closest('.connection-point');
             if (connectionPoint) {
                 e.stopPropagation();
-                this.startConnection(connectionPoint, e);
+                
+                // Правый клик + Shift для разрыва связей
+                if ((e.button === 2 || (e.button === 0 && e.shiftKey)) && e.shiftKey) {
+                    e.preventDefault();
+                    this.breakConnectionsAtPoint(connectionPoint);
+                } else if (e.button === 0) {
+                    // Левый клик для создания соединения
+                    this.startConnection(connectionPoint, e);
+                }
+            }
+        });
+        
+        // Предотвращаем контекстное меню на точках соединения при Shift
+        this.canvas.addEventListener('contextmenu', (e) => {
+            const connectionPoint = e.target.closest('.connection-point');
+            if (connectionPoint && e.shiftKey) {
+                e.preventDefault();
             }
         });
         
@@ -49,6 +65,23 @@ class ConnectionManager {
         this.canvas.addEventListener('click', (e) => {
             if (this.isConnecting && !e.target.closest('.connection-point')) {
                 this.cancelConnection();
+            }
+        });
+        
+        // Подсказка при наведении на точку соединения
+        this.canvas.addEventListener('mouseover', (e) => {
+            const connectionPoint = e.target.closest('.connection-point');
+            if (connectionPoint && e.shiftKey) {
+                connectionPoint.style.cursor = 'not-allowed';
+                connectionPoint.title = 'Удерживайте Shift и кликните правой кнопкой для разрыва связей';
+            }
+        });
+        
+        this.canvas.addEventListener('mouseout', (e) => {
+            const connectionPoint = e.target.closest('.connection-point');
+            if (connectionPoint) {
+                connectionPoint.style.cursor = '';
+                connectionPoint.title = '';
             }
         });
     }
@@ -481,6 +514,43 @@ class ConnectionManager {
     
     getAllConnections() {
         return Array.from(this.connections.values());
+    }
+    
+    breakConnectionsAtPoint(connectionPoint) {
+        const nodeId = connectionPoint.dataset.nodeId;
+        const pointType = connectionPoint.dataset.type;
+        const inputName = connectionPoint.dataset.inputName;
+        
+        const connectionsToRemove = [];
+        
+        // Находим все соединения, связанные с этой точкой
+        for (const [connectionId, connection] of this.connections.entries()) {
+            if (pointType === 'input') {
+                // Если это входная точка
+                if (connection.to.nodeId === nodeId && 
+                    (!inputName || connection.to.element.dataset.inputName === inputName)) {
+                    connectionsToRemove.push(connectionId);
+                }
+            } else if (pointType === 'output') {
+                // Если это выходная точка
+                if (connection.from.nodeId === nodeId) {
+                    connectionsToRemove.push(connectionId);
+                }
+            }
+        }
+        
+        // Удаляем найденные соединения
+        if (connectionsToRemove.length > 0) {
+            connectionsToRemove.forEach(connectionId => {
+                this.removeConnection(connectionId);
+            });
+            
+            // Показываем визуальный эффект разрыва
+            connectionPoint.style.animation = 'pulse 0.5s';
+            setTimeout(() => {
+                connectionPoint.style.animation = '';
+            }, 500);
+        }
     }
     
     swapInputOutputFields() {

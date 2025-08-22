@@ -63,13 +63,18 @@ class CipherEngine {
         
         try {
             // Получаем порядок выполнения нодов
-            const executionOrder = window.connectionManager.getExecutionOrder();
+            let executionOrder = window.connectionManager.getExecutionOrder();
+            const isReverseMode = window.connectionManager.reverseMode;
+            
+            // В режиме дешифрования инвертируем порядок выполнения
+            if (isReverseMode) {
+                executionOrder = executionOrder.slice().reverse();
+            }
             
             // Создаем карту для хранения результатов выполнения каждого нода
             const nodeResults = new Map();
             
             // Получаем входной текст в зависимости от режима
-            const isReverseMode = window.connectionManager.reverseMode;
             const inputText = isReverseMode ? 
                 document.getElementById('outputText').value : 
                 document.getElementById('inputText').value;
@@ -81,32 +86,69 @@ class CipherEngine {
                 
                 let inputData = '';
                 
-                // Определяем входные данные для нода
-                if (node.type === 'input') {
-                    // Для input нода берем текст из главного поля ввода
-                    inputData = inputText;
-                } else if (node.data.multipleInputs) {
-                    // Для нодов с множественными входами (например, шифр Виженера)
-                    const connections = window.connectionManager.getNodeConnections(nodeId);
-                    inputData = {};
-                    
-                    // Собираем данные от всех подключенных входов
-                    connections.inputs.forEach(conn => {
-                        const inputName = conn.inputName || 'default';
-                        const sourceNodeId = conn.fromNodeId;
-                        inputData[inputName] = nodeResults.get(sourceNodeId) || '';
-                    });
+                // В режиме дешифрования меняем логику input/output
+                if (isReverseMode) {
+                    if (node.type === 'output') {
+                        // В режиме дешифрования output становится входом
+                        inputData = inputText;
+                    } else if (node.type === 'input') {
+                        // В режиме дешифрования input становится выходом
+                        const connections = window.connectionManager.getNodeConnections(nodeId);
+                        if (connections.outputs.length > 0) {
+                            const sourceNodeId = connections.outputs[0].toNodeId;
+                            inputData = nodeResults.get(sourceNodeId) || '';
+                        }
+                    } else if (node.data.multipleInputs) {
+                        // Для нодов с множественными входами в режиме дешифрования
+                        const connections = window.connectionManager.getNodeConnections(nodeId);
+                        inputData = {};
+                        
+                        // В режиме дешифрования берем данные от выходных соединений
+                        connections.outputs.forEach(conn => {
+                            const targetNodeId = conn.toNodeId;
+                            const targetNode = window.nodeManager.nodes.get(targetNodeId);
+                            if (targetNode) {
+                                // Определяем какой это вход у исходного нода
+                                const targetConnections = window.connectionManager.getNodeConnections(targetNodeId);
+                                const inputConnection = targetConnections.inputs.find(ic => ic.fromNodeId === nodeId);
+                                const inputName = inputConnection?.inputName || 'default';
+                                inputData[inputName] = nodeResults.get(targetNodeId) || '';
+                            }
+                        });
+                    } else {
+                        // Для других нодов в режиме дешифрования
+                        const connections = window.connectionManager.getNodeConnections(nodeId);
+                        
+                        if (connections.outputs.length > 0) {
+                            // В режиме дешифрования берем данные от выходного нода
+                            const targetNodeId = connections.outputs[0].toNodeId;
+                            inputData = nodeResults.get(targetNodeId) || '';
+                        } else if (node.data.hasOutput) {
+                            inputData = '';
+                        }
+                    }
                 } else {
-                    // Для других нодов ищем входящие соединения
-                    const connections = window.connectionManager.getNodeConnections(nodeId);
-                    
-                    if (connections.inputs.length > 0) {
-                        // Берем данные от первого подключенного нода
-                        const sourceNodeId = connections.inputs[0].fromNodeId;
-                        inputData = nodeResults.get(sourceNodeId) || '';
-                    } else if (node.data.hasInput) {
-                        // Если нет соединений, но нод требует ввод, используем пустую строку
-                        inputData = '';
+                    // Обычный режим шифрования
+                    if (node.type === 'input') {
+                        inputData = inputText;
+                    } else if (node.data.multipleInputs) {
+                        const connections = window.connectionManager.getNodeConnections(nodeId);
+                        inputData = {};
+                        
+                        connections.inputs.forEach(conn => {
+                            const inputName = conn.inputName || 'default';
+                            const sourceNodeId = conn.fromNodeId;
+                            inputData[inputName] = nodeResults.get(sourceNodeId) || '';
+                        });
+                    } else {
+                        const connections = window.connectionManager.getNodeConnections(nodeId);
+                        
+                        if (connections.inputs.length > 0) {
+                            const sourceNodeId = connections.inputs[0].fromNodeId;
+                            inputData = nodeResults.get(sourceNodeId) || '';
+                        } else if (node.data.hasInput) {
+                            inputData = '';
+                        }
                     }
                 }
                 
@@ -114,9 +156,8 @@ class CipherEngine {
                 const result = this.processNode(node, inputData);
                 nodeResults.set(nodeId, result);
                 
-                // Если это output нод, выводим результат
-                if (node.type === 'output') {
-                    const isReverseMode = window.connectionManager.reverseMode;
+                // Выводим результат в соответствующее поле
+                if ((node.type === 'output' && !isReverseMode) || (node.type === 'input' && isReverseMode)) {
                     const outputElement = isReverseMode ? 
                         document.getElementById('inputText') : 
                         document.getElementById('outputText');
@@ -124,11 +165,12 @@ class CipherEngine {
                 }
             }
             
-            // Если нет output нода, но есть результаты, показываем последний результат
-            const outputNodes = window.nodeManager.getAllNodes().filter(n => n.type === 'output');
+            // Если нет соответствующего выходного нода, но есть результаты
+            const outputNodes = window.nodeManager.getAllNodes().filter(n => 
+                isReverseMode ? n.type === 'input' : n.type === 'output'
+            );
             if (outputNodes.length === 0 && nodeResults.size > 0) {
                 const lastResult = Array.from(nodeResults.values()).pop();
-                const isReverseMode = window.connectionManager.reverseMode;
                 const outputElement = isReverseMode ? 
                     document.getElementById('inputText') : 
                     document.getElementById('outputText');

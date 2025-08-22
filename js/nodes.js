@@ -53,21 +53,53 @@ class NodeManager {
     
     startNodeDrag(item, e) {
         const clone = item.cloneNode(true);
-        clone.style.position = 'absolute';
+        clone.style.position = 'fixed';
         clone.style.pointerEvents = 'none';
-        clone.style.opacity = '0.7';
+        clone.style.opacity = '0.8';
         clone.style.zIndex = '9999';
-        clone.style.transform = 'rotate(5deg)';
+        clone.style.transform = 'rotate(2deg) scale(1.05)';
+        clone.style.transition = 'none';
+        clone.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
+        
+        // Получаем размеры элемента
+        const itemRect = item.getBoundingClientRect();
+        clone.style.width = itemRect.width + 'px';
+        clone.style.height = itemRect.height + 'px';
+        
+        // Оффсет для центрирования элемента под курсором
+        const offsetX = itemRect.width / 2;
+        const offsetY = itemRect.height / 2;
+        
         document.body.appendChild(clone);
         
-        const updateClonePosition = (e) => {
-            clone.style.left = e.clientX + 'px';
-            clone.style.top = e.clientY + 'px';
+        let currentX = e.clientX;
+        let currentY = e.clientY;
+        
+        // Функция плавного обновления позиции
+        const updateClonePosition = () => {
+            const targetX = currentX - offsetX;
+            const targetY = currentY - offsetY;
+            
+            clone.style.left = targetX + 'px';
+            clone.style.top = targetY + 'px';
+        };
+        
+        const moveHandler = (e) => {
+            currentX = e.clientX;
+            currentY = e.clientY;
+            requestAnimationFrame(updateClonePosition);
         };
         
         const finishDrag = (e) => {
-            document.body.removeChild(clone);
-            document.removeEventListener('mousemove', updateClonePosition);
+            clone.style.transition = 'opacity 0.2s, transform 0.2s';
+            clone.style.opacity = '0';
+            clone.style.transform = 'rotate(0deg) scale(0.8)';
+            
+            setTimeout(() => {
+                document.body.removeChild(clone);
+            }, 200);
+            
+            document.removeEventListener('mousemove', moveHandler);
             document.removeEventListener('mouseup', finishDrag);
             
             // Проверим, попали ли мы на canvas
@@ -80,8 +112,10 @@ class NodeManager {
             }
         };
         
-        updateClonePosition(e);
-        document.addEventListener('mousemove', updateClonePosition);
+        // Начальная позиция
+        updateClonePosition();
+        
+        document.addEventListener('mousemove', moveHandler);
         document.addEventListener('mouseup', finishDrag);
     }
     
@@ -102,11 +136,25 @@ class NodeManager {
         });
     }
     
-    createNode(type, x, y) {
+    createNode(type, screenX, screenY) {
         const nodeId = `node_${this.nodeIdCounter++}`;
         const nodeData = this.getNodeTemplate(type);
         
-        const nodeElement = this.createElement(nodeId, nodeData, x, y);
+        // Преобразуем экранные координаты в мировые
+        let worldX = screenX;
+        let worldY = screenY;
+        
+        if (window.canvasManager) {
+            const worldCoords = window.canvasManager.screenToWorld(screenX, screenY);
+            worldX = worldCoords.x;
+            worldY = worldCoords.y;
+        }
+        
+        // Добавляем смещение для центрирования в виртуальном пространстве
+        worldX += window.canvasManager?.virtualCenterX || 0;
+        worldY += window.canvasManager?.virtualCenterY || 0;
+        
+        const nodeElement = this.createElement(nodeId, nodeData, worldX, worldY);
         this.nodesLayer.appendChild(nodeElement);
         
         this.nodes.set(nodeId, {
@@ -114,8 +162,8 @@ class NodeManager {
             type: type,
             element: nodeElement,
             data: nodeData,
-            x: x,
-            y: y,
+            x: worldX,
+            y: worldY,
             inputs: {},
             outputs: {}
         });
@@ -362,6 +410,12 @@ class NodeManager {
     createElement(nodeId, nodeData, x, y) {
         const nodeElement = document.createElement('div');
         nodeElement.className = 'canvas-node';
+        
+        // Добавляем класс для нодов с множественными входами
+        if (nodeData.multipleInputs && nodeData.multipleInputs.length > 0) {
+            nodeElement.className += ' has-multiple-inputs';
+        }
+        
         nodeElement.dataset.nodeId = nodeId;
         nodeElement.style.transform = `translate(${x}px, ${y}px)`;
         
@@ -511,12 +565,25 @@ class NodeManager {
         this.draggedNode = node;
         this.selectNode(nodeId);
         
-        const rect = nodeElement.getBoundingClientRect();
+        // Получаем текущие мировые координаты мыши и нода
         const canvasRect = this.canvas.getBoundingClientRect();
+        const screenMouseX = e.clientX - canvasRect.left;
+        const screenMouseY = e.clientY - canvasRect.top;
         
+        // Преобразуем в мировые координаты
+        let worldMouseX = screenMouseX;
+        let worldMouseY = screenMouseY;
+        
+        if (window.canvasManager) {
+            const worldCoords = window.canvasManager.screenToWorld(screenMouseX, screenMouseY);
+            worldMouseX = worldCoords.x + window.canvasManager.virtualCenterX;
+            worldMouseY = worldCoords.y + window.canvasManager.virtualCenterY;
+        }
+        
+        // Сохраняем смещение относительно нода
         this.dragOffset = {
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top
+            x: worldMouseX - node.x,
+            y: worldMouseY - node.y
         };
         
         let animationFrameId = null;
@@ -528,11 +595,21 @@ class NodeManager {
         const updatePosition = () => {
             if (!isDragging || !this.draggedNode) return;
             
-            const x = lastMouseX - canvasRect.left - this.dragOffset.x;
-            const y = lastMouseY - canvasRect.top - this.dragOffset.y;
+            // Преобразуем экранные координаты мыши в мировые
+            const screenX = lastMouseX - canvasRect.left;
+            const screenY = lastMouseY - canvasRect.top;
+            
+            let worldX = screenX;
+            let worldY = screenY;
+            
+            if (window.canvasManager) {
+                const worldCoords = window.canvasManager.screenToWorld(screenX, screenY);
+                worldX = worldCoords.x + window.canvasManager.virtualCenterX - this.dragOffset.x;
+                worldY = worldCoords.y + window.canvasManager.virtualCenterY - this.dragOffset.y;
+            }
             
             // Обновляем позицию нода
-            this.updateNodePosition(nodeId, x, y);
+            this.updateNodePosition(nodeId, worldX, worldY);
             
             // Обновляем соединения
             if (window.connectionManager) {
@@ -577,12 +654,10 @@ class NodeManager {
         const node = this.nodes.get(nodeId);
         if (!node) return;
         
-        // Ограничиваем перемещение границами canvas
-        const canvasRect = this.canvas.getBoundingClientRect();
-        const nodeRect = node.element.getBoundingClientRect();
-        
-        x = Math.max(0, Math.min(x, canvasRect.width - nodeRect.width));
-        y = Math.max(0, Math.min(y, canvasRect.height - nodeRect.height));
+        // Не ограничиваем перемещение, так как работаем с виртуальным пространством
+        // Можно установить минимальные и максимальные границы
+        x = Math.max(0, Math.min(x, 10000));
+        y = Math.max(0, Math.min(y, 10000));
         
         node.x = x;
         node.y = y;

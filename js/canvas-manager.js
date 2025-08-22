@@ -5,6 +5,7 @@ class CanvasManager {
         this.canvas = document.getElementById('canvas');
         this.nodesLayer = document.getElementById('nodesLayer');
         this.connectionsLayer = document.getElementById('connections');
+        this.canvasBackground = document.querySelector('.canvas-background');
         
         this.scale = 1;
         this.offsetX = 0;
@@ -18,9 +19,13 @@ class CanvasManager {
         this.panStartOffsetX = 0;
         this.panStartOffsetY = 0;
         
+        // Начальное смещение для центрирования виртуального пространства
+        this.virtualCenterX = 5000;
+        this.virtualCenterY = 5000;
+        
         this.initializeControls();
         this.bindEvents();
-        this.updateTransform();
+        this.centerView();
     }
     
     initializeControls() {
@@ -149,8 +154,14 @@ class CanvasManager {
     
     resetZoom() {
         this.scale = 1;
-        this.offsetX = 0;
-        this.offsetY = 0;
+        this.centerView();
+    }
+    
+    centerView() {
+        const rect = this.canvas.getBoundingClientRect();
+        // Центрируем вид на виртуальном центре пространства
+        this.offsetX = rect.width / 2 - this.virtualCenterX * this.scale;
+        this.offsetY = rect.height / 2 - this.virtualCenterY * this.scale;
         this.updateTransform();
     }
     
@@ -177,12 +188,17 @@ class CanvasManager {
     updateTransform() {
         const transform = `translate(${this.offsetX}px, ${this.offsetY}px) scale(${this.scale})`;
         
-        // Применяем одинаковую трансформацию к обоим слоям
+        // Применяем одинаковую трансформацию ко всем слоям
         this.nodesLayer.style.transform = transform;
         this.nodesLayer.style.transformOrigin = '0 0';
         
         this.connectionsLayer.style.transform = transform;
         this.connectionsLayer.style.transformOrigin = '0 0';
+        
+        if (this.canvasBackground) {
+            this.canvasBackground.style.transform = transform;
+            this.canvasBackground.style.transformOrigin = '0 0';
+        }
         
         // Обновляем отображение масштаба
         const zoomLevel = document.getElementById('zoomLevel');

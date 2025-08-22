@@ -295,31 +295,34 @@ input:checked + .slider {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 10000px;  /* Большое виртуальное пространство */
+    height: 10000px;
     background-image: 
         radial-gradient(circle at 20px 20px, var(--border-color) 1px, transparent 1px);
     background-size: 40px 40px;
     opacity: 0.3;
+    transform-origin: 0 0;
 }
 
 .connections-layer {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 10000px;  /* Большое виртуальное пространство */
+    height: 10000px;
     pointer-events: none;
     z-index: 1;
+    transform-origin: 0 0;
 }
 
 .nodes-layer {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 10000px;  /* Большое виртуальное пространство */
+    height: 10000px;
     z-index: 10;
+    transform-origin: 0 0;
 }
 
 /* === Ноды на canvas === */
@@ -332,6 +335,11 @@ input:checked + .slider {
     box-shadow: var(--shadow-lg);
     cursor: move;
     transition: var(--transition);
+}
+
+/* Нод с множественными входами */
+.canvas-node.has-multiple-inputs {
+    min-height: 120px;
 }
 
 .canvas-node:hover {
@@ -468,6 +476,14 @@ input:checked + .slider {
     position: absolute;
     left: -8px;
     transform: none;
+}
+
+/* Метки для множественных входов */
+.input-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    user-select: none;
+    pointer-events: none;
 }
 
 .connection-point.output {
