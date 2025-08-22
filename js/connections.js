@@ -563,17 +563,23 @@ class ConnectionManager {
     swapInputOutputFields() {
         const inputText = document.getElementById('inputText');
         const outputText = document.getElementById('outputText');
-        const inputLabel = inputText.previousElementSibling;
-        const outputLabel = outputText.previousElementSibling;
+        const inputLabel = document.getElementById('inputLabel');
+        const outputLabel = document.getElementById('outputLabel');
+        const inputSection = document.getElementById('inputSection');
+        const outputSection = document.getElementById('outputSection');
         
         if (this.reverseMode) {
-            // В режиме дешифрации: поле вывода становится вводом, поле ввода становится выводом
+            // В режиме дешифровки: поле вывода становится вводом, поле ввода становится выводом
             inputText.readOnly = true;
             outputText.readOnly = false;
-            inputText.placeholder = 'Результат появится здесь...';
+            inputText.placeholder = 'Дешифрованный текст появится здесь...';
             outputText.placeholder = 'Введите зашифрованный текст...';
-            inputLabel.textContent = 'Результат:';
+            inputLabel.textContent = 'Дешифрованный текст:';
             outputLabel.textContent = 'Зашифрованный текст:';
+            
+            // Добавляем CSS классы для стилизации
+            inputSection.classList.add('decrypt-result');
+            outputSection.classList.add('decrypt-input');
             
             // Переносим содержимое из поля ввода в поле "вывода" (которое теперь ввод)
             const tempValue = inputText.value;
@@ -599,6 +605,10 @@ class ConnectionManager {
             outputText.placeholder = 'Результат появится здесь...';
             inputLabel.textContent = 'Входной текст:';
             outputLabel.textContent = 'Результат:';
+            
+            // Удаляем CSS классы для стилизации
+            inputSection.classList.remove('decrypt-result');
+            outputSection.classList.remove('decrypt-input');
             
             // Переносим содержимое обратно
             const tempValue = outputText.value;

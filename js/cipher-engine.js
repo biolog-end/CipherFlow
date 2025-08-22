@@ -75,6 +75,8 @@ class CipherEngine {
             const nodeResults = new Map();
             
             // Получаем входной текст в зависимости от режима
+            // В режиме дешифровки источником данных является outputText (зашифрованный текст)
+            // В обычном режиме источником данных является inputText
             const inputText = isReverseMode ? 
                 document.getElementById('outputText').value : 
                 document.getElementById('inputText').value;
@@ -159,8 +161,8 @@ class CipherEngine {
                 // Выводим результат в соответствующее поле
                 if ((node.type === 'output' && !isReverseMode) || (node.type === 'input' && isReverseMode)) {
                     const outputElement = isReverseMode ? 
-                        document.getElementById('inputText') : 
-                        document.getElementById('outputText');
+                        document.getElementById('inputText') :  // В режиме дешифровки результат в inputText (дешифрованный)
+                        document.getElementById('outputText');  // В обычном режиме результат в outputText
                     outputElement.value = result;
                 }
             }
@@ -243,6 +245,8 @@ class CipherEngine {
     processInputNode(node, inputData) {
         // Нод ввода берет текст из соответствующего поля в зависимости от режима
         const isReverseMode = window.connectionManager?.reverseMode;
+        // В режиме дешифровки источник данных - outputText (зашифрованный текст)
+        // В обычном режиме источник данных - inputText
         const inputElement = isReverseMode ? 
             document.getElementById('outputText') : 
             document.getElementById('inputText');
