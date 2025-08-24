@@ -357,6 +357,16 @@ class NodeManager {
                 icon: 'fas fa-sort-numeric-up',
                 fields: [
                     {
+                        name: 'language', 
+                        type: 'select',
+                        label: 'Язык',
+                        value: 'ru',
+                        options: [
+                            { value: 'ru', label: 'Русский' },
+                            { value: 'en', label: 'English' }
+                        ]
+                    },
+                    {
                         name: 'mode',
                         type: 'select',
                         label: 'Режим',
