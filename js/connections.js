@@ -111,43 +111,7 @@ class ConnectionManager {
             }
         });
         
-        // Добавляем hover эффект для соединений
-        this.svg.addEventListener('mouseover', (e) => {
-            if (e.target.classList.contains('connection-line')) {
-                e.target.style.strokeWidth = '3';
-                e.target.style.cursor = 'pointer';
-                
-                // Показываем подсказку
-                const tooltip = document.createElement('div');
-                tooltip.className = 'connection-tooltip';
-                tooltip.textContent = 'Нажмите для удаления соединения';
-                tooltip.style.cssText = `
-                    position: fixed;
-                    left: ${e.clientX + 10}px;
-                    top: ${e.clientY - 30}px;
-                    background: var(--bg-secondary);
-                    color: var(--text-primary);
-                    padding: 4px 8px;
-                    border-radius: 4px;
-                    font-size: 12px;
-                    pointer-events: none;
-                    z-index: 1000;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-                `;
-                document.body.appendChild(tooltip);
-                e.target._tooltip = tooltip;
-            }
-        });
-        
-        this.svg.addEventListener('mouseout', (e) => {
-            if (e.target.classList.contains('connection-line')) {
-                e.target.style.strokeWidth = '2';
-                if (e.target._tooltip) {
-                    e.target._tooltip.remove();
-                    delete e.target._tooltip;
-                }
-            }
-        });
+        // Удален код hover эффекта для соединений по запросу пользователя
     }
     
     startConnection(connectionPoint, e) {

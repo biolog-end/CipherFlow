@@ -146,11 +146,9 @@ class NodeManager {
         const nodeData = this.getNodeTemplate(type);
         
         // Преобразуем экранные координаты относительно canvas в мировые координаты
-        // Преобразуем экранные координаты относительно canvas в мировые координаты
         let worldX = screenX;
         let worldY = screenY;
         
-        // Если canvas-manager доступен, используем его преобразования
         // Если canvas-manager доступен, используем его преобразования
         if (window.canvasManager) {
             const worldCoords = window.canvasManager.screenToWorld(screenX, screenY);
@@ -158,19 +156,25 @@ class NodeManager {
             worldY = worldCoords.y;
         }
         
-        const nodeElement = this.createElement(nodeId, nodeData, worldX, worldY);
-        this.nodesLayer.appendChild(nodeElement);
-        
+        // Сохраняем нод перед созданием элемента
         this.nodes.set(nodeId, {
             id: nodeId,
             type: type,
-            element: nodeElement,
+            element: null,
             data: nodeData,
             x: worldX,
             y: worldY,
             inputs: {},
             outputs: {}
         });
+        
+        const nodeElement = this.createElement(nodeId, nodeData, worldX, worldY);
+        nodeElement.dataset.nodeType = type;
+        this.nodesLayer.appendChild(nodeElement);
+        
+        // Обновляем элемент в сохраненном ноде
+        const node = this.nodes.get(nodeId);
+        node.element = nodeElement;
         
         // Добавляем анимацию появления
         nodeElement.classList.add('fade-in');
@@ -180,6 +184,21 @@ class NodeManager {
         
         // Автоматически выбираем созданный нод
         this.selectNode(nodeId);
+        
+        // Добавляем в историю
+        if (window.historyManager) {
+            window.historyManager.addAction({
+                type: 'create_node',
+                description: `Создан нод: ${nodeData.title}`,
+                data: {
+                    nodeId: nodeId,
+                    type: type,
+                    x: worldX,
+                    y: worldY,
+                    data: JSON.parse(JSON.stringify(nodeData))
+                }
+            });
+        }
         
         return nodeId;
     }
@@ -380,9 +399,9 @@ class NodeManager {
                 hasInput: true,
                 hasOutput: true
             },
-            'braille-binary': {
-                title: 'Морзе (Бинарный)',
-                icon: 'fas fa-braille',
+            'binary': {
+                title: 'Бинарный код',
+                icon: 'fas fa-microchip',
                 fields: [
                     {
                         name: 'mode',
@@ -390,8 +409,8 @@ class NodeManager {
                         label: 'Режим',
                         value: 'encode',
                         options: [
-                            { value: 'encode', label: 'Текст → Бинарный код' },
-                            { value: 'decode', label: 'Бинарный код → Текст' }
+                            { value: 'encode', label: 'Текст → Бинарный' },
+                            { value: 'decode', label: 'Бинарный → Текст' }
                         ]
                     }
                 ],
@@ -444,6 +463,14 @@ class NodeManager {
                 ],
                 hasInput: true,
                 hasOutput: true
+            },
+            'monitor': {
+                title: 'Монитор',
+                icon: 'fas fa-desktop',
+                fields: [],
+                hasInput: true,
+                hasOutput: true,
+                isMonitor: true
             }
         };
         
@@ -452,6 +479,7 @@ class NodeManager {
     
     createElement(nodeId, nodeData, x, y) {
         const nodeElement = document.createElement('div');
+        const nodeType = this.nodes.get(nodeId)?.type || 'default';
         nodeElement.className = 'canvas-node';
         
         // Добавляем класс для нодов с множественными входами
@@ -460,6 +488,7 @@ class NodeManager {
         }
         
         nodeElement.dataset.nodeId = nodeId;
+        nodeElement.dataset.nodeType = nodeType;
         nodeElement.style.transform = `translate(${x}px, ${y}px)`;
         
         // Создаем заголовок
@@ -468,6 +497,9 @@ class NodeManager {
         header.innerHTML = `
             <i class="${nodeData.icon}"></i>
             <span class="node-title">${nodeData.title}</span>
+            <button class="node-help-button" onclick="if(window.showNodeHelp) window.showNodeHelp('${nodeType}')" title="Показать справку">
+                <i class="fas fa-question"></i>
+            </button>
             <button class="node-remove" onclick="nodeManager.removeNode('${nodeId}')">
                 <i class="fas fa-times"></i>
             </button>
@@ -476,6 +508,15 @@ class NodeManager {
         // Создаем содержимое
         const content = document.createElement('div');
         content.className = 'node-content';
+        
+        // Если это монитор, добавляем дисплей
+        if (nodeData.isMonitor) {
+            const display = document.createElement('div');
+            display.className = 'monitor-display';
+            display.dataset.nodeId = nodeId;
+            display.textContent = 'Ожидание данных...';
+            content.appendChild(display);
+        }
         
         // Добавляем поля
         nodeData.fields.forEach(field => {
@@ -611,6 +652,10 @@ class NodeManager {
         this.draggedNode = node;
         this.selectNode(nodeId);
         
+        // Сохраняем начальную позицию для истории
+        const startX = node.x;
+        const startY = node.y;
+        
         // Получаем текущие мировые координаты мыши и нода
         const canvasRect = this.canvas.getBoundingClientRect();
         const screenMouseX = e.clientX - canvasRect.left;
@@ -680,6 +725,21 @@ class NodeManager {
                 cancelAnimationFrame(animationFrameId);
             }
             
+            // Сохраняем в истории если позиция изменилась
+            if (window.historyManager && (node.x !== startX || node.y !== startY)) {
+                window.historyManager.addAction({
+                    type: 'move_node',
+                    description: `Перемещен нод: ${node.data.title}`,
+                    data: {
+                        nodeId: nodeId,
+                        oldX: startX,
+                        oldY: startY,
+                        newX: node.x,
+                        newY: node.y
+                    }
+                });
+            }
+            
             // Финальное обновление соединений
             if (window.connectionManager) {
                 window.connectionManager.updateConnections(nodeId);
@@ -736,9 +796,41 @@ class NodeManager {
         this.selectedNode = null;
     }
     
-    removeNode(nodeId) {
+    removeNode(nodeId, skipHistory = false) {
         const node = this.nodes.get(nodeId);
         if (!node) return;
+        
+        // Сохраняем информацию для истории
+        if (!skipHistory && window.historyManager) {
+            const connections = [];
+            if (window.connectionManager) {
+                const nodeConns = window.connectionManager.getNodeConnections(nodeId);
+                // Сохраняем все соединения нода
+                [...nodeConns.inputs, ...nodeConns.outputs].forEach(conn => {
+                    const connection = window.connectionManager.connections.get(conn.connectionId);
+                    if (connection) {
+                        connections.push({
+                            id: connection.id,
+                            from: connection.from,
+                            to: connection.to
+                        });
+                    }
+                });
+            }
+            
+            window.historyManager.addAction({
+                type: 'delete_node',
+                description: `Удален нод: ${node.data.title}`,
+                data: {
+                    nodeId: nodeId,
+                    type: node.type,
+                    x: node.x,
+                    y: node.y,
+                    data: JSON.parse(JSON.stringify(node.data)),
+                    connections: connections
+                }
+            });
+        }
         
         // Удаляем все соединения с этим нодом
         if (window.connectionManager) {
@@ -758,6 +850,36 @@ class NodeManager {
         
         // Запускаем обновление выполнения
         this.triggerExecution();
+    }
+    
+    restoreNode(nodeData) {
+        const nodeId = nodeData.nodeId || `node_${this.nodeIdCounter++}`;
+        
+        // Восстанавливаем нод в карте
+        this.nodes.set(nodeId, {
+            id: nodeId,
+            type: nodeData.type,
+            element: null,
+            data: nodeData.data,
+            x: nodeData.x,
+            y: nodeData.y,
+            inputs: {},
+            outputs: {}
+        });
+        
+        // Создаем элемент
+        const nodeElement = this.createElement(nodeId, nodeData.data, nodeData.x, nodeData.y);
+        nodeElement.dataset.nodeType = nodeData.type;
+        this.nodesLayer.appendChild(nodeElement);
+        
+        // Обновляем элемент в сохраненном ноде
+        const node = this.nodes.get(nodeId);
+        node.element = nodeElement;
+        
+        // Инициализируем обработчики
+        this.initializeNodeHandlers(nodeId);
+        
+        return nodeId;
     }
     
     updateNodeData(nodeId, fieldName, value) {

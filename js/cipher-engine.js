@@ -216,8 +216,11 @@ class CipherEngine {
                 case 'a1z26':
                     return this.processA1Z26(nodeData, inputData);
                     
-                case 'braille-binary':
-                    return this.processBrailleBinary(nodeData, inputData);
+                case 'binary':
+                    return this.processBinary(nodeData, inputData);
+                    
+                case 'monitor':
+                    return this.processMonitor(node, inputData);
                     
                 case 'braille-cat':
                     return this.processBrailleCat(nodeData, inputData);
@@ -285,16 +288,28 @@ class CipherEngine {
 
     _morseEncode(text) {
         if (typeof text !== 'string') return '';
-        return text.toUpperCase().split('').map(char => {
-            return this.morseCode[char] || ''; 
-        }).join(' ');
+        
+        return text.split('\n').map(line => {
+           
+            return line.toUpperCase().split('').map(char => {
+                return this.morseCode[char] || ''; 
+            }).join(' ');
+        }).join('\n'); 
     }
 
     _morseDecode(morseText) {
         if (typeof morseText !== 'string') return '';
-        return morseText.split(' / ').map(word => 
-            word.split(' ').map(code => this.reverseMorseCode[code] || '').join('')
-        ).join(' ');
+        
+        return morseText.split('\n').map(line => {
+            return line
+                .trim() 
+                .split(/\s*\/\s*/) 
+                .map(word => 
+                    word.split(' ').filter(code => code) 
+                        .map(code => this.reverseMorseCode[code] || '')
+                        .join('')
+                ).join(' ');
+        }).join('\n'); 
     }
 
     processNumbersToWords(nodeData, text) {
@@ -382,18 +397,20 @@ class CipherEngine {
                     result = isReverse ? num + value : num - value;
                     break;
                 case 'multiply':
+                    // Проверка деления на ноль при дешифрации
                     if (value === 0) return isReverse ? 'Ошибка: деление на 0' : 0;
                     result = isReverse ? num / value : num * value;
                     break;
                 case 'divide':
-                    if (num === 0 && isReverse) return 'Ошибка: деление на 0';
+                    // Проверка деления на ноль при шифрации
+                    if (value === 0) return isReverse ? num * value : 'Ошибка: деление на 0';
                     result = isReverse ? num * value : num / value;
                     break;
                 default:
                     result = num;
             }
             
-            return Number.isInteger(result) ? result.toString() : result.toFixed(2);
+            return result.toString();
         });
     }
     
@@ -454,11 +471,20 @@ class CipherEngine {
             data: node.data
         }));
         
-        const connections = window.connectionManager.getAllConnections().map(conn => ({
-            id: conn.id,
-            from: conn.from.nodeId,
-            to: conn.to.nodeId
-        }));
+        const connections = window.connectionManager.getAllConnections().map(conn => {
+            const connData = {
+                id: conn.id,
+                from: conn.from.nodeId,
+                to: conn.to.nodeId
+            };
+            
+            // Сохраняем имя входа для множественных входов
+            if (conn.to.element && conn.to.element.dataset.inputName) {
+                connData.inputName = conn.to.element.dataset.inputName;
+            }
+            
+            return connData;
+        });
         
         const scheme = {
             version: '1.0',
@@ -513,7 +539,17 @@ class CipherEngine {
                 
                 if (fromNode && toNode) {
                     const fromPoint = fromNode.element.querySelector('.connection-point.output');
-                    const toPoint = toNode.element.querySelector('.connection-point.input');
+                    let toPoint;
+                    
+                    // Проверяем, есть ли у соединения имя входа (для множественных входов)
+                    if (connData.inputName) {
+                        toPoint = toNode.element.querySelector(`.connection-point.input[data-input-name="${connData.inputName}"]`);
+                    }
+                    
+                    // Если не нашли специфический вход или его нет, используем обычный
+                    if (!toPoint) {
+                        toPoint = toNode.element.querySelector('.connection-point.input');
+                    }
                     
                     if (fromPoint && toPoint) {
                         window.connectionManager.createConnection(fromPoint, toPoint);
@@ -522,8 +558,16 @@ class CipherEngine {
             }
         }
         
-        // Запускаем выполнение
-        this.executeChain();
+        // Обновляем все соединения после небольшой задержки для корректного позиционирования
+        setTimeout(() => {
+            // Обновляем позиции всех соединений
+            for (const [nodeId] of window.nodeManager.nodes) {
+                window.connectionManager.updateConnections(nodeId);
+            }
+            
+            // Запускаем выполнение
+            this.executeChain();
+        }, 100);
     }
     
     processSecretWord(nodeData, inputData) {
@@ -637,38 +681,48 @@ class CipherEngine {
         const currentAlphabet = alphabets[lang];
 
         if (actualMode === 'encode') {
-            let result = '';
-            for (let i = 0; i < inputData.length; i++) {
-                const char = inputData[i];
-                const upperChar = char.toUpperCase();
-                const index = currentAlphabet.indexOf(upperChar);
+            const regex = new RegExp(`[${currentAlphabet}]+`, 'gi');
 
-                if (index !== -1) {
-                    result += (index + 1);
-                    if (i + 1 < inputData.length && currentAlphabet.includes(inputData[i + 1].toUpperCase())) {
-                        result += '-';
-                    }
-                } else {
-                    result += char;
-                }
-            }
-            return result;
+            return inputData.replace(regex, (word) => {
+
+                return word.split('').map(char => {
+                    const index = currentAlphabet.indexOf(char.toUpperCase());
+                    
+                    return index + 1;
+                }).join('-'); 
+            });
+
         } else { // 'decode'
-            // Разделяем по пробелам, чтобы сохранить их
-            return inputData.split(' ').map(word => {
-                // Внутри слова разделяем по дефисам и преобразуем числа
-                return word.split('-').map(part => {
-                    const num = parseInt(part, 10);
+            
+            // Регулярное выражение, которое находит ТОЛЬКО последовательности чисел,
+            // разделенных дефисами. \b - это "граница слова", чтобы не трогать числа внутри координат.
+            const regex = /\b(\d+(-\d+)*)\b/g;
+            
+            return inputData.replace(regex, (match) => {
+                // Эта функция будет вызвана для каждого найденного блока, например, "17-18-10".
+                // Координаты и одиночные числа НЕ будут найдены и останутся без изменений.
+                
+                const convertNumToLetter = (numStr) => {
+                    const num = parseInt(numStr, 10);
                     if (!isNaN(num) && num >= 1 && num <= currentAlphabet.length) {
                         return currentAlphabet[num - 1];
                     }
-                    return part; // Возвращаем как есть, если не число
+                    return numStr; // На всякий случай, если что-то пошло не так
+                };
+
+                // Дешифруем найденный блок
+                return match.split('-').map(part => {
+                    // Обработка дробных чисел, если они как-то попали внутрь (например, "2.3")
+                    if (part.includes('.')) {
+                        return part.split('.').map(convertNumToLetter).join('.');
+                    }
+                    return convertNumToLetter(part);
                 }).join('');
-            }).join(' '); // Соединяем слова обратно пробелами
+            });
         }
     }
     
-    processBrailleBinary(nodeData, inputData) {
+    processBinary(nodeData, inputData) {
         const modeField = nodeData.fields.find(f => f.name === 'mode');
         const mode = modeField?.value || 'encode';
         
@@ -678,16 +732,45 @@ class CipherEngine {
         if (typeof inputData !== 'string') return '';
         
         if (actualMode === 'encode') {
-            const morseText = this._morseEncode(inputData);
-            return morseText
-                .replace(/[·.]/g, '0')
-                .replace(/[−-]/g, '1');
+
+            const encoder = new TextEncoder();
+            const utf8Bytes = encoder.encode(inputData); 
+            
+            return Array.from(utf8Bytes).map(byte => {
+                return byte.toString(2).padStart(8, '0');
+            }).join(' ');
         } else {
-            const morseText = inputData
-                .replace(/0/g, '.')
-                .replace(/1/g, '-');
-            return this._morseDecode(morseText);
+            const binaryStrings = inputData.match(/[01]{8}/g); 
+            
+            if (!binaryStrings || binaryStrings.length === 0) {
+                return "Ошибка: Некорректный бинарный ввод для дешифровки.";
+            }
+            
+            const utf8Bytes = new Uint8Array(binaryStrings.map(binary => parseInt(binary, 2)));
+            
+            const decoder = new TextDecoder('utf-8'); 
+            try {
+                return decoder.decode(utf8Bytes);
+            } catch (e) {
+                console.error("Binary decode error:", e);
+                return "Ошибка декодирования бинарного кода: " + e.message;
+            }
         }
+    }
+    
+    processMonitor(node, inputData) {
+        if (node.element) {
+            const display = node.element.querySelector('.monitor-display');
+            if (display) {
+                const isReverse = window.connectionManager?.reverseMode || false;
+                const direction = isReverse ? '⬅ Дешифровка' : '➡ Шифровка';
+                
+                const formattedInput = (inputData || 'Пусто').replace(/\n/g, '<br>');
+                
+                display.innerHTML = `<small style="color: var(--accent-primary);">${direction}</small><br>${formattedInput}`;
+            }
+        }
+        return inputData;
     }
 
     _decodeCatMorseWord(word) {
@@ -723,30 +806,31 @@ class CipherEngine {
         if (typeof inputData !== 'string') return '';
         
         if (actualMode === 'encode') {
-            const morseText = this._morseEncode(inputData);
-            // Применяем разные замены для русских и английских символов морзе
-            return morseText
-                .replace(/\//g, ' брряу ')   // Разделитель слов (общий)
-                .replace(/·/g, 'мяу')        // Русская точка
-                .replace(/−/g, 'мрряу')      // Русское тире
-                .replace(/\./g, 'nyan')       // Английская точка
-                .replace(/-/g, 'myau')       // Английское тире
-                .replace(/\s+/g, ' ').trim(); // Очищаем лишние пробелы
-        } else { // decode
-            // Разбиваем входную строку на "кошачьи" слова
-            const catWords = inputData.toLowerCase().trim().split(/\s+/);
             
-            const morseWords = catWords.map(word => {
-                if (word === 'брряу') {
-                    // "брряу" соответствует разделителю слов в морзе
-                    return '/';
-                }
-                // Декодируем каждое "кошачье" слово в последовательность точек и тире
-                return this._decodeCatMorseWord(word);
+            const morseText = this._morseEncode(inputData);
+            return morseText
+                .replace(/\//g, ' брряу ')
+                .replace(/·/g, 'мяу')
+                .replace(/−/g, 'мрряу')
+                .replace(/\./g, 'nyan')
+                .replace(/-/g, 'myau')
+                .replace(/ +/g, ' ').trim(); 
+        } else { // decode
+
+            const catLines = inputData.toLowerCase().trim().split('\n');
+            
+            const morseLines = catLines.map(line => {
+                const catWords = line.split(/\s+/);
+                
+                return catWords.map(word => {
+                    if (word === 'брряу') {
+                        return '/';
+                    }
+                    return this._decodeCatMorseWord(word);
+                }).join(' '); 
             });
             
-            // Соединяем результат в одну строку морзе и передаем на стандартную расшифровку
-            const morseText = morseWords.join(' ');
+            const morseText = morseLines.join('\n');
             return this._morseDecode(morseText);
         }
     }
@@ -775,6 +859,8 @@ class CipherEngine {
         const alphabetRu = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя';
         const alphabetEn = 'abcdefghijklmnopqrstuvwxyz';
         
+        const seededRandom = this.createSeededRandom(42);
+        
         let result = '';
         
         for (let char of text.toLowerCase()) {
@@ -791,7 +877,8 @@ class CipherEngine {
             }
             
             if (cities && cities.length > 0) {
-                const randomCity = cities[Math.floor(Math.random() * cities.length)];
+                const randomIndex = Math.floor(seededRandom() * cities.length);
+                const randomCity = cities[randomIndex];
                 result += randomCity.coord + '\n';
             } else {
                 result += char + '\n';
@@ -804,20 +891,40 @@ class CipherEngine {
     _planetDecode(coordinates, language) {
         const lines = coordinates.split('\n');
         let result = '';
-        
+
         for (let line of lines) {
             const coord = line.trim();
             if (coord === '') {
                 result += ' ';
                 continue;
             }
-            
+
             let found = false;
             
+            // Функция для сравнения координат как чисел, а не как строк
+            const compareCoords = (cityCoordStr, inputCoordStr) => {
+                const cityParts = cityCoordStr.split(',').map(s => s.trim());
+                const inputParts = inputCoordStr.split(',').map(s => s.trim());
+
+                if (cityParts.length !== 2 || inputParts.length !== 2) {
+                    return false; // Неверный формат координат
+                }
+
+                // Преобразуем строки в числа с плавающей точкой
+                const cityLat = parseFloat(cityParts[0]);
+                const cityLon = parseFloat(cityParts[1]);
+                const inputLat = parseFloat(inputParts[0]);
+                const inputLon = parseFloat(inputParts[1]);
+                
+                // Сравниваем именно числа
+                return cityLat === inputLat && cityLon === inputLon;
+            };
+
             // Поиск в русских городах
             if (language === 'ru' || language === 'mix') {
                 for (let [letter, cityList] of Object.entries(this.citiesRu)) {
-                    const city = cityList.find(city => city.coord === coord);
+                    // Используем новую функцию для поиска
+                    const city = cityList.find(city => compareCoords(city.coord, coord));
                     if (city) {
                         result += letter;
                         found = true;
@@ -829,7 +936,8 @@ class CipherEngine {
             // Поиск в английских городах
             if (!found && (language === 'en' || language === 'mix')) {
                 for (let [letter, cityList] of Object.entries(this.citiesEn)) {
-                    const city = cityList.find(city => city.coord === coord);
+                    // Используем новую функцию для поиска
+                    const city = cityList.find(city => compareCoords(city.coord, coord));
                     if (city) {
                         result += letter;
                         found = true;
@@ -839,7 +947,7 @@ class CipherEngine {
             }
             
             if (!found) {
-                result += '?';
+                result += coord;
             }
         }
         

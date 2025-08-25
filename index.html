@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/node-styles.css">
 </head>
 <body>
     <div class="app">
@@ -106,9 +107,9 @@
                             <i class="fas fa-text-height"></i>
                             <span>Регистр</span>
                         </div>
-                        <div class="node-item" data-type="braille-binary" draggable="true">
-                            <i class="fas fa-braille"></i>
-                            <span>Морзе (Бинарный)</span>
+                        <div class="node-item" data-type="binary" draggable="true">
+                            <i class="fas fa-microchip"></i>
+                            <span>Бинарный код</span>
                         </div>
                         <div class="node-item" data-type="braille-cat" draggable="true">
                             <i class="fas fa-cat"></i>
@@ -117,6 +118,10 @@
                         <div class="node-item" data-type="planet-enchanter" draggable="true">
                             <i class="fas fa-globe"></i>
                             <span>Зачаровыватель планет</span>
+                        </div>
+                        <div class="node-item" data-type="monitor" draggable="true">
+                            <i class="fas fa-desktop"></i>
+                            <span>Монитор</span>
                         </div>
                     </div>
                 </div>
@@ -160,6 +165,8 @@
     <!-- Скрытый input для загрузки файлов -->
     <input type="file" id="fileInput" accept=".json" style="display: none;">
 
+    <script src="js/node-descriptions.js"></script>
+    <script src="js/history-manager.js"></script>
     <script src="js/nodes.js"></script>
     <script src="js/connections.js"></script>
     <script src="js/cipher-engine.js"></script>
