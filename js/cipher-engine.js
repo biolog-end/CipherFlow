@@ -14,6 +14,18 @@ class CipherEngine {
             'Э': '··−·',    'Ю': '··−−',    'Я': '·−·−'
         };
         
+        // Альтернативная таблица с отдельным кодом для Ё
+        this.morseCodeRuWithYo = {
+            // Русский алфавит (кириллица) с отдельным кодом для Ё
+            'А': '·−',      'Б': '−···',    'В': '·−−',     'Г': '−−·',     'Д': '−··',     
+            'Ё': '··−··',   'Е': '·',       'Ж': '···−',    'З': '−−··',    'И': '··',      
+            'Й': '·−−−',    'К': '−·−',     'Л': '·−··',    'М': '−−',      'Н': '−·',      
+            'О': '−−−',     'П': '·−−·',    'Р': '·−·',     'С': '···',     'Т': '−',       
+            'У': '··−',     'Ф': '··−·',    'Х': '····',    'Ц': '−·−·',    'Ч': '−−−·',    
+            'Ш': '−−−−',    'Щ': '−−·−',    'Ъ': '−−·−−',   'Ы': '−·−−',    'Ь': '−··−',    
+            'Э': '··−·',    'Ю': '··−−',    'Я': '·−·−'
+        };
+        
         this.morseCodeEn = {
             // Английский алфавит (латиница) - стандартные коды Морзе
             'A': '.-',      'B': '-...',    'C': '-.-.',    'D': '-..',     'E': '.',
@@ -66,6 +78,21 @@ class CipherEngine {
         }
         
         this.bindEvents();
+    }
+    
+    // Метод для получения символов и цифр в коде Морзе
+    getNumbersAndSymbolsMorse() {
+        return {
+            // Цифры
+            '0': '-----',   '1': '.----',   '2': '..---',   '3': '...--',   '4': '....-',
+            '5': '.....',   '6': '-....',   '7': '--...',   '8': '---..',   '9': '----.',
+            
+            // Знаки препинания и специальные символы
+            ' ': '/',       '.': '.-.-.-',  ',': '--..--',  '?': '..--..',  "'": '.----.',
+            '!': '-.-.--',  '/': '-..-.',   '(': '-.--.',   ')': '-.--.-',  '&': '.-...',
+            ':': '---...',  ';': '-.-.-.',  '=': '-...-',   '+': '.-.-.',   '-': '-....-',
+            '_': '..--.-',  '"': '.-..-.',  '$': '...-..-', '@': '.--.-.'
+        };
     }
     
     bindEvents() {
@@ -278,27 +305,47 @@ class CipherEngine {
     
     processMorseCode(nodeData, text) {
         const modeField = nodeData.fields.find(f => f.name === 'mode');
+        const supportYoField = nodeData.fields.find(f => f.name === 'supportYo');
+        
         const mode = modeField?.value || 'encode';
+        const supportYo = supportYoField?.value === 'true' || supportYoField?.value === true;
         
         const isReverse = window.connectionManager?.reverseMode || false;
         const actualMode = (mode === 'encode' && !isReverse) || (mode === 'decode' && isReverse) ? 'encode' : 'decode';
         
-        return actualMode === 'encode' ? this._morseEncode(text) : this._morseDecode(text);
+        return actualMode === 'encode' ? this._morseEncode(text, supportYo) : this._morseDecode(text, supportYo);
     }
 
-    _morseEncode(text) {
+    _morseEncode(text, supportYo = false) {
         if (typeof text !== 'string') return '';
+        
+        // Выбираем нужную таблицу Морзе в зависимости от настройки
+        const morseTable = supportYo ? 
+            { ...this.morseCodeRuWithYo, ...this.morseCodeEn, ...this.getNumbersAndSymbolsMorse() } :
+            this.morseCode;
         
         return text.split('\n').map(line => {
            
             return line.toUpperCase().split('').map(char => {
-                return this.morseCode[char] || ''; 
+                return morseTable[char] || ''; 
             }).join(' ');
         }).join('\n'); 
     }
 
-    _morseDecode(morseText) {
+    _morseDecode(morseText, supportYo = false) {
         if (typeof morseText !== 'string') return '';
+        
+        // Создаем обратную таблицу в зависимости от настройки
+        let reverseMorseTable;
+        if (supportYo) {
+            const fullMorseTable = { ...this.morseCodeRuWithYo, ...this.morseCodeEn, ...this.getNumbersAndSymbolsMorse() };
+            reverseMorseTable = {};
+            for (const [key, value] of Object.entries(fullMorseTable)) {
+                reverseMorseTable[value] = key;
+            }
+        } else {
+            reverseMorseTable = this.reverseMorseCode;
+        }
         
         return morseText.split('\n').map(line => {
             return line
@@ -306,7 +353,7 @@ class CipherEngine {
                 .split(/\s*\/\s*/) 
                 .map(word => 
                     word.split(' ').filter(code => code) 
-                        .map(code => this.reverseMorseCode[code] || '')
+                        .map(code => reverseMorseTable[code] || '')
                         .join('')
                 ).join(' ');
         }).join('\n'); 
@@ -798,7 +845,10 @@ class CipherEngine {
 
     processBrailleCat(nodeData, inputData) {
         const modeField = nodeData.fields.find(f => f.name === 'mode');
+        const supportYoField = nodeData.fields.find(f => f.name === 'supportYo');
+        
         const mode = modeField?.value || 'encode';
+        const supportYo = supportYoField?.value === 'true' || supportYoField?.value === true;
         
         const isReverse = window.connectionManager?.reverseMode || false;
         const actualMode = (mode === 'encode' && !isReverse) || (mode === 'decode' && isReverse) ? 'encode' : 'decode';
@@ -807,7 +857,7 @@ class CipherEngine {
         
         if (actualMode === 'encode') {
             
-            const morseText = this._morseEncode(inputData);
+            const morseText = this._morseEncode(inputData, supportYo);
             return morseText
                 .replace(/\//g, ' брряу ')
                 .replace(/·/g, 'мяу')
@@ -831,7 +881,7 @@ class CipherEngine {
             });
             
             const morseText = morseLines.join('\n');
-            return this._morseDecode(morseText);
+            return this._morseDecode(morseText, supportYo);
         }
     }
     

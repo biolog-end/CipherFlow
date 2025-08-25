@@ -248,6 +248,13 @@ class NodeManager {
                             { value: 'encode', label: 'Кодировать' },
                             { value: 'decode', label: 'Декодировать' }
                         ]
+                    },
+                    {
+                        name: 'supportYo',
+                        type: 'checkbox',
+                        label: 'Поддержка Ё (··−··)',
+                        value: false,
+                        tooltip: 'Включить отдельный код для буквы Ё. По умолчанию Ё = Е'
                     }
                 ],
                 hasInput: true,
@@ -430,6 +437,13 @@ class NodeManager {
                             { value: 'encode', label: 'Текст → Кошачий код' },
                             { value: 'decode', label: 'Кошачий код → Текст' }
                         ]
+                    },
+                    {
+                        name: 'supportYo',
+                        type: 'checkbox',
+                        label: 'Поддержка Ё (мяумяумрряумяумяу)',
+                        value: false,
+                        tooltip: 'Включить отдельный код для буквы Ё. По умолчанию Ё = Е'
                     }
                 ],
                 hasInput: true,

@@ -376,6 +376,41 @@ class ConnectionManager {
         }
     }
     
+    // Восстановить соединение из данных истории
+    restoreConnection(connectionData) {
+        if (!connectionData) return;
+        
+        // Найдем ноды для восстановления соединения
+        const fromNode = window.nodeManager?.nodes.get(connectionData.from);
+        const toNode = window.nodeManager?.nodes.get(connectionData.to);
+        
+        if (!fromNode || !toNode) {
+            console.error('Cannot restore connection: nodes not found', connectionData);
+            return;
+        }
+        
+        // Найдем точки соединения
+        const fromPoint = fromNode.element.querySelector('.connection-point.output');
+        let toPoint;
+        
+        // Если есть имя входа, ищем специфический вход
+        if (connectionData.inputName) {
+            toPoint = toNode.element.querySelector(`.connection-point.input[data-input-name="${connectionData.inputName}"]`);
+        }
+        
+        // Если не нашли специфический вход или его нет, используем первый доступный
+        if (!toPoint) {
+            toPoint = toNode.element.querySelector('.connection-point.input');
+        }
+        
+        if (fromPoint && toPoint) {
+            return this.createConnection(fromPoint, toPoint);
+        }
+        
+        console.error('Cannot restore connection: connection points not found', connectionData);
+        return null;
+    }
+    
     removeNodeConnections(nodeId) {
         // Удаляем все соединения, связанные с указанным нодом
         const connectionsToRemove = [];

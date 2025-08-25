@@ -18,6 +18,12 @@
                     <i class="fas fa-project-diagram"></i>
                     <span>CipherFlow</span>
                 </div>
+                <button class="help-btn" onclick="window.showHelp()" title="Показать справку (F1)">
+                    <i class="fas fa-question-circle"></i>
+                </button>
+                <button class="settings-btn" onclick="window.settingsSystem?.show()" title="Настройки">
+                    <i class="fas fa-cog"></i>
+                </button>
                 <div class="controls">
                     <div class="mode-toggle">
                         <span class="mode-label">Шифрование</span>
@@ -166,6 +172,8 @@
     <input type="file" id="fileInput" accept=".json" style="display: none;">
 
     <script src="js/node-descriptions.js"></script>
+    <script src="js/help-system.js"></script>
+    <script src="js/settings-system.js"></script>
     <script src="js/history-manager.js"></script>
     <script src="js/nodes.js"></script>
     <script src="js/connections.js"></script>

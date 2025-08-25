@@ -70,6 +70,29 @@ body {
     font-size: 1.75rem;
 }
 
+.help-btn, .settings-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.75rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    margin: 0 0.5rem;
+}
+
+.help-btn:hover {
+    color: var(--accent-primary);
+    background: var(--accent-primary-10);
+    transform: scale(1.05);
+}
+
+.settings-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+    transform: scale(1.05);
+}
+
 .controls {
     display: flex;
     align-items: center;
@@ -381,6 +404,23 @@ input:checked + .slider {
     -ms-user-select: none;
 }
 
+.node-help-button {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: var(--radius);
+    transition: var(--transition);
+    order: 1; /* Располагаем между заголовком и кнопкой удаления */
+}
+
+.node-help-button:hover {
+    color: var(--accent-primary);
+    background: rgba(124, 58, 237, 0.1);
+    transform: scale(1.05);
+}
+
 .node-remove {
     background: none;
     border: none;
@@ -389,6 +429,7 @@ input:checked + .slider {
     padding: 0.25rem;
     border-radius: var(--radius);
     transition: var(--transition);
+    order: 2; /* Последняя кнопка справа */
 }
 
 .node-remove:hover {

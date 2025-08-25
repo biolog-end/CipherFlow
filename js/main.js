@@ -115,33 +115,85 @@ class CipherFlowApp {
     
     setupKeyboardShortcuts() {
         document.addEventListener('keydown', (e) => {
-            // Ctrl/Cmd + S - сохранить схему
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            // Проверяем, что фокус не на элементах ввода текста
+            const activeElement = document.activeElement;
+            const isTextInput = activeElement && (
+                activeElement.tagName === 'INPUT' ||
+                activeElement.tagName === 'TEXTAREA' ||
+                activeElement.contentEditable === 'true'
+            );
+            
+            // Создаем мапинг клавиш для поддержки русской раскладки
+            const keyMap = {
+                'ы': 's', 'щ': 'o', 'т': 'n', 'з': 'p', // русские клавиши на соответствующих позициях
+                'a': 'f', 'и': 'b', 'с': 'c', 'м': 'v', // дополнительные мапинги
+                'х': 'x', 'я': 'z'
+            };
+            
+            // Нормализуем клавишу (поддержка русской раскладки)
+            const normalizedKey = keyMap[e.key.toLowerCase()] || e.key.toLowerCase();
+            
+            // Ctrl/Cmd + S - сохранить схему (поддержка 'ы' для русской раскладки)
+            if ((e.ctrlKey || e.metaKey) && (normalizedKey === 's')) {
                 e.preventDefault();
                 if (this.components.fileManager) {
                     this.components.fileManager.saveScheme();
                 }
+                return;
             }
             
-            // Ctrl/Cmd + O - загрузить схему
-            if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+            // Ctrl/Cmd + O - загрузить схему (поддержка 'щ' для русской раскладки)
+            if ((e.ctrlKey || e.metaKey) && (normalizedKey === 'o')) {
                 e.preventDefault();
                 if (this.components.fileManager) {
                     this.components.fileManager.loadScheme();
                 }
+                return;
             }
             
-            // Ctrl/Cmd + N - новая схема
-            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+            // Ctrl/Cmd + N - новая схема (поддержка 'т' для русской раскладки)
+            if ((e.ctrlKey || e.metaKey) && (normalizedKey === 'n')) {
                 e.preventDefault();
                 if (this.components.fileManager) {
                     this.components.fileManager.clearScheme();
                 }
+                return;
+            }
+            
+            // Ограничиваем копирование/вставку только для области нодов (не в текстовых полях)
+            if (!isTextInput) {
+                // Ctrl/Cmd + C - копирование выделенных нодов (поддержка 'с' для русской раскладки)
+                if ((e.ctrlKey || e.metaKey) && (normalizedKey === 'c')) {
+                    e.preventDefault();
+                    if (window.selectionManager) {
+                        window.selectionManager.copySelected();
+                    }
+                    return;
+                }
+                
+                // Ctrl/Cmd + V - вставка нодов (поддержка 'м' для русской раскладки)
+                if ((e.ctrlKey || e.metaKey) && (normalizedKey === 'v')) {
+                    e.preventDefault();
+                    if (window.selectionManager) {
+                        window.selectionManager.paste();
+                    }
+                    return;
+                }
+                
+                // Ctrl/Cmd + A - выделить все ноды (поддержка 'ф' для русской раскладки)
+                if ((e.ctrlKey || e.metaKey) && (normalizedKey === 'a')) {
+                    e.preventDefault();
+                    if (window.selectionManager) {
+                        window.selectionManager.selectAll();
+                    }
+                    return;
+                }
             }
             
             // Delete - удалить выбранный нод
-            if (e.key === 'Delete' && this.components.nodeManager?.selectedNode) {
+            if (e.key === 'Delete' && this.components.nodeManager?.selectedNode && !isTextInput) {
                 this.components.nodeManager.removeNode(this.components.nodeManager.selectedNode);
+                return;
             }
             
             // Escape - снять выделение
@@ -152,12 +204,50 @@ class CipherFlowApp {
                 if (this.components.connectionManager?.isConnecting) {
                     this.components.connectionManager.cancelConnection();
                 }
+                if (window.selectionManager) {
+                    window.selectionManager.clearSelection();
+                }
+                return;
             }
             
             // F1 - показать справку
             if (e.key === 'F1') {
                 e.preventDefault();
                 this.showHelp();
+                return;
+            }
+            
+            // X - режим резки соединений (поддержка 'ч' для русской раскладки)
+            if ((normalizedKey === 'x') && !isTextInput) {
+                if (this.components.connectionManager) {
+                    this.components.connectionManager.toggleCuttingMode();
+                }
+                return;
+            }
+            
+            // + / = - увеличить масштаб
+            if ((e.key === '+' || e.key === '=' || e.key === 'ъ') && !isTextInput) {
+                if (this.components.canvasManager) {
+                    this.components.canvasManager.zoomIn();
+                }
+                return;
+            }
+            
+            // - - уменьшить масштаб
+            if (e.key === '-' && !isTextInput) {
+                if (this.components.canvasManager) {
+                    this.components.canvasManager.zoomOut();
+                }
+                return;
+            }
+            
+            // Ctrl/Cmd + 0 - сброс масштаба
+            if ((e.ctrlKey || e.metaKey) && e.key === '0' && !isTextInput) {
+                e.preventDefault();
+                if (this.components.canvasManager) {
+                    this.components.canvasManager.resetZoom();
+                }
+                return;
             }
         });
     }

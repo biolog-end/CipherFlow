@@ -365,10 +365,10 @@ class SelectionManager {
         this.selectionBox.style.height = height + 'px';
         
         // Проверяем какие ноды попали в область выделения
-        this.updateSelectedNodes(left, top, width, height);
+        this.updateSelectedNodes(left, top, width, height, e);
     }
     
-    updateSelectedNodes(left, top, width, height) {
+    updateSelectedNodes(left, top, width, height, event) {
         const selectionRect = {
             left: left,
             top: top,
@@ -395,7 +395,8 @@ class SelectionManager {
                     nodePos.bottom > selectionRect.top) {
                     
                     this.addToSelection(nodeId);
-                } else if (!e.ctrlKey && !e.metaKey) {
+                } else if (!event || (!event.ctrlKey && !event.metaKey)) {
+                    // Удаляем из выделения только если не используются модификаторы
                     this.removeFromSelection(nodeId);
                 }
             });

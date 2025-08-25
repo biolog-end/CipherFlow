@@ -23,6 +23,55 @@
     --node-bg-alpha-end: 0.15;   /* Конечная прозрачность градиента (менее плотная) */
 }
 
+/* === ЦВЕТНЫЕ КРЕСТИКИ ДЛЯ КАЖДОГО ТИПА НОДА === */
+
+/* Цветные кнопки закрытия для лучшей видимости */
+.canvas-node[data-node-type="input"] .node-remove { color: var(--node-input-color); background: rgba(16, 185, 129, 0.15); }
+.canvas-node[data-node-type="output"] .node-remove { color: var(--node-output-color); background: rgba(245, 158, 11, 0.15); }
+.canvas-node[data-node-type="caesar"] .node-remove { color: var(--node-caesar-color); background: rgba(99, 102, 241, 0.15); }
+.canvas-node[data-node-type="morse"] .node-remove { color: var(--node-morse-color); background: rgba(139, 92, 246, 0.15); }
+.canvas-node[data-node-type="vigenere"] .node-remove { color: var(--node-vigenere-color); background: rgba(236, 72, 153, 0.15); }
+.canvas-node[data-node-type="a1z26"] .node-remove { color: var(--node-a1z26-color); background: rgba(20, 184, 166, 0.15); }
+.canvas-node[data-node-type="binary"] .node-remove { color: var(--node-binary-color); background: rgba(59, 130, 246, 0.15); }
+.canvas-node[data-node-type="braille-cat"] .node-remove { color: var(--node-cat-color); background: rgba(244, 114, 182, 0.15); }
+.canvas-node[data-node-type="planet-enchanter"] .node-remove { color: var(--node-planet-color); background: rgba(34, 211, 238, 0.15); }
+.canvas-node[data-node-type="numbers-to-words"] .node-remove { color: var(--node-numbers-color); background: rgba(132, 204, 22, 0.15); }
+.canvas-node[data-node-type="math"] .node-remove { color: var(--node-math-color); background: rgba(250, 204, 21, 0.15); }
+.canvas-node[data-node-type="reverse"] .node-remove { color: var(--node-reverse-color); background: rgba(251, 146, 60, 0.15); }
+.canvas-node[data-node-type="case-transform"] .node-remove { color: var(--node-case-color); background: rgba(192, 132, 252, 0.15); }
+.canvas-node[data-node-type="secret-word"] .node-remove { color: var(--node-secret-color); background: rgba(248, 113, 113, 0.15); }
+.canvas-node[data-node-type="monitor"] .node-remove { color: var(--node-monitor-color); background: rgba(100, 116, 139, 0.15); }
+
+/* Эффекты наведения для цветных крестиков */
+.canvas-node[data-node-type="input"] .node-remove:hover { background: rgba(16, 185, 129, 0.3); transform: scale(1.1); }
+.canvas-node[data-node-type="output"] .node-remove:hover { background: rgba(245, 158, 11, 0.3); transform: scale(1.1); }
+.canvas-node[data-node-type="caesar"] .node-remove:hover { background: rgba(99, 102, 241, 0.3); transform: scale(1.1); }
+.canvas-node[data-node-type="morse"] .node-remove:hover { background: rgba(139, 92, 246, 0.3); transform: scale(1.1); }
+.canvas-node[data-node-type="vigenere"] .node-remove:hover { background: rgba(236, 72, 153, 0.3); transform: scale(1.1); }
+.canvas-node[data-node-type="a1z26"] .node-remove:hover { background: rgba(20, 184, 166, 0.3); transform: scale(1.1); }
+.canvas-node[data-node-type="binary"] .node-remove:hover { background: rgba(59, 130, 246, 0.3); transform: scale(1.1); }
+.canvas-node[data-node-type="braille-cat"] .node-remove:hover { background: rgba(244, 114, 182, 0.3); transform: scale(1.1); }
+.canvas-node[data-node-type="planet-enchanter"] .node-remove:hover { background: rgba(34, 211, 238, 0.3); transform: scale(1.1); }
+.canvas-node[data-node-type="numbers-to-words"] .node-remove:hover { background: rgba(132, 204, 22, 0.3); transform: scale(1.1); }
+.canvas-node[data-node-type="math"] .node-remove:hover { background: rgba(250, 204, 21, 0.3); transform: scale(1.1); }
+.canvas-node[data-node-type="reverse"] .node-remove:hover { background: rgba(251, 146, 60, 0.3); transform: scale(1.1); }
+.canvas-node[data-node-type="case-transform"] .node-remove:hover { background: rgba(192, 132, 252, 0.3); transform: scale(1.1); }
+.canvas-node[data-node-type="secret-word"] .node-remove:hover { background: rgba(248, 113, 113, 0.3); transform: scale(1.1); }
+.canvas-node[data-node-type="monitor"] .node-remove:hover { background: rgba(100, 116, 139, 0.3); transform: scale(1.1); }
+
+/* Базовые стили для кнопок закрытия */
+.canvas-node .node-remove {
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    opacity: 0.8;
+}
+
+.canvas-node .node-remove:hover {
+    opacity: 1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
 /* Стиль для нода ввода */
 .canvas-node[data-node-type="input"] {
     background: linear-gradient(135deg, 
