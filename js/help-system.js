@@ -517,14 +517,26 @@ class HelpSystem {
                         </div>
                     </div>
                     <p><strong>Принцип работы:</strong> Каждая буква, цифра и знак препинания кодируется уникальной комбинацией коротких (точка) и длинных (тире) сигналов.</p>
+                    
                     <div class="example-box">
-                        <h4>Пример:</h4>
-                        <div class="example-input">Вход: SOS</div>
-                        <div class="example-output">Выход: ··· −−− ··· (S=···, O=−−−, S=···)</div>
+                        <h4>Различия символов для языков:</h4>
+                        <div class="example-input"><strong>Русский:</strong> · (Unicode точка) и − (Unicode тире)</div>
+                        <div class="example-input"><strong>Английский:</strong> . (ASCII точка) и - (ASCII дефис)</div>
+                        <div class="example-output">Это позволяет различать язык при декодировании смешанного текста</div>
                     </div>
+                    
+                    <div class="example-box">
+                        <h4>Пример кодирования:</h4>
+                        <div class="example-input">Вход: "ПРИВЕТ SOS"</div>
+                        <div class="example-output">Выход: ·−−· ·−· ·· ·−·· · ·− ... --- ...</div>
+                        <div class="example-output">Русские буквы: ·−, английские: .--</div>
+                    </div>
+                    
                     <div class="data-loss-warning">
                         <h4>Настройка поддержки Ё</h4>
-                        <p>По умолчанию Ё кодируется как Е. Включите переключатель "Поддержка Ё" для отдельного кода ··−··</p>
+                        <p>По умолчанию Ё кодируется как Е (·). Включите переключатель "Поддержка Ё" для отдельного кода ··−··</p>
+                        <div class="example-input">Без поддержки: ЁЛЬ → · ·−·· ·−··−</div>
+                        <div class="example-input">С поддержкой: ЁЛЬ → ··−·· ·−·· ·−··−</div>
                     </div>
                 </div>
 
@@ -538,12 +550,23 @@ class HelpSystem {
                             <p>Забавный вариант кода Морзе с кошачьими звуками</p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Аналогично обычному морзе, но точки и тире заменяются на кошачьи звуки.</p>
+                    <p><strong>Принцип работы:</strong> Сначала текст кодируется в обычный код Морзе, затем символы заменяются на кошачьи звуки.</p>
                     <div class="example-box">
                         <h4>Замены:</h4>
-                        <div class="example-input">· (точка) → мяу</div>
-                        <div class="example-input">− (тире) → мрряу</div>
-                        <div class="example-input">/ (пробел) → брряу</div>
+                        <div class="example-input">· (точка) → мяy</div>
+                        <div class="example-input">− (тире) → мрряy</div>
+                        <div class="example-input">/ (пробел между словами) → брряy</div>
+                    </div>
+                    <div class="example-box">
+                        <h4>Пример кодирования:</h4>
+                        <div class="example-input">Вход: КОТ</div>
+                        <div class="example-output">Морзе: −·− −−− −</div>
+                        <div class="example-output">Кошачий: мрряyмяy мрряyмрряyмрряy мрряy</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Поддержка Ё в кошачьем морзе</h4>
+                        <p>Также поддерживается переключатель Ё, как в обычном морзе</p>
+                        <div class="example-input">Ё с поддержкой → мяyмяyмрряyмяyмяy</div>
                     </div>
                 </div>
 
@@ -564,6 +587,175 @@ class HelpSystem {
                         <h4>Пример:</h4>
                         <div class="example-input">Вход: КОТ</div>
                         <div class="example-output">Выход: 12-16-20 (К=12, О=16, Т=20)</div>
+                    </div>
+                </div>
+
+                <div class="algorithm-card">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Шифр Виженера</h3>
+                            <p>Полиалфавитный шифр с ключевым словом</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Каждая буква текста сдвигается на количество позиций, соответствующее букве ключа в том же положении.</p>
+                    <div class="example-box">
+                        <h4>Пример (ключ: КОТ):</h4>
+                        <div class="example-input">Текст: ПРИВЕТ</div>
+                        <div class="example-input">Ключ: КОТКО(Т)</div>
+                        <div class="example-output">Результат: П+К=Э, Р+О=Е, И+Т=Б, В+К=И, Е+О=С, Т+Т=М → ЕБИСМ</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Особенности</h4>
+                        <p>• Имеет два входа: текст и ключ<br>• Ключ повторяется циклически<br>• Устойчив к частотному анализу</p>
+                    </div>
+                </div>
+
+                <div class="algorithm-card">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f87171, #ef4444);">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Секретное слово</h3>
+                            <p>Генератор ключевых слов для других алгоритмов</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Создает ключевое слово, которое можно использовать в шифрах типа Виженер.</p>
+                    <div class="example-box">
+                        <h4>Пример:</h4>
+                        <div class="example-input">Секретное слово: ТАЙНА</div>
+                        <div class="example-output">Использование: подключить к ключевому входу Виженера</div>
+                    </div>
+                </div>
+
+                <div class="algorithm-card">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #84cc16, #65a30d);">
+                            <i class="fas fa-hashtag"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Числа в слова</h3>
+                            <p>Преобразование цифр в словесное представление</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Заменяет цифры в тексте на их словесное представление на выбранном языке.</p>
+                    <div class="example-box">
+                        <h4>Пример (русский):</h4>
+                        <div class="example-input">Вход: У меня 5 котов и 12 собак</div>
+                        <div class="example-output">Выход: У меня пять котов и двенадцать собак</div>
+                    </div>
+                    <div class="example-box">
+                        <h4>Пример (английский):</h4>
+                        <div class="example-input">Вход: I have 7 cats</div>
+                        <div class="example-output">Выход: I have seven cats</div>
+                    </div>
+                </div>
+
+                <div class="algorithm-card">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #facc15, #eab308);">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Математика</h3>
+                            <p>Арифметические операции над числами в тексте</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Находит числа в тексте и выполняет над ними выбранную математическую операцию.</p>
+                    <div class="example-box">
+                        <h4>Пример (умножение на 2):</h4>
+                        <div class="example-input">Вход: У меня 5 котов и 12 собак</div>
+                        <div class="example-output">Выход: У меня 10 котов и 24 собак</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Доступные операции</h4>
+                        <p>• Сложение/вычитание константы<br>• Умножение/деление<br>• Возведение в степень</p>
+                    </div>
+                </div>
+
+                <div class="algorithm-card">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #fb923c, #f97316);">
+                            <i class="fas fa-undo"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Обратить текст</h3>
+                            <p>Реверс всего текста или отдельных слов</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Изменяет порядок символов в тексте в обратном направлении.</p>
+                    <div class="example-box">
+                        <h4>Режим "Весь текст":</h4>
+                        <div class="example-input">Вход: ПРИВЕТ МИР</div>
+                        <div class="example-output">Выход: РИМ ТЕВИРП</div>
+                    </div>
+                    <div class="example-box">
+                        <h4>Режим "По словам":</h4>
+                        <div class="example-input">Вход: ПРИВЕТ МИР</div>
+                        <div class="example-output">Выход: ТЕВИРП РИМ</div>
+                    </div>
+                </div>
+
+                <div class="algorithm-card">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #c084fc, #a855f7);">
+                            <i class="fas fa-text-height"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Регистр</h3>
+                            <p>Изменение регистра букв в тексте</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Преобразует регистр букв согласно выбранному режиму.</p>
+                    <div class="example-box">
+                        <h4>Доступные режимы:</h4>
+                        <div class="example-input">Верхний: привет → ПРИВЕТ</div>
+                        <div class="example-input">Нижний: ПРИВЕТ → привет</div>
+                        <div class="example-input">Заглавные: привет мир → Привет Мир</div>
+                        <div class="example-input">Инвертировать: ПрИвЕт → пРиВеТ</div>
+                    </div>
+                </div>
+
+                <div class="algorithm-card">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Бинарный код</h3>
+                            <p>Представление текста в двоичной системе</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Каждый символ кодируется в его ASCII/UTF-8 представление в двоичной системе.</p>
+                    <div class="example-box">
+                        <h4>Пример:</h4>
+                        <div class="example-input">Вход: A</div>
+                        <div class="example-output">Выход: 01000001 (ASCII 65)</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Особенности</h4>
+                        <p>• Кириллица требует UTF-8 (более длинные коды)<br>• Результат может быть очень длинным</p>
+                    </div>
+                </div>
+
+                <div class="algorithm-card">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #64748b, #475569);">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Монитор</h3>
+                            <p>Промежуточный просмотр данных в цепочке</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Отображает проходящие через него данные без изменения, позволяя отслеживать промежуточные результаты.</p>
+                    <div class="example-box">
+                        <h4>Использование:</h4>
+                        <div class="example-input">Установите между алгоритмами для отладки</div>
+                        <div class="example-output">Данные проходят без изменений</div>
                     </div>
                 </div>
 

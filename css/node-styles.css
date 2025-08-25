@@ -23,59 +23,44 @@
     --node-bg-alpha-end: 0.15;   /* Конечная прозрачность градиента (менее плотная) */
 }
 
-/* === ЦВЕТНЫЕ КРЕСТИКИ ДЛЯ КАЖДОГО ТИПА НОДА === */
 
-/* Цветные кнопки закрытия для лучшей видимости */
-.canvas-node[data-node-type="input"] .node-remove { color: var(--node-input-color); background: rgba(16, 185, 129, 0.15); }
-.canvas-node[data-node-type="output"] .node-remove { color: var(--node-output-color); background: rgba(245, 158, 11, 0.15); }
-.canvas-node[data-node-type="caesar"] .node-remove { color: var(--node-caesar-color); background: rgba(99, 102, 241, 0.15); }
-.canvas-node[data-node-type="morse"] .node-remove { color: var(--node-morse-color); background: rgba(139, 92, 246, 0.15); }
-.canvas-node[data-node-type="vigenere"] .node-remove { color: var(--node-vigenere-color); background: rgba(236, 72, 153, 0.15); }
-.canvas-node[data-node-type="a1z26"] .node-remove { color: var(--node-a1z26-color); background: rgba(20, 184, 166, 0.15); }
-.canvas-node[data-node-type="binary"] .node-remove { color: var(--node-binary-color); background: rgba(59, 130, 246, 0.15); }
-.canvas-node[data-node-type="braille-cat"] .node-remove { color: var(--node-cat-color); background: rgba(244, 114, 182, 0.15); }
-.canvas-node[data-node-type="planet-enchanter"] .node-remove { color: var(--node-planet-color); background: rgba(34, 211, 238, 0.15); }
-.canvas-node[data-node-type="numbers-to-words"] .node-remove { color: var(--node-numbers-color); background: rgba(132, 204, 22, 0.15); }
-.canvas-node[data-node-type="math"] .node-remove { color: var(--node-math-color); background: rgba(250, 204, 21, 0.15); }
-.canvas-node[data-node-type="reverse"] .node-remove { color: var(--node-reverse-color); background: rgba(251, 146, 60, 0.15); }
-.canvas-node[data-node-type="case-transform"] .node-remove { color: var(--node-case-color); background: rgba(192, 132, 252, 0.15); }
-.canvas-node[data-node-type="secret-word"] .node-remove { color: var(--node-secret-color); background: rgba(248, 113, 113, 0.15); }
-.canvas-node[data-node-type="monitor"] .node-remove { color: var(--node-monitor-color); background: rgba(100, 116, 139, 0.15); }
+/* === НОВЫЕ СТИЛИ ДЛЯ КРЕСТИКОВ С ВЫСОКИМ КОНТРАСТОМ === */
 
-/* Эффекты наведения для цветных крестиков */
-.canvas-node[data-node-type="input"] .node-remove:hover { background: rgba(16, 185, 129, 0.3); transform: scale(1.1); }
-.canvas-node[data-node-type="output"] .node-remove:hover { background: rgba(245, 158, 11, 0.3); transform: scale(1.1); }
-.canvas-node[data-node-type="caesar"] .node-remove:hover { background: rgba(99, 102, 241, 0.3); transform: scale(1.1); }
-.canvas-node[data-node-type="morse"] .node-remove:hover { background: rgba(139, 92, 246, 0.3); transform: scale(1.1); }
-.canvas-node[data-node-type="vigenere"] .node-remove:hover { background: rgba(236, 72, 153, 0.3); transform: scale(1.1); }
-.canvas-node[data-node-type="a1z26"] .node-remove:hover { background: rgba(20, 184, 166, 0.3); transform: scale(1.1); }
-.canvas-node[data-node-type="binary"] .node-remove:hover { background: rgba(59, 130, 246, 0.3); transform: scale(1.1); }
-.canvas-node[data-node-type="braille-cat"] .node-remove:hover { background: rgba(244, 114, 182, 0.3); transform: scale(1.1); }
-.canvas-node[data-node-type="planet-enchanter"] .node-remove:hover { background: rgba(34, 211, 238, 0.3); transform: scale(1.1); }
-.canvas-node[data-node-type="numbers-to-words"] .node-remove:hover { background: rgba(132, 204, 22, 0.3); transform: scale(1.1); }
-.canvas-node[data-node-type="math"] .node-remove:hover { background: rgba(250, 204, 21, 0.3); transform: scale(1.1); }
-.canvas-node[data-node-type="reverse"] .node-remove:hover { background: rgba(251, 146, 60, 0.3); transform: scale(1.1); }
-.canvas-node[data-node-type="case-transform"] .node-remove:hover { background: rgba(192, 132, 252, 0.3); transform: scale(1.1); }
-.canvas-node[data-node-type="secret-word"] .node-remove:hover { background: rgba(248, 113, 113, 0.3); transform: scale(1.1); }
-.canvas-node[data-node-type="monitor"] .node-remove:hover { background: rgba(100, 116, 139, 0.3); transform: scale(1.1); }
-
-/* Базовые стили для кнопок закрытия */
+/* Общий стиль для всех кнопок закрытия */
 .canvas-node .node-remove {
+    color: #ffffff !important; /* Белый цвет для максимального контраста */
+    border: none !important;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    opacity: 0.9; /* Немного прозрачности для лучшей интеграции */
+}
+
+/* Общий эффект наведения для всех кнопок */
+.canvas-node .node-remove:hover {
+    opacity: 1; /* Полная непрозрачность при наведении */
+    transform: scale(1.15); /* Увеличение для акцента */
+    filter: brightness(1.15); /* Делаем цвет ярче */
+    box-shadow: none !important;
+}
+
+
+/* Базовые стили для кнопок закрытия - применяются только если нет специфичного стиля */
+.canvas-node .node-remove:not([data-styled]) {
     border: 1px solid currentColor;
     border-radius: 4px;
     transition: all 0.2s ease;
     opacity: 0.8;
 }
 
-.canvas-node .node-remove:hover {
+.canvas-node .node-remove:not([data-styled]):hover {
     opacity: 1;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Стиль для нода ввода */
 .canvas-node[data-node-type="input"] {
-    background: linear-gradient(135deg, 
-        rgba(16, 185, 129, var(--node-bg-alpha-start)) 0%, 
+    background: linear-gradient(135deg,
+        rgba(16, 185, 129, var(--node-bg-alpha-start)) 0%,
         rgba(16, 185, 129, var(--node-bg-alpha-end)) 100%);
     border: 2px solid var(--node-input-color);
 }
@@ -86,8 +71,8 @@
 
 /* Стиль для нода вывода */
 .canvas-node[data-node-type="output"] {
-    background: linear-gradient(135deg, 
-        rgba(245, 158, 11, var(--node-bg-alpha-start)) 0%, 
+    background: linear-gradient(135deg,
+        rgba(245, 158, 11, var(--node-bg-alpha-start)) 0%,
         rgba(245, 158, 11, var(--node-bg-alpha-end)) 100%);
     border: 2px solid var(--node-output-color);
 }
@@ -98,8 +83,8 @@
 
 /* Стиль для шифра Цезаря */
 .canvas-node[data-node-type="caesar"] {
-    background: linear-gradient(135deg, 
-        rgba(99, 102, 241, var(--node-bg-alpha-start)) 0%, 
+    background: linear-gradient(135deg,
+        rgba(99, 102, 241, var(--node-bg-alpha-start)) 0%,
         rgba(99, 102, 241, var(--node-bg-alpha-end)) 100%);
     border: 2px solid var(--node-caesar-color);
 }
@@ -110,8 +95,8 @@
 
 /* Стиль для кода Морзе */
 .canvas-node[data-node-type="morse"] {
-    background: linear-gradient(135deg, 
-        rgba(139, 92, 246, var(--node-bg-alpha-start)) 0%, 
+    background: linear-gradient(135deg,
+        rgba(139, 92, 246, var(--node-bg-alpha-start)) 0%,
         rgba(139, 92, 246, var(--node-bg-alpha-end)) 100%);
     border: 2px solid var(--node-morse-color);
 }
@@ -122,8 +107,8 @@
 
 /* Стиль для шифра Виженера */
 .canvas-node[data-node-type="vigenere"] {
-    background: linear-gradient(135deg, 
-        rgba(236, 72, 153, var(--node-bg-alpha-start)) 0%, 
+    background: linear-gradient(135deg,
+        rgba(236, 72, 153, var(--node-bg-alpha-start)) 0%,
         rgba(236, 72, 153, var(--node-bg-alpha-end)) 100%);
     border: 2px solid var(--node-vigenere-color);
     min-height: 140px;
@@ -135,8 +120,8 @@
 
 /* Стиль для A1Z26 */
 .canvas-node[data-node-type="a1z26"] {
-    background: linear-gradient(135deg, 
-        rgba(20, 184, 166, var(--node-bg-alpha-start)) 0%, 
+    background: linear-gradient(135deg,
+        rgba(20, 184, 166, var(--node-bg-alpha-start)) 0%,
         rgba(20, 184, 166, var(--node-bg-alpha-end)) 100%);
     border: 2px solid var(--node-a1z26-color);
 }
@@ -147,8 +132,8 @@
 
 /* Стиль для бинарного кода (заменяет Морзе Бинарный) */
 .canvas-node[data-node-type="binary"] {
-    background: linear-gradient(135deg, 
-        rgba(59, 130, 246, var(--node-bg-alpha-start)) 0%, 
+    background: linear-gradient(135deg,
+        rgba(59, 130, 246, var(--node-bg-alpha-start)) 0%,
         rgba(59, 130, 246, var(--node-bg-alpha-end)) 100%);
     border: 2px solid var(--node-binary-color);
 }
@@ -159,8 +144,8 @@
 
 /* Стиль для кошачьего морзе */
 .canvas-node[data-node-type="braille-cat"] {
-    background: linear-gradient(135deg, 
-        rgba(244, 114, 182, var(--node-bg-alpha-start)) 0%, 
+    background: linear-gradient(135deg,
+        rgba(244, 114, 182, var(--node-bg-alpha-start)) 0%,
         rgba(244, 114, 182, var(--node-bg-alpha-end)) 100%);
     border: 2px solid var(--node-cat-color);
 }
@@ -171,8 +156,8 @@
 
 /* Стиль для зачаровывателя планет */
 .canvas-node[data-node-type="planet-enchanter"] {
-    background: linear-gradient(135deg, 
-        rgba(34, 211, 238, var(--node-bg-alpha-start)) 0%, 
+    background: linear-gradient(135deg,
+        rgba(34, 211, 238, var(--node-bg-alpha-start)) 0%,
         rgba(34, 211, 238, var(--node-bg-alpha-end)) 100%);
     border: 2px solid var(--node-planet-color);
 }
@@ -183,8 +168,8 @@
 
 /* Стиль для чисел в слова */
 .canvas-node[data-node-type="numbers-to-words"] {
-    background: linear-gradient(135deg, 
-        rgba(132, 204, 22, var(--node-bg-alpha-start)) 0%, 
+    background: linear-gradient(135deg,
+        rgba(132, 204, 22, var(--node-bg-alpha-start)) 0%,
         rgba(132, 204, 22, var(--node-bg-alpha-end)) 100%);
     border: 2px solid var(--node-numbers-color);
 }
@@ -195,8 +180,8 @@
 
 /* Стиль для математики */
 .canvas-node[data-node-type="math"] {
-    background: linear-gradient(135deg, 
-        rgba(250, 204, 21, var(--node-bg-alpha-start)) 0%, 
+    background: linear-gradient(135deg,
+        rgba(250, 204, 21, var(--node-bg-alpha-start)) 0%,
         rgba(250, 204, 21, var(--node-bg-alpha-end)) 100%);
     border: 2px solid var(--node-math-color);
 }
@@ -207,8 +192,8 @@
 
 /* Стиль для обращения текста */
 .canvas-node[data-node-type="reverse"] {
-    background: linear-gradient(135deg, 
-        rgba(251, 146, 60, var(--node-bg-alpha-start)) 0%, 
+    background: linear-gradient(135deg,
+        rgba(251, 146, 60, var(--node-bg-alpha-start)) 0%,
         rgba(251, 146, 60, var(--node-bg-alpha-end)) 100%);
     border: 2px solid var(--node-reverse-color);
 }
@@ -219,8 +204,8 @@
 
 /* Стиль для изменения регистра */
 .canvas-node[data-node-type="case-transform"] {
-    background: linear-gradient(135deg, 
-        rgba(192, 132, 252, var(--node-bg-alpha-start)) 0%, 
+    background: linear-gradient(135deg,
+        rgba(192, 132, 252, var(--node-bg-alpha-start)) 0%,
         rgba(192, 132, 252, var(--node-bg-alpha-end)) 100%);
     border: 2px solid var(--node-case-color);
 }
@@ -231,8 +216,8 @@
 
 /* Стиль для секретного слова */
 .canvas-node[data-node-type="secret-word"] {
-    background: linear-gradient(135deg, 
-        rgba(248, 113, 113, var(--node-bg-alpha-start)) 0%, 
+    background: linear-gradient(135deg,
+        rgba(248, 113, 113, var(--node-bg-alpha-start)) 0%,
         rgba(248, 113, 113, var(--node-bg-alpha-end)) 100%);
     border: 2px solid var(--node-secret-color);
 }
@@ -243,8 +228,8 @@
 
 /* Стиль для монитора */
 .canvas-node[data-node-type="monitor"] {
-    background: linear-gradient(135deg, 
-        rgba(100, 116, 139, var(--node-bg-alpha-start)) 0%, 
+    background: linear-gradient(135deg,
+        rgba(100, 116, 139, var(--node-bg-alpha-start)) 0%,
         rgba(100, 116, 139, var(--node-bg-alpha-end)) 100%);
     border: 2px solid var(--node-monitor-color);
     min-height: 120px;

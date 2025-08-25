@@ -597,8 +597,12 @@ class NodeManager {
         const fieldDiv = document.createElement('div');
         fieldDiv.className = 'node-field';
         
+        // Создаем уникальный ID для поля
+        const fieldId = `${nodeId}_${field.name}`;
+        
         const label = document.createElement('label');
         label.textContent = field.label;
+        label.setAttribute('for', fieldId);
         fieldDiv.appendChild(label);
         
         let input;
@@ -631,6 +635,12 @@ class NodeManager {
                 if (field.max !== undefined) input.max = field.max;
                 break;
                 
+            case 'checkbox':
+                input = document.createElement('input');
+                input.type = 'checkbox';
+                input.checked = field.value || false;
+                break;
+                
             default:
                 input = document.createElement('input');
                 input.type = 'text';
@@ -638,10 +648,19 @@ class NodeManager {
         }
         
         input.name = field.name;
-        input.addEventListener('input', () => {
-            this.updateNodeData(nodeId, field.name, input.value);
+        input.id = fieldId;
+        
+        // Обработчик изменений для всех типов полей
+        const updateValue = () => {
+            const value = field.type === 'checkbox' ? input.checked : input.value;
+            this.updateNodeData(nodeId, field.name, value);
             this.triggerExecution();
-        });
+        };
+        
+        input.addEventListener('input', updateValue);
+        if (field.type === 'checkbox') {
+            input.addEventListener('change', updateValue);
+        }
         
         fieldDiv.appendChild(input);
         return fieldDiv;

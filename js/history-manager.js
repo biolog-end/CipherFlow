@@ -12,14 +12,34 @@ class HistoryManager {
     
     initializeKeyboardShortcuts() {
         document.addEventListener('keydown', (e) => {
-            // Ctrl/Cmd + Z для Undo
-            if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+            // Проверяем, что фокус не на элементах ввода текста
+            const activeElement = document.activeElement;
+            const isTextInput = activeElement && (
+                activeElement.tagName === 'INPUT' ||
+                activeElement.tagName === 'TEXTAREA' ||
+                activeElement.contentEditable === 'true'
+            );
+            
+            // Не обрабатываем горячие клавиши в текстовых полях
+            if (isTextInput) return;
+            
+            // Создаем мапинг клавиш для поддержки русской раскладки
+            const keyMap = {
+                'я': 'z',  // я - русская Z
+                'н': 'y'   // н - русская Y
+            };
+            
+            // Нормализуем клавишу (поддержка русской раскладки)
+            const normalizedKey = keyMap[e.key.toLowerCase()] || e.key.toLowerCase();
+            
+            // Ctrl/Cmd + Z для Undo (поддержка 'я' для русской раскладки)
+            if ((e.ctrlKey || e.metaKey) && normalizedKey === 'z' && !e.shiftKey) {
                 e.preventDefault();
                 this.undo();
             }
             
-            // Ctrl/Cmd + Shift + Z или Ctrl/Cmd + Y для Redo
-            if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+            // Ctrl/Cmd + Shift + Z или Ctrl/Cmd + Y для Redo (поддержка 'я' и 'н' для русской раскладки)
+            if ((e.ctrlKey || e.metaKey) && (normalizedKey === 'y' || (normalizedKey === 'z' && e.shiftKey))) {
                 e.preventDefault();
                 this.redo();
             }
