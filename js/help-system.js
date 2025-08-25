@@ -301,6 +301,36 @@ class HelpSystem {
                 0%, 100% { opacity: 0.3; }
                 50% { opacity: 1; }
             }
+
+            .example-load-btn {
+                background: var(--accent-primary);
+                color: white;
+                border: none;
+                padding: 0.75rem 1.5rem;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                margin-top: 1rem;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                width: fit-content;
+            }
+
+            .example-load-btn:hover {
+                background: var(--accent-secondary);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+            }
+
+            .example-load-btn:active {
+                transform: translateY(0);
+            }
+
+            .example-load-btn i {
+                font-size: 1rem;
+            }
         `;
         document.head.appendChild(style);
     }
@@ -403,6 +433,86 @@ class HelpSystem {
         this.currentSection = sectionId;
     }
 
+    async loadExample(exampleName) {
+        try {
+            // Скрываем справку
+            this.hide();
+            
+            // Загружаем файл примера
+            const response = await fetch(`examples/${exampleName}.json`);
+            if (!response.ok) {
+                throw new Error(`Не удалось загрузить пример: ${response.status}`);
+            }
+            
+            const exampleData = await response.text();
+            
+            // Используем файловый менеджер для загрузки схемы
+            if (window.fileManager) {
+                window.fileManager.importScheme(exampleData);
+                
+                // Показываем уведомление
+                this.showExampleLoadedNotification(exampleName);
+
+                // Воспроизводим звук если включены звуковые эффекты
+                if (window.settingsSystem?.settings.soundEffects) {
+                    window.settingsSystem.playSound('select');
+                }
+            } else {
+                throw new Error('Файловый менеджер недоступен');
+            }
+            
+        } catch (error) {
+            console.error('Ошибка загрузки примера:', error);
+            alert(`Ошибка загрузки примера "${exampleName}": ${error.message}`);
+        }
+    }
+
+    showExampleLoadedNotification(exampleName) {
+        // Получаем данные примера для отображения имени
+        const exampleNames = {
+            'simple-caesar': 'Простой шифр Цезаря',
+            'vigenere-with-secret': 'Шифр Виженера с секретным словом',
+            'multilevel-encryption': 'Многоуровневое шифрование',
+            'planet-enchanter': 'Географическое шифрование',
+            'cat-morse': 'Забавный кошачий морзе',
+            'monitoring-chain': 'Отладка с мониторами'
+        };
+
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--accent-primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            z-index: 10001;
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.3);
+            animation: slideInUp 0.3s ease, slideOutDown 0.3s ease 3s forwards;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        `;
+        
+        notification.innerHTML = `
+            <i class="fas fa-check-circle" style="font-size: 1.2rem;"></i>
+            <div>
+                <div style="font-weight: 600;">Пример загружен!</div>
+                <div style="font-size: 0.9rem; opacity: 0.9;">${exampleNames[exampleName] || exampleName}</div>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 3500);
+    }
+
     generateContent() {
         return `
             ${this.getOverviewSection()}
@@ -486,9 +596,57 @@ class HelpSystem {
                     Алгоритмы шифрования
                 </div>
 
+                <div class="help-subtitle">Входные и выходные ноды</div>
+                
+                <div class="algorithm-card" data-node-type="input">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Ввод текста</h3>
+                            <p>Источник данных для цепочки шифрования</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Берет текст из общего поля ввода в нижней панели и передает его в цепочку обработки. Является начальной точкой любой схемы шифрования.</p>
+                    <div class="example-box">
+                        <h4>Использование:</h4>
+                        <div class="example-input">1. Введите текст в поле внизу экрана</div>
+                        <div class="example-input">2. Соедините выход нода "Ввод текста" со входом следующего алгоритма</div>
+                        <div class="example-output">Данные автоматически передаются в цепочку</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Особенности</h4>
+                        <p>• Только один выход, нет входов<br>• Автоматически обновляется при изменении текста в поле ввода<br>• Может быть несколько нодов ввода в одной схеме</p>
+                    </div>
+                </div>
+
+                <div class="algorithm-card" data-node-type="output">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Вывод текста</h3>
+                            <p>Отображение результата цепочки шифрования</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Получает обработанные данные и отображает их в поле вывода в нижней панели. Является конечной точкой схемы шифрования.</p>
+                    <div class="example-box">
+                        <h4>Использование:</h4>
+                        <div class="example-input">1. Соедините вход нода "Вывод текста" с выходом последнего алгоритма</div>
+                        <div class="example-input">2. Результат автоматически появится в поле вывода внизу экрана</div>
+                        <div class="example-output">Можно копировать результат из поля вывода</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Особенности</h4>
+                        <p>• Только один вход, нет выходов<br>• Автоматически обновляется при изменении данных<br>• Может быть несколько нодов вывода для промежуточных результатов</p>
+                    </div>
+                </div>
+
                 <div class="help-subtitle">Классические шифры</div>
                 
-                <div class="algorithm-card">
+                <div class="algorithm-card" data-node-type="caesar">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">
                             <i class="fas fa-exchange-alt"></i>
@@ -506,7 +664,7 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="algorithm-card">
+                <div class="algorithm-card" data-node-type="morse">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
                             <i class="fas fa-broadcast-tower"></i>
@@ -540,7 +698,7 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="algorithm-card">
+                <div class="algorithm-card" data-node-type="braille-cat">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #f472b6, #ec4899);">
                             <i class="fas fa-cat"></i>
@@ -572,7 +730,7 @@ class HelpSystem {
 
                 <div class="help-subtitle">Преобразования</div>
 
-                <div class="algorithm-card">
+                <div class="algorithm-card" data-node-type="a1z26">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #14b8a6, #0d9488);">
                             <i class="fas fa-sort-numeric-up"></i>
@@ -590,7 +748,7 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="algorithm-card">
+                <div class="algorithm-card" data-node-type="vigenere">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">
                             <i class="fas fa-shield-alt"></i>
@@ -613,7 +771,7 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="algorithm-card">
+                <div class="algorithm-card" data-node-type="secret-word">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #f87171, #ef4444);">
                             <i class="fas fa-key"></i>
@@ -631,7 +789,7 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="algorithm-card">
+                <div class="algorithm-card" data-node-type="numbers-to-words">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #84cc16, #65a30d);">
                             <i class="fas fa-hashtag"></i>
@@ -654,7 +812,7 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="algorithm-card">
+                <div class="algorithm-card" data-node-type="math">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #facc15, #eab308);">
                             <i class="fas fa-calculator"></i>
@@ -676,7 +834,7 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="algorithm-card">
+                <div class="algorithm-card" data-node-type="reverse">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #fb923c, #f97316);">
                             <i class="fas fa-undo"></i>
@@ -699,7 +857,7 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="algorithm-card">
+                <div class="algorithm-card" data-node-type="case-transform">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #c084fc, #a855f7);">
                             <i class="fas fa-text-height"></i>
@@ -719,7 +877,7 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="algorithm-card">
+                <div class="algorithm-card" data-node-type="binary">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
                             <i class="fas fa-microchip"></i>
@@ -741,7 +899,7 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="algorithm-card">
+                <div class="algorithm-card" data-node-type="monitor">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #64748b, #475569);">
                             <i class="fas fa-desktop"></i>
@@ -759,7 +917,7 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="algorithm-card">
+                <div class="algorithm-card" data-node-type="planet-enchanter">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #22d3ee, #06b6d4);">
                             <i class="fas fa-globe"></i>
@@ -925,8 +1083,11 @@ class HelpSystem {
                     <p>Самая простая схема для начинающих. Один алгоритм шифрования.</p>
                     <div class="example-box">
                         <h4>Схема:</h4>
-                        <div class="example-input">[Ввод текста] → [Шифр Цезаря, сдвиг +5] → [Вывод текста]</div>
-                        <div class="example-output">Результат: "ПРИВЕТ" → "ХУЛКМЧ"</div>
+                        <div class="example-input">[Ввод текста] → [Шифр Цезаря, сдвиг +3] → [Вывод текста]</div>
+                        <div class="example-output">Результат: "ПРИВЕТ" → "ТУЛЖЗЧ"</div>
+                        <button class="example-load-btn" onclick="window.helpSystem.loadExample('simple-caesar')">
+                            <i class="fas fa-download"></i> Загрузить пример
+                        </button>
                     </div>
                 </div>
 
@@ -946,6 +1107,9 @@ class HelpSystem {
                         <h4>Схема:</h4>
                         <div class="example-input">[Ввод] → [Регистр: верхний] → [A1Z26] → [Морзе] → [Кошачий морзе] → [Вывод]</div>
                         <div class="example-output">Результат: многослойная защита с преобразованием в кошачьи звуки</div>
+                        <button class="example-load-btn" onclick="window.helpSystem.loadExample('multilevel-encryption')">
+                            <i class="fas fa-download"></i> Загрузить пример
+                        </button>
                     </div>
                 </div>
 
@@ -963,6 +1127,9 @@ class HelpSystem {
                         <h4>Схема:</h4>
                         <div class="example-input">[Ввод текста] → [Текст] ↘<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Шифр Виженера] → [Вывод]<br>[Секретное слово] → [Ключ] ↗</div>
                         <div class="example-output">Результат: полиалфавитное шифрование с вашим секретным словом</div>
+                        <button class="example-load-btn" onclick="window.helpSystem.loadExample('vigenere-with-secret')">
+                            <i class="fas fa-download"></i> Загрузить пример
+                        </button>
                     </div>
                 </div>
 
@@ -982,6 +1149,9 @@ class HelpSystem {
                         <h4>Схема:</h4>
                         <div class="example-input">[Ввод] → [Зачаровыватель планет] → [Вывод]</div>
                         <div class="example-output">Результат: секретное сообщение в виде GPS-координат городов</div>
+                        <button class="example-load-btn" onclick="window.helpSystem.loadExample('planet-enchanter')">
+                            <i class="fas fa-download"></i> Загрузить пример
+                        </button>
                     </div>
                     <p>💡 Можно использовать для создания квестов или головоломок!</p>
                 </div>
@@ -999,9 +1169,33 @@ class HelpSystem {
                     <div class="example-box">
                         <h4>Схема:</h4>
                         <div class="example-input">[Ввод] → [Морзе (Кошачий)] → [Вывод]</div>
-                        <div class="example-output">Результат: "ПРИВЕТ" → "мяумрряумяу мрряумрряумрряу мяумяу"</div>
+                        <div class="example-output">Результат: "КОТ" → "мрряyмяy мрряyмрряyмрряy мрряy"</div>
+                        <button class="example-load-btn" onclick="window.helpSystem.loadExample('cat-morse')">
+                            <i class="fas fa-download"></i> Загрузить пример
+                        </button>
                     </div>
                     <p>🐱 Отлично подходит для обучения основам криптографии в игровой форме!</p>
+                </div>
+
+                <div class="algorithm-card">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #64748b, #475569);">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Отладка с мониторами</h3>
+                            <p>Отслеживание промежуточных результатов</p>
+                        </div>
+                    </div>
+                    <div class="example-box">
+                        <h4>Схема:</h4>
+                        <div class="example-input">[Ввод] → [Числа в слова] → [Монитор] + [Цезарь] → [Монитор] + [Реверс] → [Вывод]</div>
+                        <div class="example-output">Результат: возможность видеть результат на каждом этапе обработки</div>
+                        <button class="example-load-btn" onclick="window.helpSystem.loadExample('monitoring-chain')">
+                            <i class="fas fa-download"></i> Загрузить пример
+                        </button>
+                    </div>
+                    <p>🔍 Полезно для понимания того, как работают сложные цепочки алгоритмов!</p>
                 </div>
             </div>
         `;
@@ -1239,5 +1433,23 @@ window.showNodeHelp = (nodeType) => {
     // Переключаемся на раздел алгоритмов
     setTimeout(() => {
         window.helpSystem.switchSection('algorithms');
+        // Прокручиваем к нужному ноду
+        setTimeout(() => {
+            const nodeCard = document.querySelector(`[data-node-type="${nodeType}"]`);
+            if (nodeCard) {
+                nodeCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Подсвечиваем карточку
+                nodeCard.style.background = 'var(--accent-primary-10)';
+                nodeCard.style.borderColor = 'var(--accent-primary)';
+                nodeCard.style.boxShadow = '0 0 20px rgba(124, 58, 237, 0.3)';
+                
+                // Убираем подсветку через 3 секунды
+                setTimeout(() => {
+                    nodeCard.style.background = '';
+                    nodeCard.style.borderColor = '';
+                    nodeCard.style.boxShadow = '';
+                }, 3000);
+            }
+        }, 200);
     }, 100);
 };

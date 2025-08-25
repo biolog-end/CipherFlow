@@ -1,0 +1,77 @@
+{
+  "version": "2.0",
+  "name": "Забавный кошачий морзе",
+  "description": "Образовательный пример с превращением текста в кошачьи звуки. Идеально для обучения детей основам криптографии!",
+  "created": "2025-01-01T00:00:00.000Z", 
+  "nodes": [
+    {
+      "id": "node_0",
+      "type": "input",
+      "x": 100,
+      "y": 150,
+      "data": {
+        "title": "Ввод текста",
+        "icon": "fas fa-sign-in-alt",
+        "fields": [],
+        "hasInput": false,
+        "hasOutput": true
+      }
+    },
+    {
+      "id": "node_1",
+      "type": "braille-cat",
+      "x": 300,
+      "y": 150,
+      "data": {
+        "title": "Морзе (Кошачий)",
+        "icon": "fas fa-cat",
+        "fields": [
+          {
+            "name": "mode",
+            "type": "select",
+            "label": "Режим",
+            "value": "encode",
+            "options": [
+              { "value": "encode", "label": "Текст → Кошачий код" },
+              { "value": "decode", "label": "Кошачий код → Текст" }
+            ]
+          },
+          {
+            "name": "supportYo",
+            "type": "checkbox",
+            "label": "Поддержка Ё (мяумяумрряумяумяу)",
+            "value": true,
+            "tooltip": "Включить отдельный код для буквы Ё. По умолчанию Ё = Е"
+          }
+        ],
+        "hasInput": true,
+        "hasOutput": true
+      }
+    },
+    {
+      "id": "node_2",
+      "type": "output",
+      "x": 500,
+      "y": 150,
+      "data": {
+        "title": "Вывод текста",
+        "icon": "fas fa-sign-out-alt",
+        "fields": [],
+        "hasInput": true,
+        "hasOutput": false
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "connection_0",
+      "from": "node_0", 
+      "to": "node_1"
+    },
+    {
+      "id": "connection_1",
+      "from": "node_1",
+      "to": "node_2"
+    }
+  ]
+}

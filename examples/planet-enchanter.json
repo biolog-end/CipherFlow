@@ -1,0 +1,81 @@
+{
+  "version": "2.0",
+  "name": "Географическое шифрование",
+  "description": "Уникальный алгоритм превращения текста в GPS-координаты городов мира. Отлично подходит для квестов!",
+  "created": "2025-01-01T00:00:00.000Z",
+  "nodes": [
+    {
+      "id": "node_0",
+      "type": "input",
+      "x": 100,
+      "y": 150,
+      "data": {
+        "title": "Ввод текста",
+        "icon": "fas fa-sign-in-alt", 
+        "fields": [],
+        "hasInput": false,
+        "hasOutput": true
+      }
+    },
+    {
+      "id": "node_1",
+      "type": "planet-enchanter",
+      "x": 300,
+      "y": 150,
+      "data": {
+        "title": "Зачаровыватель планет",
+        "icon": "fas fa-globe",
+        "fields": [
+          {
+            "name": "mode",
+            "type": "select",
+            "label": "Режим",
+            "value": "encode",
+            "options": [
+              { "value": "encode", "label": "Текст → Координаты" },
+              { "value": "decode", "label": "Координаты → Текст" }
+            ]
+          },
+          {
+            "name": "language",
+            "type": "select",
+            "label": "Язык",
+            "value": "ru",
+            "options": [
+              { "value": "ru", "label": "Русский" },
+              { "value": "en", "label": "English" },
+              { "value": "mix", "label": "Смешанный" }
+            ]
+          }
+        ],
+        "hasInput": true,
+        "hasOutput": true
+      }
+    },
+    {
+      "id": "node_2",
+      "type": "output",
+      "x": 500,
+      "y": 150,
+      "data": {
+        "title": "Вывод текста",
+        "icon": "fas fa-sign-out-alt",
+        "fields": [],
+        "hasInput": true,
+        "hasOutput": false
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "connection_0",
+      "from": "node_0",
+      "to": "node_1"
+    },
+    {
+      "id": "connection_1",
+      "from": "node_1",
+      "to": "node_2"
+    }
+  ]
+}

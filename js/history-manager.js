@@ -309,33 +309,14 @@ class SelectionManager {
     }
     
     initializeKeyboardShortcuts() {
-        document.addEventListener('keydown', (e) => {
-            // Ctrl/Cmd + A для выделения всех нодов
-            if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
-                e.preventDefault();
-                this.selectAll();
-            }
-            
-            // Ctrl/Cmd + C для копирования
-            if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
-                e.preventDefault();
-                this.copySelected();
-            }
-            
-            // Ctrl/Cmd + V для вставки
-            if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
-                e.preventDefault();
-                this.paste();
-            }
-            
-            // Delete для удаления выделенных нодов
-            if (e.key === 'Delete' && this.selectedNodes.size > 0) {
-                e.preventDefault();
-                this.deleteSelected();
-            }
-            
-            // Escape для снятия выделения
-            if (e.key === 'Escape') {
+        // Убираем обработчики клавиатуры из SelectionManager,
+        // так как они обрабатываются в main.js для лучшего контроля контекста
+        // (проверка текстовых полей, справки и т.д.)
+        
+        // Остается только обработчик Escape для снятия выделения при клике на пустое место
+        document.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('canvas') || 
+                e.target.classList.contains('canvas-background')) {
                 this.clearSelection();
             }
         });
@@ -519,15 +500,30 @@ class SelectionManager {
     paste() {
         if (!this.clipboard || this.clipboard.nodes.length === 0) return;
         
-        const offset = 50; // Смещение для вставленных нодов
+        // Получаем позицию курсора для центра вставки
+        const canvas = document.getElementById('canvas');
+        const canvasRect = canvas.getBoundingClientRect();
+        
+        // Используем центр канваса как базовую точку
+        const baseX = (canvasRect.width / 2) - 150; // Примерно по центру
+        const baseY = (canvasRect.height / 2) - 100;
+        
         const nodeIdMapping = new Map();
+        
+        // Вычисляем смещение от оригинальной позиции первого нода
+        const firstNode = this.clipboard.nodes[0];
+        const offsetX = baseX - firstNode.x + Math.random() * 100 - 50; // Добавляем случайность
+        const offsetY = baseY - firstNode.y + Math.random() * 100 - 50;
         
         // Вставляем ноды
         this.clipboard.nodes.forEach(nodeData => {
+            const newX = nodeData.x + offsetX;
+            const newY = nodeData.y + offsetY;
+            
             const newNodeId = window.nodeManager.createNode(
                 nodeData.type,
-                nodeData.x + offset,
-                nodeData.y + offset
+                newX,
+                newY
             );
             
             nodeIdMapping.set(nodeData.id, newNodeId);

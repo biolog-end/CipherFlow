@@ -267,6 +267,11 @@ class ConnectionManager {
         // Обновляем позицию линии
         this.updateConnectionPath(connection);
         
+        // Воспроизводим звук соединения
+        if (window.settingsSystem?.settings.soundEffects) {
+            window.settingsSystem.playSound('connection');
+        }
+        
         return connectionId;
     }
     
@@ -369,6 +374,11 @@ class ConnectionManager {
         
         // Удаляем из карты соединений
         this.connections.delete(connectionId);
+        
+        // Воспроизводим звук разрыва соединения
+        if (window.settingsSystem?.settings.soundEffects) {
+            window.settingsSystem.playSound('disconnect');
+        }
         
         // Запускаем обновление выполнения
         if (window.nodeManager) {

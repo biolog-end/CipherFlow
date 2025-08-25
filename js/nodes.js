@@ -185,6 +185,11 @@ class NodeManager {
         // Автоматически выбираем созданный нод
         this.selectNode(nodeId);
         
+        // Воспроизводим звук создания нода
+        if (window.settingsSystem?.settings.soundEffects) {
+            window.settingsSystem.playSound('node_create');
+        }
+        
         // Добавляем в историю
         if (window.historyManager) {
             window.historyManager.addAction({

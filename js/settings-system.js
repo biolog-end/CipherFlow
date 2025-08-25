@@ -13,7 +13,7 @@ class SettingsSystem {
         return saved ? JSON.parse(saved) : {
             theme: 'dark',
             autoSave: true,
-            soundEffects: false,
+            soundEffects: true,
             animations: true,
             compactMode: false,
             language: 'ru'
@@ -643,6 +643,27 @@ class SettingsSystem {
                 break;
             case 'select':
                 oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+                break;
+            case 'connection':
+                // Восходящий звук для соединения
+                oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.15);
+                gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                oscillator.stop(audioContext.currentTime + 0.3);
+                return; // Выходим рано из-за другого времени
+            case 'disconnect':
+                // Нисходящий звук для разрыва соединения
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(300, audioContext.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.25);
+                oscillator.stop(audioContext.currentTime + 0.25);
+                return; // Выходим рано из-за другого времени
+            case 'node_create':
+                // Звук создания нода
+                oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+                oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
                 break;
             default:
                 oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
