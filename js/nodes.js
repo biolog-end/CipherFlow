@@ -415,6 +415,35 @@ class NodeManager {
                 ],
                 hasInput: true,
                 hasOutput: true
+            },
+            'planet-enchanter': {
+                title: 'Зачаровыватель планет',
+                icon: 'fas fa-globe',
+                fields: [
+                    {
+                        name: 'mode',
+                        type: 'select',
+                        label: 'Режим',
+                        value: 'encode',
+                        options: [
+                            { value: 'encode', label: 'Текст → Координаты' },
+                            { value: 'decode', label: 'Координаты → Текст' }
+                        ]
+                    },
+                    {
+                        name: 'language',
+                        type: 'select',
+                        label: 'Язык',
+                        value: 'ru',
+                        options: [
+                            { value: 'ru', label: 'Русский' },
+                            { value: 'en', label: 'English' },
+                            { value: 'mix', label: 'Смешанный' }
+                        ]
+                    }
+                ],
+                hasInput: true,
+                hasOutput: true
             }
         };
         

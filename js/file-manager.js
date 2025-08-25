@@ -43,13 +43,184 @@ class FileManager {
                 throw new Error('Движок шифрования не инициализирован');
             }
             
-            const schemeData = window.cipherEngine.exportScheme();
-            const blob = new Blob([schemeData], { type: 'application/json' });
+            // Показываем диалог для ввода имени схемы
+            this.showSaveDialog();
             
-            // Создаем имя файла с текущей датой
+        } catch (error) {
+            console.error('Ошибка сохранения схемы:', error);
+            this.showNotification('Ошибка сохранения: ' + error.message, 'error');
+        }
+    }
+    
+    showSaveDialog() {
+        const dialog = document.createElement('div');
+        dialog.className = 'save-dialog-overlay';
+        dialog.innerHTML = `
+            <div class="save-dialog">
+                <div class="save-dialog-header">
+                    <h3>💾 Сохранить схему</h3>
+                    <button class="dialog-close" onclick="this.parentElement.parentElement.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="save-dialog-content">
+                    <div class="form-group">
+                        <label for="schemeName">Название схемы:</label>
+                        <input type="text" id="schemeName" placeholder="Введите название схемы..." value="Моя схема шифрования">
+                    </div>
+                    <div class="form-group">
+                        <label for="schemeDescription">Описание (необязательно):</label>
+                        <textarea id="schemeDescription" placeholder="Краткое описание того, что делает эта схема..." rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="save-dialog-footer">
+                    <button class="btn btn-outline" onclick="this.parentElement.parentElement.parentElement.remove()">
+                        Отмена
+                    </button>
+                    <button class="btn btn-primary" onclick="window.fileManager.performSave()">
+                        <i class="fas fa-save"></i>
+                        Сохранить
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        dialog.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        `;
+        
+        const dialogStyles = `
+            .save-dialog {
+                background: var(--bg-secondary);
+                border-radius: var(--radius-lg);
+                padding: 0;
+                width: 500px;
+                max-width: 90vw;
+                box-shadow: var(--shadow-lg);
+                border: 1px solid var(--border-color);
+                overflow: hidden;
+            }
+            .save-dialog-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1.5rem;
+                background: var(--bg-primary);
+                border-bottom: 1px solid var(--border-color);
+            }
+            .save-dialog-header h3 {
+                margin: 0;
+                color: var(--text-primary);
+            }
+            .dialog-close {
+                background: none;
+                border: none;
+                color: var(--text-muted);
+                cursor: pointer;
+                padding: 0.5rem;
+                border-radius: var(--radius);
+                transition: var(--transition);
+            }
+            .dialog-close:hover {
+                color: var(--text-primary);
+                background: rgba(255, 255, 255, 0.1);
+            }
+            .save-dialog-content {
+                padding: 1.5rem;
+            }
+            .form-group {
+                margin-bottom: 1.5rem;
+            }
+            .form-group:last-child {
+                margin-bottom: 0;
+            }
+            .form-group label {
+                display: block;
+                margin-bottom: 0.5rem;
+                color: var(--text-primary);
+                font-weight: 500;
+            }
+            .form-group input,
+            .form-group textarea {
+                width: 100%;
+                padding: 0.75rem;
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius);
+                background: var(--bg-primary);
+                color: var(--text-primary);
+                font-family: inherit;
+                transition: var(--transition);
+            }
+            .form-group input:focus,
+            .form-group textarea:focus {
+                outline: none;
+                border-color: var(--accent-primary);
+                box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+            }
+            .save-dialog-footer {
+                display: flex;
+                gap: 1rem;
+                justify-content: flex-end;
+                padding: 1.5rem;
+                background: var(--bg-primary);
+                border-top: 1px solid var(--border-color);
+            }
+        `;
+        
+        if (!document.querySelector('#save-dialog-styles')) {
+            const style = document.createElement('style');
+            style.id = 'save-dialog-styles';
+            style.textContent = dialogStyles;
+            document.head.appendChild(style);
+        }
+        
+        document.body.appendChild(dialog);
+        
+        // Автофокус на поле ввода имени
+        setTimeout(() => {
+            const nameInput = document.getElementById('schemeName');
+            if (nameInput) {
+                nameInput.select();
+            }
+        }, 100);
+    }
+    
+    performSave() {
+        const nameInput = document.getElementById('schemeName');
+        const descriptionInput = document.getElementById('schemeDescription');
+        
+        const schemeName = nameInput?.value.trim() || 'Схема шифрования';
+        const schemeDescription = descriptionInput?.value.trim() || '';
+        
+        try {
+            const schemeData = JSON.parse(window.cipherEngine.exportScheme());
+            
+            // Добавляем метаданные
+            schemeData.name = schemeName;
+            schemeData.description = schemeDescription;
+            schemeData.created = new Date().toISOString();
+            
+            const blob = new Blob([JSON.stringify(schemeData, null, 2)], { type: 'application/json' });
+            
+            // Создаем безопасное имя файла
+            const safeFileName = schemeName
+                .replace(/[^a-zа-я0-9\s-_]/gi, '')
+                .replace(/\s+/g, '-')
+                .toLowerCase();
+            
             const now = new Date();
-            const timestamp = now.toISOString().replace(/[:.]/g, '-').slice(0, -5);
-            const filename = `cipher-scheme-${timestamp}.json`;
+            const timestamp = now.toISOString().slice(0, 10); // YYYY-MM-DD
+            const filename = `${safeFileName}-${timestamp}.json`;
             
             // Создаем ссылку для скачивания
             const url = URL.createObjectURL(blob);
@@ -64,7 +235,13 @@ class FileManager {
             
             URL.revokeObjectURL(url);
             
-            this.showNotification('Схема успешно сохранена!', 'success');
+            // Закрываем диалог
+            const dialog = document.querySelector('.save-dialog-overlay');
+            if (dialog) {
+                dialog.remove();
+            }
+            
+            this.showNotification(`Схема "${schemeName}" успешно сохранена!`, 'success');
             
         } catch (error) {
             console.error('Ошибка сохранения схемы:', error);
@@ -102,8 +279,18 @@ class FileManager {
                     }
                 }
                 
+                const parsedScheme = JSON.parse(schemeData);
+                const schemeName = parsedScheme.name || 'Неизвестная схема';
+                const schemeDescription = parsedScheme.description || '';
+                
                 window.cipherEngine.importScheme(schemeData);
-                this.showNotification('Схема успешно загружена!', 'success');
+                
+                let message = `Схема "${schemeName}" успешно загружена!`;
+                if (schemeDescription) {
+                    message += `\nОписание: ${schemeDescription}`;
+                }
+                
+                this.showNotification(message, 'success');
                 
                 // Сохраняем в localStorage для автовосстановления
                 this.saveToLocalStorage(schemeData);

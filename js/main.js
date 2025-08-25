@@ -69,6 +69,16 @@ class CipherFlowApp {
     }
     
     setupGlobalEventListeners() {
+        // Обработка клика по логотипу для показа справки
+        const logo = document.querySelector('.logo');
+        if (logo) {
+            logo.addEventListener('click', () => {
+                this.showHelp();
+            });
+            logo.style.cursor = 'pointer';
+            logo.title = 'Показать справку (F1)';
+        }
+        
         // Обработка изменения размера окна
         window.addEventListener('resize', this.debounce(() => {
             if (this.components.connectionManager) {
@@ -343,30 +353,46 @@ class CipherFlowApp {
                     <div class="help-section">
                         <h3>⌨️ Горячие клавиши</h3>
                         <ul>
-                            <li><kbd>Ctrl/Cmd + S</kbd> - Сохранить схему</li>
+                            <li><kbd>Ctrl/Cmd + S</kbd> - Сохранить схему с названием</li>
                             <li><kbd>Ctrl/Cmd + O</kbd> - Загрузить схему</li>
                             <li><kbd>Ctrl/Cmd + N</kbd> - Новая схема</li>
                             <li><kbd>Delete</kbd> - Удалить выбранный нод</li>
-                            <li><kbd>Escape</kbd> - Снять выделение</li>
+                            <li><kbd>Escape</kbd> - Снять выделение / Отменить соединение</li>
                             <li><kbd>F1</kbd> - Показать справку</li>
+                            <li><kbd>X</kbd> - Режим резки соединений</li>
+                            <li><kbd>+/-</kbd> - Масштабирование</li>
                         </ul>
                     </div>
                     <div class="help-section">
                         <h3>🔗 Типы нодов</h3>
                         <ul>
-                            <li><strong>Ввод текста</strong> - источник данных</li>
-                            <li><strong>Вывод текста</strong> - отображение результата</li>
+                            <li><strong>Ввод/Вывод текста</strong> - источник и результат данных</li>
                             <li><strong>Шифр Цезаря</strong> - сдвиг букв алфавита</li>
-                            <li><strong>Код Морзе</strong> - преобразование в/из морзе</li>
+                            <li><strong>Шифр Виженера</strong> - полиалфавитное шифрование с ключом</li>
+                            <li><strong>Код Морзе</strong> - улучшенное преобразование в/из морзе</li>
+                            <li><strong>Зачаровыватель планет</strong> - шифрование координатами городов</li>
+                            <li><strong>A1Z26</strong> - замена букв на позиции в алфавите</li>
+                            <li><strong>Морзе (Бинарный/Кошачий)</strong> - специальные режимы морзе</li>
                             <li><strong>Числа в слова</strong> - замена цифр словами</li>
                             <li><strong>Математика</strong> - арифметические операции</li>
                             <li><strong>Обратить текст</strong> - реверс строки</li>
                             <li><strong>Регистр</strong> - изменение регистра букв</li>
+                            <li><strong>Секретное слово</strong> - генерация ключей</li>
                         </ul>
                     </div>
                     <div class="help-section">
                         <h3>🔄 Режимы работы</h3>
                         <p>Переключатель в верхней части позволяет менять режим между <strong>шифрованием</strong> и <strong>расшифровкой</strong>. В режиме расшифровки направления стрелок меняются, и алгоритмы работают в обратном направлении.</p>
+                    </div>
+                    <div class="help-section">
+                        <h3>🆕 Новые возможности</h3>
+                        <ul>
+                            <li><strong>✂️ Режим резки</strong> - кнопка ножниц или клавиша X для удаления соединений</li>
+                            <li><strong>🌍 Зачаровыватель планет</strong> - шифрование через координаты городов</li>
+                            <li><strong>🛡️ Шифр Виженера</strong> - с множественными входами для текста и ключа</li>
+                            <li><strong>🐱 Кошачий морзе</strong> - мяy, брмяy, мрряy вместо точек и тире</li>
+                            <li><strong>💾 Умное сохранение</strong> - с названиями и описаниями схем</li>
+                        </ul>
                     </div>
                 </div>
             </div>
