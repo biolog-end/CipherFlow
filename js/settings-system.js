@@ -14,6 +14,7 @@ class SettingsSystem {
             theme: 'dark',
             autoSave: true,
             soundEffects: true,
+            soundEffects: true,
             animations: true,
             compactMode: false,
             language: 'ru'
