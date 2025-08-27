@@ -1,3 +1,4 @@
+// File: js/history-manager.js
 // === Система управления историей действий (Undo/Redo) ===
 
 class HistoryManager {
@@ -128,6 +129,14 @@ class HistoryManager {
                     }
                 }
                 break;
+
+            case 'move_node_group':
+                if (window.nodeManager) {
+                    action.data.nodes.forEach(nodeData => {
+                        window.nodeManager.moveNode(nodeData.nodeId, nodeData.oldX, nodeData.oldY);
+                    });
+                }
+                break;
                 
             case 'move_node':
                 if (window.nodeManager) {
@@ -211,6 +220,14 @@ class HistoryManager {
                     window.connectionManager.removeConnection(action.data.connectionId, true);
                 }
                 break;
+
+            case 'move_node_group':
+                if (window.nodeManager) {
+                    action.data.nodes.forEach(nodeData => {
+                        window.nodeManager.moveNode(nodeData.nodeId, nodeData.newX, nodeData.newY);
+                    });
+                }
+                break;
                 
             case 'change_field':
                 if (window.nodeManager) {
@@ -279,18 +296,18 @@ class SelectionManager {
     initializeSelectionHandlers() {
         const canvas = document.getElementById('canvas');
         
-        // Начало выделения
         canvas.addEventListener('mousedown', (e) => {
-            // Проверяем, что клик не по ноду
-            if (e.target.closest('.canvas-node') || e.target.closest('.connection-point')) {
+
+            if (e.button !== 0 || e.ctrlKey || 
+                e.target.closest('.canvas-node') || 
+                e.target.closest('.connection-point') ||
+                (window.canvasManager && window.canvasManager.isCuttingActive())) {
                 return;
             }
-            
-            // Начинаем выделение при зажатом Shift
-            if (e.shiftKey && e.button === 0) {
-                e.preventDefault();
-                this.startSelection(e);
-            }
+
+            // Запускаем выделение рамкой
+            e.preventDefault();
+            this.startSelection(e);
         });
         
         // Обновление выделения
@@ -309,33 +326,14 @@ class SelectionManager {
     }
     
     initializeKeyboardShortcuts() {
-        document.addEventListener('keydown', (e) => {
-            // Ctrl/Cmd + A для выделения всех нодов
-            if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
-                e.preventDefault();
-                this.selectAll();
-            }
-            
-            // Ctrl/Cmd + C для копирования
-            if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
-                e.preventDefault();
-                this.copySelected();
-            }
-            
-            // Ctrl/Cmd + V для вставки
-            if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
-                e.preventDefault();
-                this.paste();
-            }
-            
-            // Delete для удаления выделенных нодов
-            if (e.key === 'Delete' && this.selectedNodes.size > 0) {
-                e.preventDefault();
-                this.deleteSelected();
-            }
-            
-            // Escape для снятия выделения
-            if (e.key === 'Escape') {
+        // Убираем обработчики клавиатуры из SelectionManager,
+        // так как они обрабатываются в main.js для лучшего контроля контекста
+        // (проверка текстовых полей, справки и т.д.)
+        
+        // Остается только обработчик Escape для снятия выделения при клике на пустое место
+        document.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('canvas') || 
+                e.target.classList.contains('canvas-background')) {
                 this.clearSelection();
             }
         });
@@ -436,7 +434,8 @@ class SelectionManager {
         this.selectedNodes.add(nodeId);
         const node = window.nodeManager.nodes.get(nodeId);
         if (node) {
-            node.element.classList.add('group-selected');
+            // === ИЗМЕНЕНИЕ: Используем один класс "selected" для консистентности ===
+            node.element.classList.add('selected');
         }
     }
     
@@ -444,7 +443,7 @@ class SelectionManager {
         this.selectedNodes.delete(nodeId);
         const node = window.nodeManager.nodes.get(nodeId);
         if (node) {
-            node.element.classList.remove('group-selected');
+            node.element.classList.remove('selected');
         }
     }
     
@@ -452,7 +451,7 @@ class SelectionManager {
         this.selectedNodes.forEach(nodeId => {
             const node = window.nodeManager.nodes.get(nodeId);
             if (node) {
-                node.element.classList.remove('group-selected');
+                node.element.classList.remove('selected');
             }
         });
         this.selectedNodes.clear();
@@ -519,15 +518,30 @@ class SelectionManager {
     paste() {
         if (!this.clipboard || this.clipboard.nodes.length === 0) return;
         
-        const offset = 50; // Смещение для вставленных нодов
+        // Получаем позицию курсора для центра вставки
+        const canvas = document.getElementById('canvas');
+        const canvasRect = canvas.getBoundingClientRect();
+        
+        // Используем центр канваса как базовую точку
+        const baseX = (canvasRect.width / 2) - 150; // Примерно по центру
+        const baseY = (canvasRect.height / 2) - 100;
+        
         const nodeIdMapping = new Map();
+        
+        // Вычисляем смещение от оригинальной позиции первого нода
+        const firstNode = this.clipboard.nodes[0];
+        const offsetX = baseX - firstNode.x + Math.random() * 100 - 50; // Добавляем случайность
+        const offsetY = baseY - firstNode.y + Math.random() * 100 - 50;
         
         // Вставляем ноды
         this.clipboard.nodes.forEach(nodeData => {
+            const newX = nodeData.x + offsetX;
+            const newY = nodeData.y + offsetY;
+            
             const newNodeId = window.nodeManager.createNode(
                 nodeData.type,
-                nodeData.x + offset,
-                nodeData.y + offset
+                newX,
+                newY
             );
             
             nodeIdMapping.set(nodeData.id, newNodeId);

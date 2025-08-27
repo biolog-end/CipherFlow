@@ -298,6 +298,11 @@ class FileManager {
             } catch (error) {
                 console.error('Ошибка загрузки схемы:', error);
                 this.showNotification('Ошибка загрузки: ' + error.message, 'error');
+            } finally {
+                const fileInput = document.getElementById('fileInput');
+                if (fileInput) {
+                    fileInput.value = null;
+                }
             }
         };
         

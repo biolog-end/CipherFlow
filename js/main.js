@@ -1,3 +1,4 @@
+// File: js/main.js
 // === Основной файл приложения CipherFlow ===
 
 class CipherFlowApp {
@@ -123,6 +124,19 @@ class CipherFlowApp {
                 activeElement.contentEditable === 'true'
             );
             
+            // Проверяем, что не открыта справка
+            const helpOverlay = document.querySelector('.help-overlay');
+            const isHelpOpen = helpOverlay && helpOverlay.classList.contains('show');
+            
+            // Проверяем, что не в области справки (включая example-input и example-output)
+            const isInHelpArea = activeElement && (
+                activeElement.closest('.help-overlay') ||
+                activeElement.closest('.example-input') ||
+                activeElement.closest('.example-output') ||
+                activeElement.classList.contains('example-input') ||
+                activeElement.classList.contains('example-output')
+            );
+            
             // Создаем мапинг клавиш для поддержки русской раскладки
             const keyMap = {
                 'ы': 's', 'щ': 'o', 'т': 'n', 'з': 'p', // русские клавиши на соответствующих позициях
@@ -160,8 +174,8 @@ class CipherFlowApp {
                 return;
             }
             
-            // Ограничиваем копирование/вставку только для области нодов (не в текстовых полях)
-            if (!isTextInput) {
+            // Ограничиваем копирование/вставку только для области нодов (не в текстовых полях и не в справке)
+            if (!isTextInput && !isHelpOpen && !isInHelpArea) {
                 // Ctrl/Cmd + C - копирование выделенных нодов (поддержка 'с' для русской раскладки)
                 if ((e.ctrlKey || e.metaKey) && (normalizedKey === 'c')) {
                     e.preventDefault();
@@ -190,22 +204,24 @@ class CipherFlowApp {
                 }
             }
             
-            // Delete - удалить выбранный нод
-            if (e.key === 'Delete' && this.components.nodeManager?.selectedNode && !isTextInput) {
-                this.components.nodeManager.removeNode(this.components.nodeManager.selectedNode);
+            // === ИЗМЕНЕНИЕ: Удаление работает с группой выделенных нодов ===
+            if (e.key === 'Delete' && !isTextInput) {
+                if (window.selectionManager && window.selectionManager.selectedNodes.size > 0) {
+                    window.selectionManager.deleteSelected();
+                }
                 return;
             }
             
             // Escape - снять выделение
             if (e.key === 'Escape') {
                 if (this.components.nodeManager) {
-                    this.components.nodeManager.deselectAllNodes();
-                }
-                if (this.components.connectionManager?.isConnecting) {
-                    this.components.connectionManager.cancelConnection();
+                    // this.components.nodeManager.deselectAllNodes(); // Заменено на selectionManager
                 }
                 if (window.selectionManager) {
                     window.selectionManager.clearSelection();
+                }
+                if (this.components.connectionManager?.isConnecting) {
+                    this.components.connectionManager.cancelConnection();
                 }
                 return;
             }
@@ -429,157 +445,10 @@ class CipherFlowApp {
     }
     
     showHelp() {
-        const help = document.createElement('div');
-        help.className = 'help-overlay';
-        help.innerHTML = `
-            <div class="help-modal">
-                <div class="help-header">
-                    <h2>📚 Справка CipherFlow</h2>
-                    <button class="help-close" onclick="this.parentElement.parentElement.parentElement.remove()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="help-content">
-                    <div class="help-section">
-                        <h3>⌨️ Горячие клавиши</h3>
-                        <ul>
-                            <li><kbd>Ctrl/Cmd + S</kbd> - Сохранить схему с названием</li>
-                            <li><kbd>Ctrl/Cmd + O</kbd> - Загрузить схему</li>
-                            <li><kbd>Ctrl/Cmd + N</kbd> - Новая схема</li>
-                            <li><kbd>Delete</kbd> - Удалить выбранный нод</li>
-                            <li><kbd>Escape</kbd> - Снять выделение / Отменить соединение</li>
-                            <li><kbd>F1</kbd> - Показать справку</li>
-                            <li><kbd>X</kbd> - Режим резки соединений</li>
-                            <li><kbd>+/-</kbd> - Масштабирование</li>
-                        </ul>
-                    </div>
-                    <div class="help-section">
-                        <h3>🔗 Типы нодов</h3>
-                        <ul>
-                            <li><strong>Ввод/Вывод текста</strong> - источник и результат данных</li>
-                            <li><strong>Шифр Цезаря</strong> - сдвиг букв алфавита</li>
-                            <li><strong>Шифр Виженера</strong> - полиалфавитное шифрование с ключом</li>
-                            <li><strong>Код Морзе</strong> - улучшенное преобразование в/из морзе</li>
-                            <li><strong>Зачаровыватель планет</strong> - шифрование координатами городов</li>
-                            <li><strong>A1Z26</strong> - замена букв на позиции в алфавите</li>
-                            <li><strong>Морзе (Бинарный/Кошачий)</strong> - специальные режимы морзе</li>
-                            <li><strong>Числа в слова</strong> - замена цифр словами</li>
-                            <li><strong>Математика</strong> - арифметические операции</li>
-                            <li><strong>Обратить текст</strong> - реверс строки</li>
-                            <li><strong>Регистр</strong> - изменение регистра букв</li>
-                            <li><strong>Секретное слово</strong> - генерация ключей</li>
-                        </ul>
-                    </div>
-                    <div class="help-section">
-                        <h3>🔄 Режимы работы</h3>
-                        <p>Переключатель в верхней части позволяет менять режим между <strong>шифрованием</strong> и <strong>расшифровкой</strong>. В режиме расшифровки направления стрелок меняются, и алгоритмы работают в обратном направлении.</p>
-                    </div>
-                    <div class="help-section">
-                        <h3>🆕 Новые возможности</h3>
-                        <ul>
-                            <li><strong>✂️ Режим резки</strong> - кнопка ножниц или клавиша X для удаления соединений</li>
-                            <li><strong>🌍 Зачаровыватель планет</strong> - шифрование через координаты городов</li>
-                            <li><strong>🛡️ Шифр Виженера</strong> - с множественными входами для текста и ключа</li>
-                            <li><strong>🐱 Кошачий морзе</strong> - мяy, брмяy, мрряy вместо точек и тире</li>
-                            <li><strong>💾 Умное сохранение</strong> - с названиями и описаниями схем</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        help.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s ease-out;
-        `;
-        
-        const helpStyles = `
-            .help-modal {
-                background: var(--bg-secondary);
-                border-radius: var(--radius-lg);
-                padding: 2rem;
-                max-width: 700px;
-                width: 90%;
-                max-height: 80vh;
-                overflow-y: auto;
-                box-shadow: var(--shadow-lg);
-                border: 1px solid var(--border-color);
-            }
-            .help-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 2rem;
-                padding-bottom: 1rem;
-                border-bottom: 1px solid var(--border-color);
-            }
-            .help-header h2 {
-                color: var(--accent-primary);
-                margin: 0;
-            }
-            .help-close {
-                background: none;
-                border: none;
-                color: var(--text-muted);
-                cursor: pointer;
-                padding: 0.5rem;
-                border-radius: var(--radius);
-                transition: var(--transition);
-            }
-            .help-close:hover {
-                color: var(--text-primary);
-                background: rgba(255, 255, 255, 0.1);
-            }
-            .help-section {
-                margin-bottom: 2rem;
-            }
-            .help-section h3 {
-                color: var(--text-primary);
-                margin-bottom: 1rem;
-            }
-            .help-section ul {
-                list-style: none;
-                padding: 0;
-            }
-            .help-section li {
-                color: var(--text-secondary);
-                margin-bottom: 0.5rem;
-                padding-left: 1rem;
-            }
-            .help-section li:before {
-                content: "•";
-                color: var(--accent-primary);
-                margin-right: 0.5rem;
-                margin-left: -1rem;
-            }
-            kbd {
-                background: var(--bg-primary);
-                border: 1px solid var(--border-color);
-                border-radius: 3px;
-                padding: 2px 6px;
-                font-family: monospace;
-                font-size: 0.9em;
-                color: var(--text-primary);
-            }
-        `;
-        
-        if (!document.querySelector('#help-styles')) {
-            const style = document.createElement('style');
-            style.id = 'help-styles';
-            style.textContent = helpStyles;
-            document.head.appendChild(style);
+        // Используем новую систему справки
+        if (window.helpSystem) {
+            window.helpSystem.show();
         }
-        
-        document.body.appendChild(help);
     }
     
     showError(message) {

@@ -13,7 +13,7 @@ class SettingsSystem {
         return saved ? JSON.parse(saved) : {
             theme: 'dark',
             autoSave: true,
-            soundEffects: false,
+            soundEffects: true,
             animations: true,
             compactMode: false,
             language: 'ru'
@@ -629,6 +629,8 @@ class SettingsSystem {
         
         // Создаем звуковые эффекты через Web Audio API
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        if (!audioContext) return; // Добавлена проверка на случай, если Web Audio API не поддерживается
+        
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
         
@@ -643,6 +645,33 @@ class SettingsSystem {
                 break;
             case 'select':
                 oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+                break;
+            case 'connection':
+                // Восходящий звук для соединения
+                oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.15);
+                gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                // === ИСПРАВЛЕНИЕ: Добавляем запуск перед планированием остановки ===
+                oscillator.start(audioContext.currentTime); 
+                oscillator.stop(audioContext.currentTime + 0.3);
+                return; 
+            case 'disconnect':
+                // Нисходящий звук для разрыва соединения
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(300, audioContext.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.25);
+                
+                // === ИСПРАВЛЕНИЕ: Добавляем запуск перед планированием остановки ===
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.25);
+                return;
+            case 'node_create':
+                // Звук создания нода
+                oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+                oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
                 break;
             default:
                 oscillator.frequency.setValueAtTime(440, audioContext.currentTime);

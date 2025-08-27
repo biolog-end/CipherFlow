@@ -17,6 +17,7 @@
     --node-case-color: #c084fc;
     --node-secret-color: #f87171;
     --node-monitor-color: #64748b;
+    --node-comment-color: #9ca3af;
 
     /* === НОВЫЕ ПЕРЕМЕННЫЕ ДЛЯ ПРОЗРАЧНОСТИ ФОНА НОДОВ === */
     --node-bg-alpha-start: 0.4; /* Начальная прозрачность градиента (более плотная) */
@@ -252,6 +253,29 @@
     word-break: break-all;
     overflow-y: auto;
     max-height: 100px;
+}
+
+.canvas-node[data-node-type="comment"] {
+    background: linear-gradient(135deg,
+        rgba(156, 163, 175, var(--node-bg-alpha-start)) 0%,
+        rgba(156, 163, 175, var(--node-bg-alpha-end)) 100%);
+    border: 2px solid var(--node-comment-color);
+    min-width: 220px; /* Сделаем его чуть шире */
+}
+
+.canvas-node[data-node-type="comment"] .node-header {
+    background: linear-gradient(90deg, var(--node-comment-color), rgba(156, 163, 175, 0.8));
+}
+
+/* Убираем лишние отступы и делаем текстовое поле более заметным */
+.canvas-node[data-node-type="comment"] .node-content {
+    padding: 8px;
+}
+
+.canvas-node[data-node-type="comment"] textarea {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
 }
 
 /* Анимация для выбранных нодов */

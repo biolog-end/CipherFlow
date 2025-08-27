@@ -11,7 +11,7 @@ class CipherEngine {
             'О': '−−−',     'П': '·−−·',    'Р': '·−·',     'С': '···',     'Т': '−',       
             'У': '··−',     'Ф': '··−·',    'Х': '····',    'Ц': '−·−·',    'Ч': '−−−·',    
             'Ш': '−−−−',    'Щ': '−−·−',    'Ъ': '−−·−−',   'Ы': '−·−−',    'Ь': '−··−',    
-            'Э': '··−·',    'Ю': '··−−',    'Я': '·−·−'
+            'Э': '···−···',    'Ю': '··−−',    'Я': '·−·−'
         };
         
         // Альтернативная таблица с отдельным кодом для Ё
@@ -23,7 +23,7 @@ class CipherEngine {
             'О': '−−−',     'П': '·−−·',    'Р': '·−·',     'С': '···',     'Т': '−',       
             'У': '··−',     'Ф': '··−·',    'Х': '····',    'Ц': '−·−·',    'Ч': '−−−·',    
             'Ш': '−−−−',    'Щ': '−−·−',    'Ъ': '−−·−−',   'Ы': '−·−−',    'Ь': '−··−',    
-            'Э': '··−·',    'Ю': '··−−',    'Я': '·−·−'
+            'Э': '···−···',    'Ю': '··−−',    'Я': '·−·−'
         };
         
         this.morseCodeEn = {
@@ -547,74 +547,80 @@ class CipherEngine {
         if (!window.nodeManager || !window.connectionManager) {
             throw new Error('Системы нодов не инициализированы');
         }
-        
+
         const scheme = JSON.parse(schemeJson);
-        
+
         // Очищаем текущую схему
         window.nodeManager.clearAllNodes();
-        
+
         // Восстанавливаем ноды
         const nodeIdMapping = new Map();
-        
+
         for (const nodeData of scheme.nodes) {
-            const newNodeId = window.nodeManager.createNode(nodeData.type, nodeData.x, nodeData.y);
+            // === ИЗМЕНЕНИЕ ЗДЕСЬ: добавлен 'true' в качестве четвертого аргумента ===
+            // Это говорит функции, что nodeData.x и nodeData.y уже являются "мировыми" координатами
+            const newNodeId = window.nodeManager.createNode(nodeData.type, nodeData.x, nodeData.y, true);
             nodeIdMapping.set(nodeData.id, newNodeId);
-            
+
             // Восстанавливаем данные нода
             const node = window.nodeManager.nodes.get(newNodeId);
             if (node && nodeData.data) {
                 node.data = JSON.parse(JSON.stringify(nodeData.data)); // Глубокое копирование
-                
+
                 // Обновляем значения в элементах формы
                 nodeData.data.fields?.forEach(field => {
                     const input = node.element.querySelector(`[name="${field.name}"]`);
                     if (input) {
-                        input.value = field.value;
+                        if (input.type === 'checkbox') {
+                            input.checked = field.value;
+                        } else {
+                            input.value = field.value;
+                        }
                     }
                 });
             }
         }
-        
+
         // Восстанавливаем соединения
         for (const connData of scheme.connections) {
             const fromNodeId = nodeIdMapping.get(connData.from);
             const toNodeId = nodeIdMapping.get(connData.to);
-            
+
             if (fromNodeId && toNodeId) {
                 const fromNode = window.nodeManager.nodes.get(fromNodeId);
                 const toNode = window.nodeManager.nodes.get(toNodeId);
-                
+
                 if (fromNode && toNode) {
                     const fromPoint = fromNode.element.querySelector('.connection-point.output');
                     let toPoint;
-                    
+
                     // Проверяем, есть ли у соединения имя входа (для множественных входов)
                     if (connData.inputName) {
                         toPoint = toNode.element.querySelector(`.connection-point.input[data-input-name="${connData.inputName}"]`);
                     }
-                    
+
                     // Если не нашли специфический вход или его нет, используем обычный
                     if (!toPoint) {
                         toPoint = toNode.element.querySelector('.connection-point.input');
                     }
-                    
+
                     if (fromPoint && toPoint) {
                         window.connectionManager.createConnection(fromPoint, toPoint);
                     }
                 }
             }
         }
-        
+
         // Обновляем все соединения после небольшой задержки для корректного позиционирования
         setTimeout(() => {
             // Обновляем позиции всех соединений
             for (const [nodeId] of window.nodeManager.nodes) {
                 window.connectionManager.updateConnections(nodeId);
             }
-            
+
             // Запускаем выполнение
             this.executeChain();
-        }, 100);
+        }, 470);
     }
     
     processSecretWord(nodeData, inputData) {
@@ -741,28 +747,49 @@ class CipherEngine {
 
         } else { // 'decode'
             
-            // Регулярное выражение, которое находит ТОЛЬКО последовательности чисел,
-            // разделенных дефисами. \b - это "граница слова", чтобы не трогать числа внутри координат.
-            const regex = /\b(\d+(-\d+)*)\b/g;
+            // ================== НАЧАЛО ИЗМЕНЕНИЯ 1: РЕГУЛЯРНОЕ ВЫРАЖЕНИЕ ==================
+            // Обновлено, чтобы корректно обрабатывать числа с точками (например, 1.002) как единое целое.
+            const regex = /\b(\d+(\.\d+)*(-\d+(\.\d+)*)*)\b/g;
+            // =================== КОНЕЦ ИЗМЕНЕНИЯ 1: РЕГУЛЯРНОЕ ВЫРАЖЕНИЕ ===================
             
             return inputData.replace(regex, (match) => {
-                // Эта функция будет вызвана для каждого найденного блока, например, "17-18-10".
-                // Координаты и одиночные числа НЕ будут найдены и останутся без изменений.
                 
                 const convertNumToLetter = (numStr) => {
                     const num = parseInt(numStr, 10);
                     if (!isNaN(num) && num >= 1 && num <= currentAlphabet.length) {
                         return currentAlphabet[num - 1];
                     }
-                    return numStr; // На всякий случай, если что-то пошло не так
+                    return numStr; // Возвращаем как есть, если не удалось конвертировать
                 };
 
-                // Дешифруем найденный блок
                 return match.split('-').map(part => {
-                    // Обработка дробных чисел, если они как-то попали внутрь (например, "2.3")
+                    // ================== НАЧАЛО ИЗМЕНЕНИЯ 2: ЛОГИКА ОБРАБОТКИ ==================
                     if (part.includes('.')) {
-                        return part.split('.').map(convertNumToLetter).join('.');
+                        return part.split('.').map(subPart => {
+                            // Ищем ведущие нули и само число
+                            const numberMatch = subPart.match(/^(0*)(\d+)$/);
+                            
+                            if (numberMatch) {
+                                const leadingZeros = numberMatch[1]; // например, "00" из "002"
+                                const numberValue = numberMatch[2];  // например, "2" из "002"
+                                
+                                // Конвертируем только числовую часть
+                                const letter = convertNumToLetter(numberValue);
+                                
+                                // Если конвертация не удалась (число вне диапазона), возвращаем исходную часть
+                                if (letter === numberValue) {
+                                    return subPart;
+                                }
+                                
+                                // Возвращаем ведущие нули вместе с новой буквой
+                                return leadingZeros + letter;
+                            }
+                            
+                            // Если часть не является числом (например, в "1.abc"), возвращаем как есть
+                            return subPart;
+                        }).join('.');
                     }
+                    // =================== КОНЕЦ ИЗМЕНЕНИЯ 2: ЛОГИКА ОБРАБОТКИ ===================
                     return convertNumToLetter(part);
                 }).join('');
             });

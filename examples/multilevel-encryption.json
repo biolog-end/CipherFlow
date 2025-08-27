@@ -1,0 +1,183 @@
+{
+  "version": "2.0",
+  "name": "Многоуровневое шифрование",
+  "description": "Сложная схема с несколькими уровнями защиты: регистр → A1Z26 → морзе → кошачий код",
+  "created": "2025-01-01T00:00:00.000Z",
+  "nodes": [
+    {
+      "id": "node_0",
+      "type": "input",
+      "x": 50,
+      "y": 200,
+      "data": {
+        "title": "Ввод текста",
+        "icon": "fas fa-sign-in-alt",
+        "fields": [],
+        "hasInput": false,
+        "hasOutput": true
+      }
+    },
+    {
+      "id": "node_1",
+      "type": "case-transform",
+      "x": 200,
+      "y": 200,
+      "data": {
+        "title": "Регистр",
+        "icon": "fas fa-text-height",
+        "fields": [
+          {
+            "name": "mode",
+            "type": "select",
+            "label": "Режим",
+            "value": "upper",
+            "options": [
+              { "value": "upper", "label": "ВЕРХНИЙ" },
+              { "value": "lower", "label": "нижний" },
+              { "value": "title", "label": "Заглавные" },
+              { "value": "toggle", "label": "иНВЕРТИРОВАТЬ" }
+            ]
+          }
+        ],
+        "hasInput": true,
+        "hasOutput": true
+      }
+    },
+    {
+      "id": "node_2",
+      "type": "a1z26", 
+      "x": 350,
+      "y": 200,
+      "data": {
+        "title": "Шифр A1Z26",
+        "icon": "fas fa-sort-numeric-up",
+        "fields": [
+          {
+            "name": "language",
+            "type": "select",
+            "label": "Язык",
+            "value": "ru",
+            "options": [
+              { "value": "ru", "label": "Русский" },
+              { "value": "en", "label": "English" }
+            ]
+          },
+          {
+            "name": "mode",
+            "type": "select",
+            "label": "Режим",
+            "value": "encode",
+            "options": [
+              { "value": "encode", "label": "Буквы → Числа" },
+              { "value": "decode", "label": "Числа → Буквы" }
+            ]
+          }
+        ],
+        "hasInput": true,
+        "hasOutput": true
+      }
+    },
+    {
+      "id": "node_3",
+      "type": "morse",
+      "x": 500,
+      "y": 200,
+      "data": {
+        "title": "Код Морзе",
+        "icon": "fas fa-broadcast-tower",
+        "fields": [
+          {
+            "name": "mode",
+            "type": "select",
+            "label": "Режим",
+            "value": "encode",
+            "options": [
+              { "value": "encode", "label": "Кодировать" },
+              { "value": "decode", "label": "Декодировать" }
+            ]
+          },
+          {
+            "name": "supportYo",
+            "type": "checkbox",
+            "label": "Поддержка Ё (··−··)",
+            "value": false,
+            "tooltip": "Включить отдельный код для буквы Ё. По умолчанию Ё = Е"
+          }
+        ],
+        "hasInput": true,
+        "hasOutput": true
+      }
+    },
+    {
+      "id": "node_4",
+      "type": "braille-cat",
+      "x": 650,
+      "y": 200,
+      "data": {
+        "title": "Морзе (Кошачий)",
+        "icon": "fas fa-cat",
+        "fields": [
+          {
+            "name": "mode", 
+            "type": "select",
+            "label": "Режим",
+            "value": "encode",
+            "options": [
+              { "value": "encode", "label": "Текст → Кошачий код" },
+              { "value": "decode", "label": "Кошачий код → Текст" }
+            ]
+          },
+          {
+            "name": "supportYo",
+            "type": "checkbox",
+            "label": "Поддержка Ё (мяумяумрряумяумяу)",
+            "value": false,
+            "tooltip": "Включить отдельный код для буквы Ё. По умолчанию Ё = Е"
+          }
+        ],
+        "hasInput": true,
+        "hasOutput": true
+      }
+    },
+    {
+      "id": "node_5",
+      "type": "output",
+      "x": 800,
+      "y": 200,
+      "data": {
+        "title": "Вывод текста",
+        "icon": "fas fa-sign-out-alt",
+        "fields": [],
+        "hasInput": true,
+        "hasOutput": false
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "connection_0",
+      "from": "node_0",
+      "to": "node_1"
+    },
+    {
+      "id": "connection_1",
+      "from": "node_1",
+      "to": "node_2"
+    },
+    {
+      "id": "connection_2",
+      "from": "node_2",
+      "to": "node_3"
+    },
+    {
+      "id": "connection_3",
+      "from": "node_3",
+      "to": "node_4"
+    },
+    {
+      "id": "connection_4",
+      "from": "node_4", 
+      "to": "node_5"
+    }
+  ]
+}

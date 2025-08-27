@@ -31,6 +31,10 @@ class ConnectionManager {
                     e.preventDefault();
                     this.breakConnectionsAtPoint(connectionPoint);
                 } else if (e.button === 0) {
+                    // === НАЧАЛО ИЗМЕНЕНИЯ: Добавлено для предотвращения нативного drag-and-drop ===
+                    e.preventDefault(); 
+                    // === КОНЕЦ ИЗМЕНЕНИЯ ===
+                    
                     // Левый клик для создания соединения
                     this.startConnection(connectionPoint, e);
                 }
@@ -267,6 +271,11 @@ class ConnectionManager {
         // Обновляем позицию линии
         this.updateConnectionPath(connection);
         
+        // Воспроизводим звук соединения
+        if (window.settingsSystem?.settings.soundEffects) {
+            window.settingsSystem.playSound('connection');
+        }
+        
         return connectionId;
     }
     
@@ -369,6 +378,11 @@ class ConnectionManager {
         
         // Удаляем из карты соединений
         this.connections.delete(connectionId);
+        
+        // Воспроизводим звук разрыва соединения
+        if (window.settingsSystem?.settings.soundEffects) {
+            window.settingsSystem.playSound('disconnect');
+        }
         
         // Запускаем обновление выполнения
         if (window.nodeManager) {

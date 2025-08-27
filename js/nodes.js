@@ -1,10 +1,11 @@
+// File: js/nodes.js
 // === Система управления нодами ===
 
 class NodeManager {
     constructor() {
         this.nodes = new Map();
         this.nodeIdCounter = 0;
-        this.selectedNode = null;
+        // this.selectedNode = null; // УДАЛЕНО: Управляется через selectionManager
         this.draggedNode = null;
         this.dragOffset = { x: 0, y: 0 };
         
@@ -125,37 +126,74 @@ class NodeManager {
     }
     
     bindEvents() {
-        // Обработка кликов по canvas для снятия выделения
-        this.canvas.addEventListener('click', (e) => {
+        // === ИЗМЕНЕНИЕ: Обработка кликов по canvas для снятия выделения ===
+        this.canvas.addEventListener('mousedown', (e) => {
             if (e.target === this.canvas || e.target.classList.contains('canvas-background')) {
-                this.deselectAllNodes();
+                if (window.selectionManager) {
+                    window.selectionManager.clearSelection();
+                }
             }
         });
         
-        // Обработка перемещения нодов
+        // === ИЗМЕНЕНИЕ: Унифицированная обработка выделения и перетаскивания нодов ===
         this.nodesLayer.addEventListener('mousedown', (e) => {
             const nodeElement = e.target.closest('.canvas-node');
-            if (nodeElement && !e.target.closest('.node-remove') && !e.target.closest('.connection-point')) {
+            if (!nodeElement) return;
+
+            const nodeId = nodeElement.dataset.nodeId;
+
+            // 1. Логика выделения по клику
+            if (e.button === 0) { // Только для ЛКМ
+                const isSelected = window.selectionManager.selectedNodes.has(nodeId);
+
+                if (e.ctrlKey || e.metaKey) {
+                    // С Ctrl/Cmd переключаем состояние выделения
+                    if (isSelected) {
+                        window.selectionManager.removeFromSelection(nodeId);
+                    } else {
+                        window.selectionManager.addToSelection(nodeId);
+                    }
+                } else {
+                    // Без Ctrl, если кликнутый нод не входит в группу выделенных,
+                    // то снимаем выделение со всех и выделяем только его.
+                    if (!isSelected) {
+                        window.selectionManager.clearSelection();
+                        window.selectionManager.addToSelection(nodeId);
+                    }
+                }
+            }
+
+            // 2. Логика начала перетаскивания
+            if (e.button === 0 && !e.target.closest('.node-remove') && !e.target.closest('.connection-point')) {
                 this.startNodeMove(nodeElement, e);
             }
         });
     }
     
-    createNode(type, screenX, screenY) {
+    createNode(type, x, y, isWorldCoords = false) {
         const nodeId = `node_${this.nodeIdCounter++}`;
         const nodeData = this.getNodeTemplate(type);
-        
-        // Преобразуем экранные координаты относительно canvas в мировые координаты
-        let worldX = screenX;
-        let worldY = screenY;
-        
-        // Если canvas-manager доступен, используем его преобразования
-        if (window.canvasManager) {
-            const worldCoords = window.canvasManager.screenToWorld(screenX, screenY);
-            worldX = worldCoords.x;
-            worldY = worldCoords.y;
+
+        let worldX, worldY;
+
+        if (isWorldCoords) {
+            // Координаты уже в "мировом" формате, используем их напрямую.
+            worldX = x;
+            worldY = y;
+        } else {
+            // Координаты в "экранном" формате, нужно преобразовать.
+            // Преобразуем экранные координаты относительно canvas в мировые координаты
+            if (window.canvasManager) {
+                const worldCoords = window.canvasManager.screenToWorld(x, y);
+                worldX = worldCoords.x;
+                worldY = worldCoords.y;
+            } else {
+                // Fallback на случай, если canvasManager недоступен
+                worldX = x;
+                worldY = y;
+            }
         }
-        
+
         // Сохраняем нод перед созданием элемента
         this.nodes.set(nodeId, {
             id: nodeId,
@@ -167,24 +205,32 @@ class NodeManager {
             inputs: {},
             outputs: {}
         });
-        
+
         const nodeElement = this.createElement(nodeId, nodeData, worldX, worldY);
         nodeElement.dataset.nodeType = type;
         this.nodesLayer.appendChild(nodeElement);
-        
+
         // Обновляем элемент в сохраненном ноде
         const node = this.nodes.get(nodeId);
         node.element = nodeElement;
-        
+
         // Добавляем анимацию появления
         nodeElement.classList.add('fade-in');
-        
+
         // Инициализируем обработчики для нового нода
         this.initializeNodeHandlers(nodeId);
-        
-        // Автоматически выбираем созданный нод
-        this.selectNode(nodeId);
-        
+
+        // === ИЗМЕНЕНИЕ: Автоматически выбираем созданный нод через selectionManager ===
+        if (window.selectionManager) {
+            window.selectionManager.clearSelection();
+            window.selectionManager.addToSelection(nodeId);
+        }
+
+        // Воспроизводим звук создания нода
+        if (window.settingsSystem?.settings.soundEffects) {
+            window.settingsSystem.playSound('node_create');
+        }
+
         // Добавляем в историю
         if (window.historyManager) {
             window.historyManager.addAction({
@@ -199,7 +245,7 @@ class NodeManager {
                 }
             });
         }
-        
+
         return nodeId;
     }
     
@@ -485,6 +531,21 @@ class NodeManager {
                 hasInput: true,
                 hasOutput: true,
                 isMonitor: true
+            },
+            'comment': {
+                title: 'Комментарий',
+                icon: 'fas fa-comment-alt',
+                fields: [
+                    {
+                        name: 'commentText',
+                        type: 'textarea',
+                        label: '', 
+                        value: '',
+                        rows: 4
+                    }
+                ],
+                hasInput: false, 
+                hasOutput: false 
             }
         };
         
@@ -667,124 +728,110 @@ class NodeManager {
     }
     
     initializeNodeHandlers(nodeId) {
-        const nodeElement = this.nodes.get(nodeId).element;
-        
-        // Обработка кликов для выбора нода
-        nodeElement.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.selectNode(nodeId);
-        });
+        // Логика выделения теперь находится в bindEvents,
+        // чтобы избежать дублирования обработчиков.
     }
     
     startNodeMove(nodeElement, e) {
-        const nodeId = nodeElement.dataset.nodeId;
-        const node = this.nodes.get(nodeId);
-        
-        if (!node) return;
-        
-        this.draggedNode = node;
-        this.selectNode(nodeId);
-        
-        // Сохраняем начальную позицию для истории
-        const startX = node.x;
-        const startY = node.y;
-        
-        // Получаем текущие мировые координаты мыши и нода
-        const canvasRect = this.canvas.getBoundingClientRect();
-        const screenMouseX = e.clientX - canvasRect.left;
-        const screenMouseY = e.clientY - canvasRect.top;
-        
-        // Преобразуем в мировые координаты
-        let worldMouseX = screenMouseX;
-        let worldMouseY = screenMouseY;
-        
-        if (window.canvasManager) {
-            const worldCoords = window.canvasManager.screenToWorld(screenMouseX, screenMouseY);
-            worldMouseX = worldCoords.x + window.canvasManager.virtualCenterX;
-            worldMouseY = worldCoords.y + window.canvasManager.virtualCenterY;
+        const clickedNodeId = nodeElement.dataset.nodeId;
+        if (!window.selectionManager.selectedNodes.has(clickedNodeId)) {
+            return;
         }
+
+        const nodesToMove = new Map();
+        const initialPositions = new Map();
+
+        window.selectionManager.selectedNodes.forEach(id => {
+            const node = this.nodes.get(id);
+            if (node) {
+                nodesToMove.set(id, node);
+                initialPositions.set(id, { x: node.x, y: node.y });
+            }
+        });
+
+        const startMouseScreenX = e.clientX;
+        const startMouseScreenY = e.clientY;
         
-        // Сохраняем смещение относительно нода
-        this.dragOffset = {
-            x: worldMouseX - node.x,
-            y: worldMouseY - node.y
-        };
-        
-        let animationFrameId = null;
         let lastMouseX = e.clientX;
         let lastMouseY = e.clientY;
         let isDragging = true;
-        
-        // Функция обновления позиции через requestAnimationFrame
-        const updatePosition = () => {
-            if (!isDragging || !this.draggedNode) return;
-            
-            // Преобразуем экранные координаты мыши в мировые
-            const screenX = lastMouseX - canvasRect.left;
-            const screenY = lastMouseY - canvasRect.top;
-            
-            let worldX = screenX;
-            let worldY = screenY;
-            
-            if (window.canvasManager) {
-                const worldCoords = window.canvasManager.screenToWorld(screenX, screenY);
-                worldX = worldCoords.x + window.canvasManager.virtualCenterX - this.dragOffset.x;
-                worldY = worldCoords.y + window.canvasManager.virtualCenterY - this.dragOffset.y;
-            }
-            
-            // Обновляем позицию нода
-            this.updateNodePosition(nodeId, worldX, worldY);
-            
-            // Обновляем соединения
+        let animationFrameId = null;
+
+        const updatePositions = () => {
+            if (!isDragging) return;
+
+            const deltaScreenX = lastMouseX - startMouseScreenX;
+            const deltaScreenY = lastMouseY - startMouseScreenY;
+            const scale = window.canvasManager ? window.canvasManager.getScale() : 1;
+            const deltaWorldX = deltaScreenX / scale;
+            const deltaWorldY = deltaScreenY / scale;
+
+            nodesToMove.forEach((node, id) => {
+                const initialPos = initialPositions.get(id);
+                const newX = initialPos.x + deltaWorldX;
+                const newY = initialPos.y + deltaWorldY;
+                this.updateNodePosition(id, newX, newY);
+            });
+
             if (window.connectionManager) {
-                window.connectionManager.updateConnections(nodeId);
-            }
-            
-            // Планируем следующий кадр
-            animationFrameId = requestAnimationFrame(updatePosition);
-        };
-        
-        const moveHandler = (e) => {
-            // Сохраняем позицию мыши
-            lastMouseX = e.clientX;
-            lastMouseY = e.clientY;
-        };
-        
-        const upHandler = () => {
-            isDragging = false;
-            this.draggedNode = null;
-            
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-            }
-            
-            // Сохраняем в истории если позиция изменилась
-            if (window.historyManager && (node.x !== startX || node.y !== startY)) {
-                window.historyManager.addAction({
-                    type: 'move_node',
-                    description: `Перемещен нод: ${node.data.title}`,
-                    data: {
-                        nodeId: nodeId,
-                        oldX: startX,
-                        oldY: startY,
-                        newX: node.x,
-                        newY: node.y
-                    }
+                nodesToMove.forEach((_, id) => {
+                    window.connectionManager.updateConnections(id);
                 });
             }
             
-            // Финальное обновление соединений
-            if (window.connectionManager) {
-                window.connectionManager.updateConnections(nodeId);
+            animationFrameId = requestAnimationFrame(updatePositions);
+        };
+
+        const moveHandler = (e) => {
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        };
+
+        const upHandler = () => {
+            isDragging = false;
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
             }
+            
+            // === НАЧАЛО ИЗМЕНЕНИЯ: Логика сохранения истории для группы ===
+            if (window.historyManager) {
+                const movedNodesData = [];
+                let hasMoved = false;
+
+                nodesToMove.forEach((node, id) => {
+                    const initialPos = initialPositions.get(id);
+                    // Проверяем, изменилась ли позиция
+                    if (node.x !== initialPos.x || node.y !== initialPos.y) {
+                        hasMoved = true;
+                    }
+                    movedNodesData.push({
+                        nodeId: id,
+                        oldX: initialPos.x,
+                        oldY: initialPos.y,
+                        newX: node.x,
+                        newY: node.y,
+                    });
+                });
+
+                // Добавляем действие в историю, только если было реальное перемещение
+                if (hasMoved) {
+                    window.historyManager.addAction({
+                        type: 'move_node_group',
+                        description: `Перемещено нодов: ${movedNodesData.length}`,
+                        data: {
+                            nodes: movedNodesData
+                        }
+                    });
+                }
+            }
+            // === КОНЕЦ ИЗМЕНЕНИЯ ===
             
             document.removeEventListener('mousemove', moveHandler);
             document.removeEventListener('mouseup', upHandler);
         };
-        
-        // Запускаем цикл анимации
-        animationFrameId = requestAnimationFrame(updatePosition);
-        
+
+        animationFrameId = requestAnimationFrame(updatePositions);
         document.addEventListener('mousemove', moveHandler);
         document.addEventListener('mouseup', upHandler);
     }
@@ -792,11 +839,6 @@ class NodeManager {
     updateNodePosition(nodeId, x, y) {
         const node = this.nodes.get(nodeId);
         if (!node) return;
-        
-        // Не ограничиваем перемещение, так как работаем с виртуальным пространством
-        // Можно установить минимальные и максимальные границы
-        x = Math.max(0, Math.min(x, 10000));
-        y = Math.max(0, Math.min(y, 10000));
         
         node.x = x;
         node.y = y;
@@ -812,22 +854,7 @@ class NodeManager {
         }
     }
     
-    selectNode(nodeId) {
-        this.deselectAllNodes();
-        
-        const node = this.nodes.get(nodeId);
-        if (node) {
-            node.element.classList.add('selected');
-            this.selectedNode = nodeId;
-        }
-    }
-    
-    deselectAllNodes() {
-        this.nodes.forEach(node => {
-            node.element.classList.remove('selected');
-        });
-        this.selectedNode = null;
-    }
+    // УДАЛЕНО: selectNode и deselectAllNodes. Их функциональность теперь в SelectionManager.
     
     removeNode(nodeId, skipHistory = false) {
         const node = this.nodes.get(nodeId);
@@ -876,9 +903,9 @@ class NodeManager {
         // Удаляем из карты нодов
         this.nodes.delete(nodeId);
         
-        // Сбрасываем выбор если удаляли выбранный нод
-        if (this.selectedNode === nodeId) {
-            this.selectedNode = null;
+        // === ИЗМЕНЕНИЕ: Сообщаем менеджеру выделения, что нод удален ===
+        if (window.selectionManager) {
+            window.selectionManager.removeFromSelection(nodeId);
         }
         
         // Запускаем обновление выполнения
@@ -946,7 +973,12 @@ class NodeManager {
         });
         
         this.nodes.clear();
-        this.selectedNode = null;
+        
+        // Очищаем выделение
+        if (window.selectionManager) {
+            window.selectionManager.clearSelection();
+        }
+        
         this.nodeIdCounter = 0;
         
         // Очищаем вывод
