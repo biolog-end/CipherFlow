@@ -255,6 +255,28 @@ class CipherEngine {
                 case 'planet-enchanter':
                     return this.processPlanetEnchanter(nodeData, inputData);
                     
+                // === НОВЫЕ НОДЫ ===
+                case 'multi-replacer':
+                    return this.processMultiReplacer(nodeData, inputData);
+                    
+                case 'text-router':
+                    return this.processTextRouter(node, inputData, allNodeResults);
+                    
+                case 'stream-merger':
+                    return this.processStreamMerger(node, inputData, allNodeResults);
+                    
+                case 'atbash':
+                    return this.processAtbash(nodeData, inputData);
+                    
+                case 'base64':
+                    return this.processBase64(nodeData, inputData);
+                    
+                case 'gawr-gura':
+                    return this.processGawrGura(nodeData, inputData);
+                    
+                case 'uwu-ifier':
+                    return this.processUwuIfier(nodeData, inputData);
+                    
                 default:
                     return inputData;
             }
@@ -1480,6 +1502,367 @@ class CipherEngine {
             {name: 'Zaragoza', coord: '41.6488, -0.8891'}
         ]
     };
+    
+    // === МЕТОДЫ ОБРАБОТКИ НОВЫХ НОДОВ ===
+    
+    // Категория 1: Продвинутая обработка текста
+    processMultiReplacer(nodeData, inputData) {
+        const isReverseMode = window.connectionManager?.reverseMode;
+        const rules = nodeData.fields?.find(f => f.name === 'rules')?.value || [];
+        const caseSensitive = nodeData.fields?.find(f => f.name === 'caseSensitive')?.value || false;
+        const wholeWords = nodeData.fields?.find(f => f.name === 'wholeWords')?.value || false;
+        
+        if (!Array.isArray(rules) || rules.length === 0) {
+            return inputData;
+        }
+        
+        let result = inputData;
+        
+        // В режиме дешифрования применяем правила в обратном порядке и меняем местами
+        const processedRules = isReverseMode 
+            ? rules.slice().reverse().map(rule => ({ find: rule.replace, replace: rule.find }))
+            : rules;
+        
+        processedRules.forEach(rule => {
+            if (rule.find && rule.find !== rule.replace) {
+                let flags = caseSensitive ? 'g' : 'gi';
+                let pattern = rule.find;
+                
+                if (wholeWords) {
+                    // Экранируем специальные символы регулярного выражения
+                    pattern = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    pattern = `\\b${pattern}\\b`;
+                }
+                
+                try {
+                    const regex = new RegExp(pattern, flags);
+                    result = result.replace(regex, rule.replace);
+                } catch (e) {
+                    // Если ошибка в регулярном выражении, делаем простую замену
+                    if (caseSensitive) {
+                        result = result.replaceAll(rule.find, rule.replace);
+                    } else {
+                        const regex = new RegExp(rule.find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+                        result = result.replace(regex, rule.replace);
+                    }
+                }
+            }
+        });
+        
+        return result;
+    }
+    
+    // Категория 2: Логические и структурные ноды
+    processTextRouter(node, inputData, allNodeResults) {
+        const nodeData = node.data;
+        const condition = nodeData.fields?.find(f => f.name === 'condition')?.value || 'contains_numbers';
+        const searchText = nodeData.fields?.find(f => f.name === 'searchText')?.value || '';
+        
+        let conditionMet = false;
+        
+        try {
+            switch (condition) {
+                case 'contains_numbers':
+                    conditionMet = /\d/.test(inputData);
+                    break;
+                case 'no_numbers':
+                    conditionMet = !/\d/.test(inputData);
+                    break;
+                case 'contains_latin':
+                    conditionMet = /[a-zA-Z]/.test(inputData);
+                    break;
+                case 'no_latin':
+                    conditionMet = !/[a-zA-Z]/.test(inputData);
+                    break;
+                case 'contains_cyrillic':
+                    conditionMet = /[а-яё]/i.test(inputData);
+                    break;
+                case 'no_cyrillic':
+                    conditionMet = !/[а-яё]/i.test(inputData);
+                    break;
+                case 'contains_text':
+                    conditionMet = inputData.toLowerCase().includes(searchText.toLowerCase());
+                    break;
+                case 'regex_match':
+                    try {
+                        const regex = new RegExp(searchText, 'i');
+                        conditionMet = regex.test(inputData);
+                    } catch (e) {
+                        conditionMet = false;
+                    }
+                    break;
+            }
+        } catch (e) {
+            conditionMet = false;
+        }
+        
+        // Отправляем данные на соответствующий выход
+        // Это особый случай - нод маршрутизатора возвращает данные через специальный механизм
+        const outputName = conditionMet ? 'true' : 'false';
+        
+        // Сохраняем результат для каждого выхода
+        if (!node.routerResults) {
+            node.routerResults = {};
+        }
+        node.routerResults[outputName] = inputData;
+        
+        return inputData; // Возвращаем оригинальные данные
+    }
+    
+    processStreamMerger(node, inputData, allNodeResults) {
+        const nodeData = node.data;
+        const mode = nodeData.fields?.find(f => f.name === 'mode')?.value || 'alternating_chars';
+        
+        // Получаем данные из множественных входов
+        const inputs = this.getMultipleInputs(node, allNodeResults);
+        const streamA = inputs.streamA || '';
+        const streamB = inputs.streamB || '';
+        
+        switch (mode) {
+            case 'alternating_chars':
+                return this.mergeAlternatingChars(streamA, streamB);
+            case 'alternating_words':
+                return this.mergeAlternatingWords(streamA, streamB);
+            case 'alternating_lines':
+                return this.mergeAlternatingLines(streamA, streamB);
+            case 'concatenate':
+            default:
+                return streamA + streamB;
+        }
+    }
+    
+    mergeAlternatingChars(a, b) {
+        let result = '';
+        const maxLen = Math.max(a.length, b.length);
+        
+        for (let i = 0; i < maxLen; i++) {
+            if (i < a.length) result += a[i];
+            if (i < b.length) result += b[i];
+        }
+        
+        return result;
+    }
+    
+    mergeAlternatingWords(a, b) {
+        const wordsA = a.split(/\s+/).filter(w => w.length > 0);
+        const wordsB = b.split(/\s+/).filter(w => w.length > 0);
+        const maxLen = Math.max(wordsA.length, wordsB.length);
+        
+        let result = [];
+        
+        for (let i = 0; i < maxLen; i++) {
+            if (i < wordsA.length) result.push(wordsA[i]);
+            if (i < wordsB.length) result.push(wordsB[i]);
+        }
+        
+        return result.join(' ');
+    }
+    
+    mergeAlternatingLines(a, b) {
+        const linesA = a.split('\n');
+        const linesB = b.split('\n');
+        const maxLen = Math.max(linesA.length, linesB.length);
+        
+        let result = [];
+        
+        for (let i = 0; i < maxLen; i++) {
+            if (i < linesA.length && linesA[i]) result.push(linesA[i]);
+            if (i < linesB.length && linesB[i]) result.push(linesB[i]);
+        }
+        
+        return result.join('\n');
+    }
+    
+    // Категория 3: Новые шифры и кодировщики
+    processAtbash(nodeData, inputData) {
+        const alphabet = nodeData.fields?.find(f => f.name === 'alphabet')?.value || 'ru';
+        
+        let result = '';
+        
+        for (let char of inputData) {
+            let converted = char;
+            
+            if (alphabet === 'ru') {
+                // Русский алфавит (33 буквы)
+                if (/[А-Я]/.test(char)) {
+                    const code = char.charCodeAt(0) - 'А'.charCodeAt(0);
+                    const reversed = 32 - code; // 32 = 33-1 (индексы с 0)
+                    converted = String.fromCharCode('А'.charCodeAt(0) + reversed);
+                } else if (/[а-я]/.test(char)) {
+                    const code = char.charCodeAt(0) - 'а'.charCodeAt(0);
+                    const reversed = 32 - code;
+                    converted = String.fromCharCode('а'.charCodeAt(0) + reversed);
+                }
+            } else {
+                // Английский алфавит (26 букв)
+                if (/[A-Z]/.test(char)) {
+                    const code = char.charCodeAt(0) - 'A'.charCodeAt(0);
+                    const reversed = 25 - code; // 25 = 26-1
+                    converted = String.fromCharCode('A'.charCodeAt(0) + reversed);
+                } else if (/[a-z]/.test(char)) {
+                    const code = char.charCodeAt(0) - 'a'.charCodeAt(0);
+                    const reversed = 25 - code;
+                    converted = String.fromCharCode('a'.charCodeAt(0) + reversed);
+                }
+            }
+            
+            result += converted;
+        }
+        
+        return result;
+    }
+    
+    processBase64(nodeData, inputData) {
+        const isReverseMode = window.connectionManager?.reverseMode;
+        const mode = nodeData.fields?.find(f => f.name === 'mode')?.value || 'encode';
+        
+        // В режиме дешифрования инвертируем операцию
+        const actualMode = isReverseMode ? (mode === 'encode' ? 'decode' : 'encode') : mode;
+        
+        try {
+            if (actualMode === 'encode') {
+                return btoa(unescape(encodeURIComponent(inputData)));
+            } else {
+                return decodeURIComponent(escape(atob(inputData)));
+            }
+        } catch (e) {
+            return `Ошибка Base64: ${e.message}`;
+        }
+    }
+    
+    // Категория 4: Забавные и тематические ноды
+    processGawrGura(nodeData, inputData) {
+        const isReverseMode = window.connectionManager?.reverseMode;
+        
+        if (isReverseMode) {
+            // Дешифрование: Gawr Gura -> текст
+            return this.decodeGawrGura(inputData);
+        } else {
+            // Шифрование: текст -> Gawr Gura
+            return this.encodeGawrGura(inputData);
+        }
+    }
+    
+    encodeGawrGura(text) {
+        const guraMap = {
+            'a': 'a', 'b': 'a a', 'c': 'a a a', 'd': 'a a a a', 'e': 'a a a a a',
+            'f': 'a a a a a a', 'g': 'a a a a a a a', 'h': 'a a a a a a a a',
+            'i': 'a a a a a a a a a', 'j': 'a a a a a a a a a a',
+            'k': 'a a a a a a a a a a a', 'l': 'a a a a a a a a a a a a',
+            'm': 'a a a a a a a a a a a a a', 'n': 'a a a a a a a a a a a a a a',
+            'o': 'a a a a a a a a a a a a a a a', 'p': 'a a a a a a a a a a a a a a a a',
+            'q': 'a a a a a a a a a a a a a a a a a', 'r': 'a a a a a a a a a a a a a a a a a a',
+            's': 'shork', 't': 'shork a', 'u': 'shork a a', 'v': 'shork a a a',
+            'w': 'shork a a a a', 'x': 'shork a a a a a', 'y': 'shork a a a a a a',
+            'z': 'shork a a a a a a a',
+            ' ': 'bloop',
+            '0': 'gura', '1': 'gura a', '2': 'gura a a', '3': 'gura a a a',
+            '4': 'gura a a a a', '5': 'gura a a a a a', '6': 'gura a a a a a a',
+            '7': 'gura a a a a a a a', '8': 'gura a a a a a a a a', '9': 'gura a a a a a a a a a'
+        };
+        
+        return text.toLowerCase().split('').map(char => guraMap[char] || char).join(' ');
+    }
+    
+    decodeGawrGura(guraText) {
+        const reverseGuraMap = {
+            'a': 'a', 'a a': 'b', 'a a a': 'c', 'a a a a': 'd', 'a a a a a': 'e',
+            'a a a a a a': 'f', 'a a a a a a a': 'g', 'a a a a a a a a': 'h',
+            'a a a a a a a a a': 'i', 'a a a a a a a a a a': 'j',
+            'a a a a a a a a a a a': 'k', 'a a a a a a a a a a a a': 'l',
+            'a a a a a a a a a a a a a': 'm', 'a a a a a a a a a a a a a a': 'n',
+            'a a a a a a a a a a a a a a a': 'o', 'a a a a a a a a a a a a a a a a': 'p',
+            'a a a a a a a a a a a a a a a a a': 'q', 'a a a a a a a a a a a a a a a a a a': 'r',
+            'shork': 's', 'shork a': 't', 'shork a a': 'u', 'shork a a a': 'v',
+            'shork a a a a': 'w', 'shork a a a a a': 'x', 'shork a a a a a a': 'y',
+            'shork a a a a a a a': 'z',
+            'bloop': ' ',
+            'gura': '0', 'gura a': '1', 'gura a a': '2', 'gura a a a': '3',
+            'gura a a a a': '4', 'gura a a a a a': '5', 'gura a a a a a a': '6',
+            'gura a a a a a a a': '7', 'gura a a a a a a a a': '8', 'gura a a a a a a a a a': '9'
+        };
+        
+        const tokens = guraText.split(' ');
+        let result = '';
+        let i = 0;
+        
+        while (i < tokens.length) {
+            let found = false;
+            
+            // Пытаемся найти самую длинную подходящую комбинацию
+            for (let len = 8; len >= 1; len--) {
+                if (i + len <= tokens.length) {
+                    const combination = tokens.slice(i, i + len).join(' ');
+                    if (reverseGuraMap[combination]) {
+                        result += reverseGuraMap[combination];
+                        i += len;
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (!found) {
+                result += tokens[i] || '';
+                i++;
+            }
+        }
+        
+        return result;
+    }
+    
+    processUwuIfier(nodeData, inputData) {
+        const isReverseMode = window.connectionManager?.reverseMode;
+        
+        if (isReverseMode) {
+            // UwU-фикатор необратим, просто возвращаем исходный текст
+            return inputData;
+        }
+        
+        let result = inputData;
+        
+        // Заменяем р и л на в
+        result = result.replace(/[рР]/g, (match) => match === 'Р' ? 'В' : 'в');
+        result = result.replace(/[лЛ]/g, (match) => match === 'Л' ? 'В' : 'в');
+        
+        // Добавляем дефисы после первых букв слов
+        result = result.replace(/\b(\w)/g, '$1-$1');
+        
+        // Добавляем случайные UwU смайлики
+        const uwuEmoticons = [' UwU', ' OwO', ' :3', ' >w<', ' ^w^'];
+        const words = result.split(' ');
+        
+        for (let i = 0; i < words.length; i++) {
+            if (Math.random() < 0.3) { // 30% вероятность добавления смайлика
+                words[i] += uwuEmoticons[Math.floor(Math.random() * uwuEmoticons.length)];
+            }
+        }
+        
+        return words.join(' ');
+    }
+    
+    // Вспомогательный метод для получения данных из множественных входов
+    getMultipleInputs(node, allNodeResults) {
+        const inputs = {};
+        
+        if (!node.data.multipleInputs) {
+            return inputs;
+        }
+        
+        // Получаем соединения для этого нода
+        const connections = window.connectionManager?.connections || new Map();
+        
+        for (const connection of connections.values()) {
+            if (connection.to === node.id) {
+                const inputName = connection.toInputName;
+                if (inputName && allNodeResults.has(connection.from)) {
+                    inputs[inputName] = allNodeResults.get(connection.from);
+                }
+            }
+        }
+        
+        return inputs;
+    }
 }
 
 // Инициализация после загрузки DOM

@@ -360,3 +360,189 @@
         opacity: 0.3;
     }
 }
+
+/* === СТИЛИ ДЛЯ НОВЫХ НОДОВ === */
+
+/* Категория 1: Продвинутая обработка текста */
+.canvas-node[data-node-type="multi-replacer"] {
+    background: linear-gradient(135deg,
+        rgba(168, 85, 247, var(--node-bg-alpha-start)) 0%,
+        rgba(168, 85, 247, var(--node-bg-alpha-end)) 100%);
+    border: 2px solid #a855f7;
+    min-height: 120px;
+    min-width: 280px;
+}
+
+.canvas-node[data-node-type="multi-replacer"] .node-header {
+    background: linear-gradient(90deg, #a855f7, rgba(168, 85, 247, 0.8));
+}
+
+/* Категория 2: Логические и структурные ноды */
+.canvas-node[data-node-type="text-router"] {
+    background: linear-gradient(135deg,
+        rgba(239, 68, 68, var(--node-bg-alpha-start)) 0%,
+        rgba(239, 68, 68, var(--node-bg-alpha-end)) 100%);
+    border: 2px solid #ef4444;
+    min-height: 140px;
+}
+
+.canvas-node[data-node-type="text-router"] .node-header {
+    background: linear-gradient(90deg, #ef4444, rgba(239, 68, 68, 0.8));
+}
+
+.canvas-node[data-node-type="stream-merger"] {
+    background: linear-gradient(135deg,
+        rgba(34, 197, 94, var(--node-bg-alpha-start)) 0%,
+        rgba(34, 197, 94, var(--node-bg-alpha-end)) 100%);
+    border: 2px solid #22c55e;
+    min-height: 140px;
+}
+
+.canvas-node[data-node-type="stream-merger"] .node-header {
+    background: linear-gradient(90deg, #22c55e, rgba(34, 197, 94, 0.8));
+}
+
+/* Категория 3: Новые шифры и кодировщики */
+.canvas-node[data-node-type="atbash"] {
+    background: linear-gradient(135deg,
+        rgba(245, 101, 101, var(--node-bg-alpha-start)) 0%,
+        rgba(245, 101, 101, var(--node-bg-alpha-end)) 100%);
+    border: 2px solid #f56565;
+}
+
+.canvas-node[data-node-type="atbash"] .node-header {
+    background: linear-gradient(90deg, #f56565, rgba(245, 101, 101, 0.8));
+}
+
+.canvas-node[data-node-type="base64"] {
+    background: linear-gradient(135deg,
+        rgba(16, 185, 129, var(--node-bg-alpha-start)) 0%,
+        rgba(16, 185, 129, var(--node-bg-alpha-end)) 100%);
+    border: 2px solid #10b981;
+}
+
+.canvas-node[data-node-type="base64"] .node-header {
+    background: linear-gradient(90deg, #10b981, rgba(16, 185, 129, 0.8));
+}
+
+/* Категория 4: Забавные и тематические ноды */
+.canvas-node[data-node-type="gawr-gura"] {
+    background: linear-gradient(135deg,
+        rgba(59, 130, 246, var(--node-bg-alpha-start)) 0%,
+        rgba(59, 130, 246, var(--node-bg-alpha-end)) 100%);
+    border: 2px solid #3b82f6;
+}
+
+.canvas-node[data-node-type="gawr-gura"] .node-header {
+    background: linear-gradient(90deg, #3b82f6, rgba(59, 130, 246, 0.8));
+}
+
+.canvas-node[data-node-type="uwu-ifier"] {
+    background: linear-gradient(135deg,
+        rgba(244, 114, 182, var(--node-bg-alpha-start)) 0%,
+        rgba(244, 114, 182, var(--node-bg-alpha-end)) 100%);
+    border: 2px solid #f472b6;
+}
+
+.canvas-node[data-node-type="uwu-ifier"] .node-header {
+    background: linear-gradient(90deg, #f472b6, rgba(244, 114, 182, 0.8));
+}
+
+/* === СТИЛИ ДЛЯ СПЕЦИАЛЬНЫХ ЭЛЕМЕНТОВ === */
+
+/* Мульти-правила */
+.multi-rules-container {
+    width: 100%;
+}
+
+.multi-rules-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.add-rule-btn {
+    background: rgba(34, 197, 94, 0.2);
+    border: 1px solid #22c55e;
+    color: #22c55e;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.add-rule-btn:hover {
+    background: rgba(34, 197, 94, 0.3);
+}
+
+.rules-container {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.rule-item {
+    margin-bottom: 6px;
+    padding: 6px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rule-inputs {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.rule-inputs input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+    padding: 4px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+}
+
+.rule-inputs input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.remove-rule-btn {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    padding: 4px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 10px;
+    transition: all 0.2s ease;
+}
+
+.remove-rule-btn:hover {
+    background: rgba(239, 68, 68, 0.3);
+}
+
+/* Множественные входы и выходы */
+.connection-point.multiple {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--text-primary);
+}
+
+.input-label, .output-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    user-select: none;
+    pointer-events: none;
+}
+
+.output-label {
+    text-align: right;
+}
