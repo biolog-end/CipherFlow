@@ -546,6 +546,145 @@ class NodeManager {
                 ],
                 hasInput: false, 
                 hasOutput: false 
+            },
+            // === КАТЕГОРИЯ 1: ПРОДВИНУТАЯ ОБРАБОТКА ТЕКСТА ===
+            'multi-replacer': {
+                title: 'Мульти-Замена',
+                icon: 'fas fa-exchange-alt',
+                fields: [
+                    {
+                        name: 'rules',
+                        type: 'multi-rules',
+                        label: 'Правила замены',
+                        value: []
+                    },
+                    {
+                        name: 'caseSensitive',
+                        type: 'checkbox',
+                        label: 'Учитывать регистр',
+                        value: false
+                    },
+                    {
+                        name: 'wholeWords',
+                        type: 'checkbox',
+                        label: 'Только целые слова',
+                        value: false
+                    }
+                ],
+                hasInput: true,
+                hasOutput: true
+            },
+            // === КАТЕГОРИЯ 2: ЛОГИЧЕСКИЕ И СТРУКТУРНЫЕ НОДЫ ===
+            'text-router': {
+                title: 'Маршрутизатор Текста',
+                icon: 'fas fa-sitemap',
+                fields: [
+                    {
+                        name: 'condition',
+                        type: 'select',
+                        label: 'Условие',
+                        value: 'contains_numbers',
+                        options: [
+                            { value: 'contains_numbers', label: 'Содержит числа' },
+                            { value: 'no_numbers', label: 'Не содержит чисел' },
+                            { value: 'contains_latin', label: 'Содержит латиницу' },
+                            { value: 'no_latin', label: 'Не содержит латиницу' },
+                            { value: 'contains_cyrillic', label: 'Содержит кириллицу' },
+                            { value: 'no_cyrillic', label: 'Не содержит кириллицу' },
+                            { value: 'contains_text', label: 'Текст содержит...' },
+                            { value: 'regex_match', label: 'Соответствует Regex...' }
+                        ]
+                    },
+                    {
+                        name: 'searchText',
+                        type: 'text',
+                        label: 'Поиск',
+                        value: '',
+                        showWhen: ['contains_text', 'regex_match']
+                    }
+                ],
+                hasInput: true,
+                hasOutput: false,
+                multipleOutputs: [
+                    { name: 'true', label: 'Если ДА', color: '#22c55e' },
+                    { name: 'false', label: 'Если НЕТ', color: '#ef4444' }
+                ]
+            },
+            'stream-merger': {
+                title: 'Слияние Потоков',
+                icon: 'fas fa-link',
+                fields: [
+                    {
+                        name: 'mode',
+                        type: 'select',
+                        label: 'Режим слияния',
+                        value: 'alternating_chars',
+                        options: [
+                            { value: 'alternating_chars', label: 'Чередование символов (ABAB...)' },
+                            { value: 'alternating_words', label: 'Чередование слов (A_word B_word...)' },
+                            { value: 'alternating_lines', label: 'Чередование строк (A_line B_line...)' },
+                            { value: 'concatenate', label: 'Склеить (A + B)' }
+                        ]
+                    }
+                ],
+                hasInput: false,
+                hasOutput: true,
+                multipleInputs: [
+                    { name: 'streamA', label: 'Поток А', color: '#3b82f6' },
+                    { name: 'streamB', label: 'Поток Б', color: '#f59e0b' }
+                ]
+            },
+            // === КАТЕГОРИЯ 3: НОВЫЕ ШИФРЫ И КОДИРОВЩИКИ ===
+            'atbash': {
+                title: 'Шифр Атбаш',
+                icon: 'fas fa-retweet',
+                fields: [
+                    {
+                        name: 'alphabet',
+                        type: 'select',
+                        label: 'Алфавит',
+                        value: 'ru',
+                        options: [
+                            { value: 'ru', label: 'Русский' },
+                            { value: 'en', label: 'Английский' }
+                        ]
+                    }
+                ],
+                hasInput: true,
+                hasOutput: true
+            },
+            'base64': {
+                title: 'Base64 Кодировщик',
+                icon: 'fas fa-file-export',
+                fields: [
+                    {
+                        name: 'mode',
+                        type: 'select',
+                        label: 'Режим',
+                        value: 'encode',
+                        options: [
+                            { value: 'encode', label: 'Кодировать' },
+                            { value: 'decode', label: 'Декодировать' }
+                        ]
+                    }
+                ],
+                hasInput: true,
+                hasOutput: true
+            },
+            // === КАТЕГОРИЯ 4: ЗАБАВНЫЕ И ТЕМАТИЧЕСКИЕ НОДЫ ===
+            'gawr-gura': {
+                title: 'Акулий Шифр',
+                icon: 'fas fa-fish',
+                fields: [],
+                hasInput: true,
+                hasOutput: true
+            },
+            'uwu-ifier': {
+                title: 'UwU-фикатор',
+                icon: 'fas fa-grin-stars',
+                fields: [],
+                hasInput: true,
+                hasOutput: true
             }
         };
         
@@ -651,6 +790,37 @@ class NodeManager {
             nodeElement.appendChild(outputPoint);
         }
         
+        // Добавляем множественные выходы (для Text Router)
+        if (nodeData.multipleOutputs && Array.isArray(nodeData.multipleOutputs)) {
+            nodeData.multipleOutputs.forEach((output, index) => {
+                const outputPoint = document.createElement('div');
+                outputPoint.className = 'connection-point output multiple';
+                outputPoint.dataset.nodeId = nodeId;
+                outputPoint.dataset.type = 'output';
+                outputPoint.dataset.outputName = output.name;
+                // Размещаем выходы справа
+                outputPoint.style.top = `${80 + index * 35}px`;
+                if (output.color) {
+                    outputPoint.style.backgroundColor = output.color;
+                }
+                
+                // Добавляем label для выхода
+                const label = document.createElement('span');
+                label.className = 'output-label';
+                label.textContent = output.label;
+                label.style.position = 'absolute';
+                label.style.right = '25px';
+                label.style.top = `${75 + index * 35}px`;
+                label.style.fontSize = '0.75rem';
+                label.style.color = 'var(--text-muted)';
+                label.style.userSelect = 'none';
+                label.style.whiteSpace = 'nowrap';
+                
+                nodeElement.appendChild(outputPoint);
+                nodeElement.appendChild(label);
+            });
+        }
+        
         return nodeElement;
     }
     
@@ -702,10 +872,27 @@ class NodeManager {
                 input.checked = field.value || false;
                 break;
                 
+            case 'textarea':
+                input = document.createElement('textarea');
+                input.value = field.value || '';
+                if (field.rows) input.rows = field.rows;
+                break;
+                
+            case 'multi-rules':
+                input = this.createMultiRulesField(field, nodeId);
+                break;
+                
             default:
                 input = document.createElement('input');
                 input.type = 'text';
                 input.value = field.value || '';
+        }
+        
+        // Обработчики для специальных типов полей
+        if (field.type === 'multi-rules') {
+            // Для multi-rules обработчики уже настроены в createMultiRulesField
+            fieldDiv.appendChild(input);
+            return fieldDiv;
         }
         
         input.name = field.name;
@@ -716,6 +903,9 @@ class NodeManager {
             const value = field.type === 'checkbox' ? input.checked : input.value;
             this.updateNodeData(nodeId, field.name, value);
             this.triggerExecution();
+            
+            // Обновляем видимость условных полей
+            this.updateConditionalFields(nodeId);
         };
         
         input.addEventListener('input', updateValue);
@@ -724,6 +914,13 @@ class NodeManager {
         }
         
         fieldDiv.appendChild(input);
+        
+        // Настраиваем условную видимость
+        if (field.showWhen) {
+            fieldDiv.dataset.showWhen = JSON.stringify(field.showWhen);
+            fieldDiv.style.display = 'none'; // Изначально скрыто
+        }
+        
         return fieldDiv;
     }
     
@@ -997,6 +1194,142 @@ class NodeManager {
                 window.cipherEngine.executeChain();
             }
         }, 100);
+    }
+    
+    // === НОВЫЕ МЕТОДЫ ДЛЯ СПЕЦИАЛЬНЫХ ПОЛЕЙ ===
+    
+    createMultiRulesField(field, nodeId) {
+        const container = document.createElement('div');
+        container.className = 'multi-rules-container';
+        
+        // Заголовок с кнопкой добавления
+        const header = document.createElement('div');
+        header.className = 'multi-rules-header';
+        header.innerHTML = `
+            <span>Правила замены:</span>
+            <button type="button" class="add-rule-btn" onclick="nodeManager.addReplaceRule('${nodeId}')">
+                <i class="fas fa-plus"></i> Добавить
+            </button>
+        `;
+        container.appendChild(header);
+        
+        // Контейнер для правил
+        const rulesContainer = document.createElement('div');
+        rulesContainer.className = 'rules-container';
+        rulesContainer.dataset.nodeId = nodeId;
+        container.appendChild(rulesContainer);
+        
+        // Загружаем существующие правила
+        const rules = field.value || [];
+        rules.forEach((rule, index) => {
+            this.createRuleElement(nodeId, index, rule);
+        });
+        
+        return container;
+    }
+    
+    addReplaceRule(nodeId) {
+        const node = this.nodes.get(nodeId);
+        if (!node || !node.data.fields) return;
+        
+        // Находим поле с правилами
+        const rulesField = node.data.fields.find(f => f.type === 'multi-rules');
+        if (!rulesField) return;
+        
+        if (!Array.isArray(rulesField.value)) {
+            rulesField.value = [];
+        }
+        
+        const newRule = { find: '', replace: '' };
+        rulesField.value.push(newRule);
+        
+        const ruleIndex = rulesField.value.length - 1;
+        this.createRuleElement(nodeId, ruleIndex, newRule);
+        
+        this.triggerExecution();
+    }
+    
+    createRuleElement(nodeId, ruleIndex, rule) {
+        const rulesContainer = document.querySelector(`.rules-container[data-node-id="${nodeId}"]`);
+        if (!rulesContainer) return;
+        
+        const ruleDiv = document.createElement('div');
+        ruleDiv.className = 'rule-item';
+        ruleDiv.dataset.ruleIndex = ruleIndex;
+        
+        ruleDiv.innerHTML = `
+            <div class="rule-inputs">
+                <input type="text" placeholder="Найти" value="${rule.find || ''}" 
+                       onchange="nodeManager.updateRule('${nodeId}', ${ruleIndex}, 'find', this.value)">
+                <input type="text" placeholder="Заменить" value="${rule.replace || ''}"
+                       onchange="nodeManager.updateRule('${nodeId}', ${ruleIndex}, 'replace', this.value)">
+                <button type="button" class="remove-rule-btn" 
+                        onclick="nodeManager.removeRule('${nodeId}', ${ruleIndex})">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        
+        rulesContainer.appendChild(ruleDiv);
+    }
+    
+    updateRule(nodeId, ruleIndex, field, value) {
+        const node = this.nodes.get(nodeId);
+        if (!node) return;
+        
+        const rulesField = node.data.fields.find(f => f.type === 'multi-rules');
+        if (!rulesField || !Array.isArray(rulesField.value)) return;
+        
+        if (rulesField.value[ruleIndex]) {
+            rulesField.value[ruleIndex][field] = value;
+            this.triggerExecution();
+        }
+    }
+    
+    removeRule(nodeId, ruleIndex) {
+        const node = this.nodes.get(nodeId);
+        if (!node) return;
+        
+        const rulesField = node.data.fields.find(f => f.type === 'multi-rules');
+        if (!rulesField || !Array.isArray(rulesField.value)) return;
+        
+        rulesField.value.splice(ruleIndex, 1);
+        
+        // Перестраиваем UI
+        const rulesContainer = document.querySelector(`.rules-container[data-node-id="${nodeId}"]`);
+        if (rulesContainer) {
+            rulesContainer.innerHTML = '';
+            rulesField.value.forEach((rule, index) => {
+                this.createRuleElement(nodeId, index, rule);
+            });
+        }
+        
+        this.triggerExecution();
+    }
+    
+    updateConditionalFields(nodeId) {
+        const node = this.nodes.get(nodeId);
+        if (!node || !node.element) return;
+        
+        const nodeElement = node.element;
+        
+        // Находим все поля с условной видимостью
+        const conditionalFields = nodeElement.querySelectorAll('[data-show-when]');
+        
+        conditionalFields.forEach(fieldDiv => {
+            try {
+                const showWhen = JSON.parse(fieldDiv.dataset.showWhen);
+                const conditionField = nodeElement.querySelector('select[name="condition"]');
+                
+                if (conditionField && showWhen.includes(conditionField.value)) {
+                    fieldDiv.style.display = 'block';
+                } else {
+                    fieldDiv.style.display = 'none';
+                }
+            } catch (e) {
+                console.error('Ошибка обработки условной видимости:', e);
+            }
+        });
     }
 }
 
