@@ -281,15 +281,11 @@ class ConnectionManager {
         // Сохраняем соединение
         const connection = {
             id: connectionId,
-            from: fromPoint.nodeId,
-            to: toPoint.nodeId,
-            fromOutputName: fromPoint.outputName,
-            toInputName: toPoint.inputName,
-            fromElement: fromPoint.element,
-            toElement: toPoint.element,
+            from: fromPoint,
+            to: toPoint,     
             element: pathElement
         };
-        
+
         this.connections.set(connectionId, connection);
         
         // Обновляем позицию линии
@@ -482,15 +478,19 @@ class ConnectionManager {
         };
         
         for (const connection of this.connections.values()) {
-            if (connection.to.nodeId === nodeId) {
+            // Проверяем, что to/from существуют и являются объектами
+            if (connection.to && typeof connection.to === 'object' && connection.to.nodeId === nodeId) {
                 nodeConnections.inputs.push({
                     connectionId: connection.id,
                     fromNodeId: connection.from.nodeId,
-                    inputName: connection.to.element.dataset.inputName || 'default'
+                    inputName: connection.to.element.dataset.inputName || 'default',
+                    // Добавляем имя выхода, с которого пришло соединение (для маршрутизатора)
+                    fromOutputName: connection.from.element.dataset.outputName || 'default'
                 });
             }
-            
-            if (connection.from.nodeId === nodeId) {
+                    
+            // Проверяем, что to/from существуют и являются объектами
+            if (connection.from && typeof connection.from === 'object' && connection.from.nodeId === nodeId) {
                 nodeConnections.outputs.push({
                     connectionId: connection.id,
                     toNodeId: connection.to.nodeId

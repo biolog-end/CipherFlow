@@ -111,6 +111,10 @@ class CipherEngine {
         try {
             const executionOrder = window.connectionManager.getExecutionOrder();
             const isReverseMode = window.connectionManager.reverseMode;
+            
+            // === КЛЮЧЕВОЕ ИЗМЕНЕНИЕ №1: ЧИСТОЕ СОСТОЯНИЕ ===
+            // Создаем новую карту результатов при КАЖДОМ запуске.
+            // Это полностью решает проблему "призрачного текста".
             const nodeResults = new Map();
 
             const initialInputElement = isReverseMode ? document.getElementById('outputText') : document.getElementById('inputText');
@@ -120,84 +124,97 @@ class CipherEngine {
                 const node = window.nodeManager.nodes.get(nodeId);
                 if (!node) continue;
 
-                let inputData = '';
+                let inputData;
                 const connections = window.connectionManager.getNodeConnections(nodeId);
 
-                // ================== НАЧАЛО ИСПРАВЛЕННОЙ ЛОГИКИ ==================
-
-                // Определяем, откуда брать данные для текущего узла.
                 const isNormalStartNode = !isReverseMode && node.type === 'input';
                 const isReverseStartNode = isReverseMode && node.type === 'output';
 
                 if (isNormalStartNode || isReverseStartNode) {
-                    // Это стартовый узел для текущего режима. Берем текст из соответствующего поля ввода.
                     inputData = initialInputText;
                 } else {
-                    // Это промежуточный или конечный узел. Берем данные от предыдущего обработанного узла.
-                    if (isReverseMode) {
-                        // В РЕЖИМЕ РАСШИФРОВКИ:
-                        // Данные приходят от узла, в который этот узел ВЫДАВАЛ данные в обычном режиме.
-                        // Этот узел (источник) уже был обработан, т.к. порядок выполнения обратный.
-                        // Ищем источник данных в "старых" исходящих соединениях (connections.outputs).
-                        if (connections.outputs.length > 0) {
-                            const sourceNodeId = connections.outputs[0].toNodeId;
-                            inputData = nodeResults.get(sourceNodeId) || '';
+                    // === КЛЮЧЕВОЕ ИЗМЕНЕНИЕ №2: НАДЕЖНОЕ ПОЛУЧЕНИЕ ДАННЫХ ===
+                    const sourceConnections = isReverseMode ? connections.outputs : connections.inputs;
+                    
+                    if (node.data.multipleInputs && !isReverseMode) { // Для слияния в прямом режиме
+                        inputData = {};
+                        sourceConnections.forEach(conn => {
+                            const inputName = conn.inputName || 'default';
+                            const sourceNodeId = conn.fromNodeId;
+                            // Если у источника еще нет результата, передаем пустую строку
+                            inputData[inputName] = nodeResults.get(sourceNodeId) || '';
+                        });
+                    } else if (sourceConnections.length > 0) { // Для всех остальных нодов
+                        const sourceConn = sourceConnections[0];
+                        const sourceNodeId = isReverseMode ? sourceConn.toNodeId : sourceConn.fromNodeId;
+                        let sourceResult = nodeResults.get(sourceNodeId);
+
+                        // Если у источника нет результата (он был в неактивной ветке),
+                        // принудительно устанавливаем пустую строку.
+                        if (sourceResult === undefined) {
+                            sourceResult = '';
+                        }
+                        
+                        if (typeof sourceResult === 'object' && sourceResult !== null) {
+                            const sourceNode = window.nodeManager.nodes.get(sourceNodeId);
+                            if (sourceNode.type === 'text-router') {
+                                if (isReverseMode) {
+                                    inputData = sourceResult.output;
+                                } else {
+                                    if (sourceResult.chosenPath === sourceConn.fromOutputName) {
+                                        inputData = sourceResult.output;
+                                    } else {
+                                        // Принудительно очищаем неактивную ветку
+                                        inputData = ''; 
+                                    }
+                                }
+                            } else if (sourceNode.type === 'stream-merger' && isReverseMode) {
+                                const originalConnection = Array.from(window.connectionManager.connections.values())
+                                    .find(c => c.from.nodeId === nodeId && c.to.nodeId === sourceNodeId);
+                                if (originalConnection) {
+                                    inputData = sourceResult[originalConnection.to.inputName];
+                                } else {
+                                    inputData = '';
+                                }
+                            } else {
+                            inputData = sourceResult;
+                            }
+                        } else {
+                            inputData = sourceResult;
                         }
                     } else {
-                        // В ОБЫЧНОМ РЕЖИМЕ:
-                        // Данные приходят от узла, который ВХОДИЛ в этот узел.
-                        // Ищем источник данных во входящих соединениях (connections.inputs).
-                        if (node.data.multipleInputs) {
-                            inputData = {};
-                            connections.inputs.forEach(conn => {
-                                const inputName = conn.inputName || 'default';
-                                const sourceNodeId = conn.fromNodeId;
-                                inputData[inputName] = nodeResults.get(sourceNodeId) || '';
-                            });
-                        } else if (connections.inputs.length > 0) {
-                            const sourceNodeId = connections.inputs[0].fromNodeId;
-                            inputData = nodeResults.get(sourceNodeId) || '';
-                        }
+                        inputData = ''; // Нод без входов
                     }
                 }
-
-                // =================== КОНЕЦ ИСПРАВЛЕННОЙ ЛОГИКИ ===================
-
-                // Выполняем обработку в ноде
+                
                 const result = this.processNode(node, inputData, nodeResults);
                 nodeResults.set(nodeId, result);
-
-                // Выводим результат в соответствующее поле, если это конечный узел
-                const isNormalEndNode = !isReverseMode && node.type === 'output';
-                const isReverseEndNode = isReverseMode && node.type === 'input';
-
-                if (isNormalEndNode || isReverseEndNode) {
-                    const outputElement = isReverseMode ? document.getElementById('inputText') : document.getElementById('outputText');
-                    if (outputElement) {
-                        outputElement.value = result;
-                    }
-                }
             }
 
-            // Обработка случая, если цепочка не доходит до конечного узла (input/output)
-            const endNodes = window.nodeManager.getAllNodes().filter(n => 
-                isReverseMode ? n.type === 'input' : n.type === 'output'
-            );
-            if (endNodes.length === 0 && executionOrder.length > 0) {
-                const lastNodeId = executionOrder[executionOrder.length - 1];
-                const lastResult = nodeResults.get(lastNodeId);
-                const outputElement = isReverseMode ? document.getElementById('inputText') : document.getElementById('outputText');
-                if (outputElement) {
-                    outputElement.value = lastResult || '';
+            // === КЛЮЧЕВОЕ ИЗМЕНЕНИЕ №3: АГРЕГАЦИЯ ВСЕХ ВЫХОДОВ ===
+            // Находим ВСЕ выходные ноды на канвасе
+            const allOutputNodes = window.nodeManager.getAllNodes().filter(n => {
+                return isReverseMode ? n.type === 'input' : n.type === 'output';
+            });
+
+            // Собираем результаты только из тех нодов, которые были обработаны
+            const finalOutputs = allOutputNodes.map(node => {
+                if (nodeResults.has(node.id)) {
+                    let res = nodeResults.get(node.id);
+                    if (typeof res === 'object' && res !== null) return res.output || '';
+                    return res;
                 }
+                return ''; // Если нод не был затронут, его результат - пустота
+            }).filter(res => res !== ''); // Убираем пустые результаты, чтобы не создавать лишних переносов строк
+
+            const outputElement = isReverseMode ? document.getElementById('inputText') : document.getElementById('outputText');
+            if (outputElement) {
+                outputElement.value = finalOutputs.join('\n'); // Объединяем результаты через перенос строки
             }
-            
+
         } catch (error) {
             console.error('Ошибка выполнения цепочки:', error);
-            const isReverseMode = window.connectionManager?.reverseMode;
-            const outputElement = isReverseMode ? 
-                document.getElementById('inputText') : 
-                document.getElementById('outputText');
+            const outputElement = window.connectionManager.reverseMode ? document.getElementById('inputText') : document.getElementById('outputText');
             if(outputElement) outputElement.value = 'Ошибка выполнения: ' + error.message;
         }
     }
@@ -300,29 +317,42 @@ class CipherEngine {
         const isReverse = window.connectionManager?.reverseMode || false;
         const actualShift = isReverse ? -shift : shift;
         
-        if (typeof text !== 'string') return ''; // Защита от ошибок, если на вход пришло не то
-        
-        return text.replace(/[а-яё]/gi, (char) => {
+        if (typeof text !== 'string') return '';
+
+        // Используем .map() на символах, чтобы обработать каждый
+        return text.split('').map(char => {
             const isUpperCase = char === char.toUpperCase();
-            const code = char.toLowerCase().charCodeAt(0);
-            const start = 'а'.charCodeAt(0);
-            const alphabetSize = 33; // а-я + ё
-            
-            let shifted = ((code - start + actualShift) % alphabetSize + alphabetSize) % alphabetSize;
-            
-            let result = String.fromCharCode(start + shifted);
-            return isUpperCase ? result.toUpperCase() : result;
-        }).replace(/[a-z]/gi, (char) => {
-            const isUpperCase = char === char.toUpperCase();
-            const code = char.toLowerCase().charCodeAt(0);
-            const start = 'a'.charCodeAt(0);
-            const alphabetSize = 26;
-            
-            let shifted = ((code - start + actualShift) % alphabetSize + alphabetSize) % alphabetSize;
-            
-            let result = String.fromCharCode(start + shifted);
-            return isUpperCase ? result.toUpperCase() : result;
-        });
+            const lowerChar = char.toLowerCase();
+
+            // Обработка русского алфавита
+            if (lowerChar >= 'а' && lowerChar <= 'я' || lowerChar === 'ё') {
+                const alphabet = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя';
+                const alphabetSize = alphabet.length;
+                const charIndex = alphabet.indexOf(lowerChar);
+
+                if (charIndex !== -1) {
+                    let shiftedIndex = (charIndex + actualShift % alphabetSize + alphabetSize) % alphabetSize;
+                    let resultChar = alphabet[shiftedIndex];
+                    return isUpperCase ? resultChar.toUpperCase() : resultChar;
+                }
+            }
+
+            // Обработка английского алфавита
+            if (lowerChar >= 'a' && lowerChar <= 'z') {
+                const startCode = 'a'.charCodeAt(0);
+                const charCode = lowerChar.charCodeAt(0);
+                const alphabetSize = 26;
+                
+                let shiftedCode = ((charCode - startCode + actualShift) % alphabetSize + alphabetSize) % alphabetSize;
+                
+                let resultChar = String.fromCharCode(startCode + shiftedCode);
+                return isUpperCase ? resultChar.toUpperCase() : resultChar;
+            }
+
+            // Если символ не является буквой, возвращаем его без изменений
+            return char;
+
+        }).join(''); // Собираем массив символов обратно в строку
     }
     
     processMorseCode(nodeData, text) {
@@ -591,12 +621,24 @@ class CipherEngine {
 
                 // Обновляем значения в элементах формы
                 nodeData.data.fields?.forEach(field => {
-                    const input = node.element.querySelector(`[name="${field.name}"]`);
-                    if (input) {
-                        if (input.type === 'checkbox') {
-                            input.checked = field.value;
-                        } else {
-                            input.value = field.value;
+                    if (field.type === 'multi-rules') {
+                        if (Array.isArray(field.value)) {
+                            const rulesContainer = node.element.querySelector(`.rules-container[data-node-id="${newNodeId}"]`);
+                            if (rulesContainer) {
+                                rulesContainer.innerHTML = ''; 
+                                field.value.forEach((rule, index) => {
+                                    window.nodeManager.createRuleElement(newNodeId, index, rule);
+                                });
+                            }
+                        }
+                    } else {
+                        const input = node.element.querySelector(`[name="${field.name}"]`);
+                        if (input) {
+                            if (input.type === 'checkbox') {
+                                input.checked = field.value;
+                            } else {
+                                input.value = field.value;
+                            }
                         }
                     }
                 });
@@ -861,12 +903,17 @@ class CipherEngine {
                 const isReverse = window.connectionManager?.reverseMode || false;
                 const direction = isReverse ? '⬅ Дешифровка' : '➡ Шифровка';
                 
-                const formattedInput = (inputData || 'Пусто').replace(/\n/g, '<br>');
+                let textToDisplay = inputData;
+                if (typeof inputData === 'object' && inputData !== null) {
+                    textToDisplay = JSON.stringify(inputData, null, 2);
+                }
+                
+                const formattedInput = (textToDisplay || 'Пусто').toString().replace(/\n/g, '<br>');
                 
                 display.innerHTML = `<small style="color: var(--accent-primary);">${direction}</small><br>${formattedInput}`;
             }
         }
-        return inputData;
+        return inputData; 
     }
 
     _decodeCatMorseWord(word) {
@@ -1503,53 +1550,67 @@ class CipherEngine {
         ]
     };
     
-    // === МЕТОДЫ ОБРАБОТКИ НОВЫХ НОДОВ ===
-    
-    // Категория 1: Продвинутая обработка текста
     processMultiReplacer(nodeData, inputData) {
         const isReverseMode = window.connectionManager?.reverseMode;
         const rules = nodeData.fields?.find(f => f.name === 'rules')?.value || [];
         const caseSensitive = nodeData.fields?.find(f => f.name === 'caseSensitive')?.value || false;
         const wholeWords = nodeData.fields?.find(f => f.name === 'wholeWords')?.value || false;
-        
-        if (!Array.isArray(rules) || rules.length === 0) {
+
+        if (typeof inputData !== 'string' || !Array.isArray(rules) || rules.length === 0) {
             return inputData;
         }
-        
-        let result = inputData;
-        
-        // В режиме дешифрования применяем правила в обратном порядке и меняем местами
+
         const processedRules = isReverseMode 
-            ? rules.slice().reverse().map(rule => ({ find: rule.replace, replace: rule.find }))
+            ? [...rules].reverse().map(rule => ({ find: rule.replace, replace: rule.find }))
             : rules;
-        
-        processedRules.forEach(rule => {
-            if (rule.find && rule.find !== rule.replace) {
-                let flags = caseSensitive ? 'g' : 'gi';
-                let pattern = rule.find;
-                
-                if (wholeWords) {
-                    // Экранируем специальные символы регулярного выражения
-                    pattern = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                    pattern = `\\b${pattern}\\b`;
-                }
-                
-                try {
-                    const regex = new RegExp(pattern, flags);
-                    result = result.replace(regex, rule.replace);
-                } catch (e) {
-                    // Если ошибка в регулярном выражении, делаем простую замену
-                    if (caseSensitive) {
-                        result = result.replaceAll(rule.find, rule.replace);
-                    } else {
-                        const regex = new RegExp(rule.find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-                        result = result.replace(regex, rule.replace);
+
+        // Если "только целые слова" не включено, используем простую глобальную замену
+        if (!wholeWords) {
+            let result = inputData;
+            processedRules.forEach(rule => {
+                if (rule.find) {
+                    const flags = caseSensitive ? 'g' : 'gi';
+                    try {
+                        const regex = new RegExp(this.escapeRegExp(rule.find), flags);
+                        result = result.replace(regex, rule.replace || '');
+                    } catch (e) {
+                        console.error("Ошибка в регулярном выражении:", rule, e);
                     }
                 }
-            }
-        });
+            });
+            return result;
+        }
+
+        // === НАЧАЛО НОВОЙ ЛОГИКИ ДЛЯ "ТОЛЬКО ПО СЛОВАМ" ===
         
-        return result;
+        // Разделяем строку на слова и разделители (пробелы, переносы строк и т.д.)
+        const parts = inputData.split(/(\s+)/);
+
+        const newParts = parts.map(part => {
+            // Пропускаем пробелы и пустые строки
+            if (/\s+/.test(part) || part === '') {
+                return part;
+            }
+
+            // Проверяем каждое правило для текущего слова
+            for (const rule of processedRules) {
+                if (!rule.find) continue;
+
+                const wordToCompare = caseSensitive ? part : part.toLowerCase();
+                const findToCompare = caseSensitive ? rule.find : rule.find.toLowerCase();
+
+                if (wordToCompare === findToCompare) {
+                    // Если нашли совпадение, заменяем и прекращаем поиск для этого слова
+                    return rule.replace || '';
+                }
+            }
+
+            // Если совпадений не найдено, возвращаем исходное слово
+            return part;
+        });
+
+        return newParts.join('');
+        // === КОНЕЦ НОВОЙ ЛОГИКИ ===
     }
     
     // Категория 2: Логические и структурные ноды
@@ -1606,17 +1667,68 @@ class CipherEngine {
         }
         node.routerResults[outputName] = inputData;
         
-        return inputData; // Возвращаем оригинальные данные
+        return {
+            output: inputData,
+            chosenPath: conditionMet ? 'true' : 'false'
+        };
+    }
+
+    unmergeAlternatingChars(text) {
+        let streamA = '';
+        let streamB = '';
+        for (let i = 0; i < text.length; i++) {
+            if (i % 2 === 0) {
+                streamA += text[i];
+            } else {
+                streamB += text[i];
+            }
+        }
+        return { streamA, streamB };
+    }
+
+    unmergeAlternatingWords(text) {
+        const words = text.split(/\s+/).filter(w => w.length > 0);
+        const wordsA = [];
+        const wordsB = [];
+        for (let i = 0; i < words.length; i++) {
+            if (i % 2 === 0) {
+                wordsA.push(words[i]);
+            } else {
+                wordsB.push(words[i]);
+            }
+        }
+        return { streamA: wordsA.join(' '), streamB: wordsB.join(' ') };
+    }
+
+    unmergeAlternatingLines(text) {
+        const lines = text.split('\n');
+        const linesA = [];
+        const linesB = [];
+        for (let i = 0; i < lines.length; i++) {
+            if (i % 2 === 0) {
+                linesA.push(lines[i]);
+            } else {
+                linesB.push(lines[i]);
+            }
+        }
+        return { streamA: linesA.join('\n'), streamB: linesB.join('\n') };
     }
     
     processStreamMerger(node, inputData, allNodeResults) {
+        const isReverseMode = window.connectionManager?.reverseMode;
         const nodeData = node.data;
         const mode = nodeData.fields?.find(f => f.name === 'mode')?.value || 'alternating_chars';
-        
-        // Получаем данные из множественных входов
-        const inputs = this.getMultipleInputs(node, allNodeResults);
-        const streamA = inputs.streamA || '';
-        const streamB = inputs.streamB || '';
+
+        if (isReverseMode) {
+            // Логика разделения текста на два потока
+            const { streamA, streamB } = this.unmergeStreams(inputData, mode);
+            // Возвращаем объект. executeChain теперь умеет его обрабатывать.
+            return { streamA, streamB };
+        }
+
+        // Логика прямого режима (слияние)
+        const streamA = inputData.streamA || '';
+        const streamB = inputData.streamB || '';
         
         switch (mode) {
             case 'alternating_chars':
@@ -1625,9 +1737,23 @@ class CipherEngine {
                 return this.mergeAlternatingWords(streamA, streamB);
             case 'alternating_lines':
                 return this.mergeAlternatingLines(streamA, streamB);
-            case 'concatenate':
             default:
-                return streamA + streamB;
+                return ''; // Безопасное значение по умолчанию
+        }
+    }
+
+    // Добавьте этот универсальный метод для разделения (если его еще нет)
+    unmergeStreams(text, mode) {
+        if (typeof text !== 'string') text = ''; // Защита от ошибок
+        switch (mode) {
+            case 'alternating_chars':
+                return this.unmergeAlternatingChars(text);
+            case 'alternating_words':
+                return this.unmergeAlternatingWords(text);
+            case 'alternating_lines':
+                return this.unmergeAlternatingLines(text);
+            default:
+                return { streamA: text, streamB: text };
         }
     }
     
@@ -1673,40 +1799,30 @@ class CipherEngine {
         return result.join('\n');
     }
     
-    // Категория 3: Новые шифры и кодировщики
     processAtbash(nodeData, inputData) {
-        const alphabet = nodeData.fields?.find(f => f.name === 'alphabet')?.value || 'ru';
+        if (typeof inputData !== 'string') return '';
+        
+        const ru_low = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя';
+        const ru_up = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
+        const en_low = 'abcdefghijklmnopqrstuvwxyz';
+        const en_up = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         
         let result = '';
         
-        for (let char of inputData) {
-            let converted = char;
+        for (const char of inputData) {
+            let index;
             
-            if (alphabet === 'ru') {
-                // Русский алфавит (33 буквы)
-                if (/[А-Я]/.test(char)) {
-                    const code = char.charCodeAt(0) - 'А'.charCodeAt(0);
-                    const reversed = 32 - code; // 32 = 33-1 (индексы с 0)
-                    converted = String.fromCharCode('А'.charCodeAt(0) + reversed);
-                } else if (/[а-я]/.test(char)) {
-                    const code = char.charCodeAt(0) - 'а'.charCodeAt(0);
-                    const reversed = 32 - code;
-                    converted = String.fromCharCode('а'.charCodeAt(0) + reversed);
-                }
+            if ((index = ru_low.indexOf(char)) !== -1) {
+                result += ru_low[ru_low.length - 1 - index];
+            } else if ((index = ru_up.indexOf(char)) !== -1) {
+                result += ru_up[ru_up.length - 1 - index];
+            } else if ((index = en_low.indexOf(char)) !== -1) {
+                result += en_low[en_low.length - 1 - index];
+            } else if ((index = en_up.indexOf(char)) !== -1) {
+                result += en_up[en_up.length - 1 - index];
             } else {
-                // Английский алфавит (26 букв)
-                if (/[A-Z]/.test(char)) {
-                    const code = char.charCodeAt(0) - 'A'.charCodeAt(0);
-                    const reversed = 25 - code; // 25 = 26-1
-                    converted = String.fromCharCode('A'.charCodeAt(0) + reversed);
-                } else if (/[a-z]/.test(char)) {
-                    const code = char.charCodeAt(0) - 'a'.charCodeAt(0);
-                    const reversed = 25 - code;
-                    converted = String.fromCharCode('a'.charCodeAt(0) + reversed);
-                }
+                result += char; // Если символ не в алфавите, оставляем его как есть
             }
-            
-            result += converted;
         }
         
         return result;
@@ -1730,115 +1846,126 @@ class CipherEngine {
         }
     }
     
-    // Категория 4: Забавные и тематические ноды
     processGawrGura(nodeData, inputData) {
         const isReverseMode = window.connectionManager?.reverseMode;
-        
-        if (isReverseMode) {
-            // Дешифрование: Gawr Gura -> текст
-            return this.decodeGawrGura(inputData);
-        } else {
-            // Шифрование: текст -> Gawr Gura
-            return this.encodeGawrGura(inputData);
-        }
+        return isReverseMode ? this.decodeGawrGura(inputData) : this.encodeGawrGura(inputData);
     }
-    
+
     encodeGawrGura(text) {
-        const guraMap = {
-            'a': 'a', 'b': 'a a', 'c': 'a a a', 'd': 'a a a a', 'e': 'a a a a a',
-            'f': 'a a a a a a', 'g': 'a a a a a a a', 'h': 'a a a a a a a a',
-            'i': 'a a a a a a a a a', 'j': 'a a a a a a a a a a',
-            'k': 'a a a a a a a a a a a', 'l': 'a a a a a a a a a a a a',
-            'm': 'a a a a a a a a a a a a a', 'n': 'a a a a a a a a a a a a a a',
-            'o': 'a a a a a a a a a a a a a a a', 'p': 'a a a a a a a a a a a a a a a a',
-            'q': 'a a a a a a a a a a a a a a a a a', 'r': 'a a a a a a a a a a a a a a a a a a',
-            's': 'shork', 't': 'shork a', 'u': 'shork a a', 'v': 'shork a a a',
-            'w': 'shork a a a a', 'x': 'shork a a a a a', 'y': 'shork a a a a a a',
-            'z': 'shork a a a a a a a',
-            ' ': 'bloop',
-            '0': 'gura', '1': 'gura a', '2': 'gura a a', '3': 'gura a a a',
-            '4': 'gura a a a a', '5': 'gura a a a a a', '6': 'gura a a a a a a',
-            '7': 'gura a a a a a a a', '8': 'gura a a a a a a a a', '9': 'gura a a a a a a a a a'
-        };
+        const ru_alphabet = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'; // 33 буквы
+        const en_alphabet = 'abcdefghijklmnopqrstuvwxyz'; // 26 букв
         
-        return text.toLowerCase().split('').map(char => guraMap[char] || char).join(' ');
+        const ru_tiers = ['а', 'шорк', 'гура'];
+        const en_tiers = ['a', 'shork', 'gura'];
+        
+        let result = [];
+
+        for (const char of text.toLowerCase()) {
+            let encoded = char; // По умолчанию
+            let index;
+
+            const encodeChar = (idx, tiers, baseUnit) => {
+                const tier = Math.floor(idx / 12);
+                if (tier >= tiers.length) return null; // Буква вне диапазона
+                
+                const keyword = tiers[tier];
+                const repetitions = idx % 12;
+                
+                let parts = [keyword];
+                for (let i = 0; i < repetitions; i++) {
+                    parts.push(baseUnit);
+                }
+                return parts.join(' ');
+            };
+
+            if ((index = ru_alphabet.indexOf(char)) !== -1) {
+                encoded = encodeChar(index, ru_tiers, 'а') || char;
+            } else if ((index = en_alphabet.indexOf(char)) !== -1) {
+                encoded = encodeChar(index, en_tiers, 'a') || char;
+            } else if (char === ' ') {
+                encoded = 'bloop';
+            }
+
+            result.push(encoded);
+        }
+        return result.join('  '); // Двойной пробел между буквами
     }
-    
+
     decodeGawrGura(guraText) {
-        const reverseGuraMap = {
-            'a': 'a', 'a a': 'b', 'a a a': 'c', 'a a a a': 'd', 'a a a a a': 'e',
-            'a a a a a a': 'f', 'a a a a a a a': 'g', 'a a a a a a a a': 'h',
-            'a a a a a a a a a': 'i', 'a a a a a a a a a a': 'j',
-            'a a a a a a a a a a a': 'k', 'a a a a a a a a a a a a': 'l',
-            'a a a a a a a a a a a a a': 'm', 'a a a a a a a a a a a a a a': 'n',
-            'a a a a a a a a a a a a a a a': 'o', 'a a a a a a a a a a a a a a a a': 'p',
-            'a a a a a a a a a a a a a a a a a': 'q', 'a a a a a a a a a a a a a a a a a a': 'r',
-            'shork': 's', 'shork a': 't', 'shork a a': 'u', 'shork a a a': 'v',
-            'shork a a a a': 'w', 'shork a a a a a': 'x', 'shork a a a a a a': 'y',
-            'shork a a a a a a a': 'z',
-            'bloop': ' ',
-            'gura': '0', 'gura a': '1', 'gura a a': '2', 'gura a a a': '3',
-            'gura a a a a': '4', 'gura a a a a a': '5', 'gura a a a a a a': '6',
-            'gura a a a a a a a': '7', 'gura a a a a a a a a': '8', 'gura a a a a a a a a a': '9'
-        };
-        
-        const tokens = guraText.split(' ');
+        const ru_alphabet = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя';
+        const en_alphabet = 'abcdefghijklmnopqrstuvwxyz';
+
+        const ru_tiers = {'а': 0, 'шорк': 1, 'гура': 2};
+        const en_tiers = {'a': 0, 'shork': 1, 'gura': 2};
+
+        const encodedLetters = guraText.split('  '); // Разделяем по двойному пробелу
         let result = '';
-        let i = 0;
-        
-        while (i < tokens.length) {
-            let found = false;
+
+        for (const part of encodedLetters) {
+            if (part === 'bloop') {
+                result += ' ';
+                continue;
+            }
+
+            const tokens = part.split(' ');
+            const keyword = tokens[0];
+            const repetitions = tokens.length - 1;
+
+            let decoded = part; // По умолчанию
             
-            // Пытаемся найти самую длинную подходящую комбинацию
-            for (let len = 8; len >= 1; len--) {
-                if (i + len <= tokens.length) {
-                    const combination = tokens.slice(i, i + len).join(' ');
-                    if (reverseGuraMap[combination]) {
-                        result += reverseGuraMap[combination];
-                        i += len;
-                        found = true;
-                        break;
-                    }
+            if (keyword in ru_tiers) {
+                const tierIndex = ru_tiers[keyword];
+                const index = tierIndex * 12 + repetitions;
+                if (index < ru_alphabet.length) {
+                    decoded = ru_alphabet[index];
+                }
+            } else if (keyword in en_tiers) {
+                const tierIndex = en_tiers[keyword];
+                const index = tierIndex * 12 + repetitions;
+                if (index < en_alphabet.length) {
+                    decoded = en_alphabet[index];
                 }
             }
             
-            if (!found) {
-                result += tokens[i] || '';
-                i++;
-            }
+            result += decoded;
         }
-        
         return result;
     }
     
     processUwuIfier(nodeData, inputData) {
         const isReverseMode = window.connectionManager?.reverseMode;
         
-        if (isReverseMode) {
-            // UwU-фикатор необратим, просто возвращаем исходный текст
-            return inputData;
+        if (isReverseMode || typeof inputData !== 'string') {
+            return inputData; // UwU-фикатор необратим
         }
+
+        // ИЗМЕНЕНИЕ: Создаем "случайность" на основе самого текста, чтобы она была постоянной
+        let seed = 0;
+        for (let i = 0; i < inputData.length; i++) {
+            seed += inputData.charCodeAt(i);
+        }
+        const seededRandom = this.createSeededRandom(seed);
         
         let result = inputData;
         
-        // Заменяем р и л на в
-        result = result.replace(/[рР]/g, (match) => match === 'Р' ? 'В' : 'в');
-        result = result.replace(/[лЛ]/g, (match) => match === 'Л' ? 'В' : 'в');
+        result = result.replace(/[рл]/g, 'в').replace(/[РЛ]/g, 'В');
         
-        // Добавляем дефисы после первых букв слов
-        result = result.replace(/\b(\w)/g, '$1-$1');
-        
-        // Добавляем случайные UwU смайлики
+        // Дефисы теперь добавляются с некоторой вероятностью
+        result = result.replace(/\b(\w)/g, (match) => {
+            return seededRandom() < 0.7 ? `${match}-${match.toLowerCase()}` : match;
+        });
+
         const uwuEmoticons = [' UwU', ' OwO', ' :3', ' >w<', ' ^w^'];
         const words = result.split(' ');
         
-        for (let i = 0; i < words.length; i++) {
-            if (Math.random() < 0.3) { // 30% вероятность добавления смайлика
-                words[i] += uwuEmoticons[Math.floor(Math.random() * uwuEmoticons.length)];
+        const uwuifiedWords = words.map(word => {
+            if (seededRandom() < 0.3) { // 30% вероятность добавления смайлика
+                return word + uwuEmoticons[Math.floor(seededRandom() * uwuEmoticons.length)];
             }
-        }
+            return word;
+        });
         
-        return words.join(' ');
+        return uwuifiedWords.join(' ');
     }
     
     // Вспомогательный метод для получения данных из множественных входов

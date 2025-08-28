@@ -622,8 +622,7 @@ class NodeManager {
                         options: [
                             { value: 'alternating_chars', label: 'Чередование символов (ABAB...)' },
                             { value: 'alternating_words', label: 'Чередование слов (A_word B_word...)' },
-                            { value: 'alternating_lines', label: 'Чередование строк (A_line B_line...)' },
-                            { value: 'concatenate', label: 'Склеить (A + B)' }
+                            { value: 'alternating_lines', label: 'Чередование строк (A_line B_line...)' }
                         ]
                     }
                 ],
@@ -638,18 +637,7 @@ class NodeManager {
             'atbash': {
                 title: 'Шифр Атбаш',
                 icon: 'fas fa-retweet',
-                fields: [
-                    {
-                        name: 'alphabet',
-                        type: 'select',
-                        label: 'Алфавит',
-                        value: 'ru',
-                        options: [
-                            { value: 'ru', label: 'Русский' },
-                            { value: 'en', label: 'Английский' }
-                        ]
-                    }
-                ],
+                fields: [],
                 hasInput: true,
                 hasOutput: true
             },

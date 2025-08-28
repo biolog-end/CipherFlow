@@ -553,9 +553,28 @@ class SelectionManager {
                 
                 // Обновляем значения в элементах формы
                 nodeData.data.fields?.forEach(field => {
-                    const input = newNode.element.querySelector(`[name="${field.name}"]`);
-                    if (input) {
-                        input.value = field.value;
+                    if (field.type === 'multi-rules') {
+                        // Логика для восстановления мульти-правил
+                        if (Array.isArray(field.value)) {
+                            const rulesContainer = newNode.element.querySelector(`.rules-container[data-node-id="${newNodeId}"]`);
+                            if (rulesContainer) {
+                                rulesContainer.innerHTML = ''; // Очищаем контейнер перед добавлением
+                                field.value.forEach((rule, index) => {
+                                    // Используем существующий метод из nodeManager для создания элемента правила
+                                    window.nodeManager.createRuleElement(newNodeId, index, rule);
+                                });
+                            }
+                        }
+                    } else {
+                        const input = newNode.element.querySelector(`[name="${field.name}"]`);
+                        if (input) {
+                            if (input.type === 'checkbox') {
+                                // Корректно восстанавливаем состояние чекбокса
+                                input.checked = field.value;
+                            } else {
+                                input.value = field.value;
+                            }
+                        }
                     }
                 });
             }
