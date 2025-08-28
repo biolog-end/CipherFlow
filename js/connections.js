@@ -248,11 +248,31 @@ class ConnectionManager {
         // Определяем направление соединения (всегда от output к input)
         let fromPoint, toPoint;
         if (startType === 'output' && endType === 'input') {
-            fromPoint = { nodeId: startNodeId, element: startPoint, type: 'output' };
-            toPoint = { nodeId: endNodeId, element: endPoint, type: 'input' };
+            fromPoint = { 
+                nodeId: startNodeId, 
+                element: startPoint, 
+                type: 'output',
+                outputName: startPoint.dataset.outputName || null
+            };
+            toPoint = { 
+                nodeId: endNodeId, 
+                element: endPoint, 
+                type: 'input',
+                inputName: endPoint.dataset.inputName || null
+            };
         } else if (startType === 'input' && endType === 'output') {
-            fromPoint = { nodeId: endNodeId, element: endPoint, type: 'output' };
-            toPoint = { nodeId: startNodeId, element: startPoint, type: 'input' };
+            fromPoint = { 
+                nodeId: endNodeId, 
+                element: endPoint, 
+                type: 'output',
+                outputName: endPoint.dataset.outputName || null
+            };
+            toPoint = { 
+                nodeId: startNodeId, 
+                element: startPoint, 
+                type: 'input',
+                inputName: startPoint.dataset.inputName || null
+            };
         }
         
         // Создаем визуальную линию соединения
@@ -261,8 +281,12 @@ class ConnectionManager {
         // Сохраняем соединение
         const connection = {
             id: connectionId,
-            from: fromPoint,
-            to: toPoint,
+            from: fromPoint.nodeId,
+            to: toPoint.nodeId,
+            fromOutputName: fromPoint.outputName,
+            toInputName: toPoint.inputName,
+            fromElement: fromPoint.element,
+            toElement: toPoint.element,
             element: pathElement
         };
         
