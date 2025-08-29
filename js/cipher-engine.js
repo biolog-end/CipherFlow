@@ -570,6 +570,7 @@ class CipherEngine {
             data: node.data
         }));
         
+        // [ИСПРАВЛЕНО] Теперь мы сохраняем имена входов и выходов
         const connections = window.connectionManager.getAllConnections().map(conn => {
             const connData = {
                 id: conn.id,
@@ -577,7 +578,12 @@ class CipherEngine {
                 to: conn.to.nodeId
             };
             
-            // Сохраняем имя входа для множественных входов
+            // Сохраняем имя выхода, если оно есть (для нодов типа Text Router)
+            if (conn.from.element && conn.from.element.dataset.outputName) {
+                connData.fromOutputName = conn.from.element.dataset.outputName;
+            }
+            
+            // Сохраняем имя входа, если оно есть (для нодов типа Vigenere, Stream Merger)
             if (conn.to.element && conn.to.element.dataset.inputName) {
                 connData.inputName = conn.to.element.dataset.inputName;
             }
@@ -586,7 +592,7 @@ class CipherEngine {
         });
         
         const scheme = {
-            version: '1.0',
+            version: '2.0', // Обновляем версию для совместимости
             created: new Date().toISOString(),
             nodes: nodes,
             connections: connections
@@ -595,6 +601,7 @@ class CipherEngine {
         return JSON.stringify(scheme, null, 2);
     }
     
+    // Метод для загрузки схемы
     importScheme(schemeJson) {
         if (!window.nodeManager || !window.connectionManager) {
             throw new Error('Системы нодов не инициализированы');
@@ -609,12 +616,9 @@ class CipherEngine {
         const nodeIdMapping = new Map();
 
         for (const nodeData of scheme.nodes) {
-            // === ИЗМЕНЕНИЕ ЗДЕСЬ: добавлен 'true' в качестве четвертого аргумента ===
-            // Это говорит функции, что nodeData.x и nodeData.y уже являются "мировыми" координатами
             const newNodeId = window.nodeManager.createNode(nodeData.type, nodeData.x, nodeData.y, true);
             nodeIdMapping.set(nodeData.id, newNodeId);
 
-            // Восстанавливаем данные нода
             const node = window.nodeManager.nodes.get(newNodeId);
             if (node && nodeData.data) {
                 node.data = JSON.parse(JSON.stringify(nodeData.data)); // Глубокое копирование
@@ -645,7 +649,6 @@ class CipherEngine {
             }
         }
 
-        // Восстанавливаем соединения
         for (const connData of scheme.connections) {
             const fromNodeId = nodeIdMapping.get(connData.from);
             const toNodeId = nodeIdMapping.get(connData.to);
@@ -655,36 +658,39 @@ class CipherEngine {
                 const toNode = window.nodeManager.nodes.get(toNodeId);
 
                 if (fromNode && toNode) {
-                    const fromPoint = fromNode.element.querySelector('.connection-point.output');
-                    let toPoint;
+                    let fromPoint, toPoint;
 
-                    // Проверяем, есть ли у соединения имя входа (для множественных входов)
+                    // Ищем КОНКРЕТНУЮ точку выхода, если ее имя сохранено
+                    if (connData.fromOutputName) {
+                        fromPoint = fromNode.element.querySelector(`.connection-point.output[data-output-name="${connData.fromOutputName}"]`);
+                    } else {
+                        // Иначе берем первую попавшуюся
+                        fromPoint = fromNode.element.querySelector('.connection-point.output');
+                    }
+
+                    // Ищем КОНКРЕТНУЮ точку входа, если ее имя сохранено
                     if (connData.inputName) {
                         toPoint = toNode.element.querySelector(`.connection-point.input[data-input-name="${connData.inputName}"]`);
-                    }
-
-                    // Если не нашли специфический вход или его нет, используем обычный
-                    if (!toPoint) {
+                    } else {
+                        // Иначе берем первую попавшуюся
                         toPoint = toNode.element.querySelector('.connection-point.input');
                     }
-
+                    
                     if (fromPoint && toPoint) {
                         window.connectionManager.createConnection(fromPoint, toPoint);
+                    } else {
+                        console.warn('Не удалось найти точки для соединения:', connData);
                     }
                 }
             }
         }
-
-        // Обновляем все соединения после небольшой задержки для корректного позиционирования
+        
         setTimeout(() => {
-            // Обновляем позиции всех соединений
             for (const [nodeId] of window.nodeManager.nodes) {
                 window.connectionManager.updateConnections(nodeId);
             }
-
-            // Запускаем выполнение
             this.executeChain();
-        }, 470);
+        }, 470); 
     }
     
     processSecretWord(nodeData, inputData) {

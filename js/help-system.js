@@ -543,86 +543,6 @@ class HelpSystem {
         }, 3500);
     }
 
-    async loadExample(exampleName) {
-        try {
-            // Скрываем справку
-            this.hide();
-            
-            // Загружаем файл примера
-            const response = await fetch(`examples/${exampleName}.json`);
-            if (!response.ok) {
-                throw new Error(`Не удалось загрузить пример: ${response.status}`);
-            }
-            
-            const exampleData = await response.text();
-            
-            // Используем файловый менеджер для загрузки схемы
-            if (window.fileManager) {
-                window.fileManager.importScheme(exampleData);
-                
-                // Показываем уведомление
-                this.showExampleLoadedNotification(exampleName);
-
-                // Воспроизводим звук если включены звуковые эффекты
-                if (window.settingsSystem?.settings.soundEffects) {
-                    window.settingsSystem.playSound('select');
-                }
-            } else {
-                throw new Error('Файловый менеджер недоступен');
-            }
-            
-        } catch (error) {
-            console.error('Ошибка загрузки примера:', error);
-            alert(`Ошибка загрузки примера "${exampleName}": ${error.message}`);
-        }
-    }
-
-    showExampleLoadedNotification(exampleName) {
-        // Получаем данные примера для отображения имени
-        const exampleNames = {
-            'simple-caesar': 'Простой шифр Цезаря',
-            'vigenere-with-secret': 'Шифр Виженера с секретным словом',
-            'multilevel-encryption': 'Многоуровневое шифрование',
-            'planet-enchanter': 'Географическое шифрование',
-            'cat-morse': 'Забавный кошачий морзе',
-            'monitoring-chain': 'Отладка с мониторами'
-        };
-
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--accent-primary);
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            font-size: 1rem;
-            z-index: 10001;
-            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.3);
-            animation: slideInUp 0.3s ease, slideOutDown 0.3s ease 3s forwards;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        `;
-        
-        notification.innerHTML = `
-            <i class="fas fa-check-circle" style="font-size: 1.2rem;"></i>
-            <div>
-                <div style="font-weight: 600;">Пример загружен!</div>
-                <div style="font-size: 0.9rem; opacity: 0.9;">${exampleNames[exampleName] || exampleName}</div>
-            </div>
-        `;
-        
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.remove();
-            }
-        }, 3500);
-    }
-
     generateContent() {
         return `
             ${this.getOverviewSection()}
@@ -754,57 +674,8 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="help-subtitle">Входные и выходные ноды</div>
-                
-                <div class="algorithm-card" data-node-type="input">
-                    <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
-                            <i class="fas fa-sign-in-alt"></i>
-                        </div>
-                        <div class="algorithm-info">
-                            <h3>Ввод текста</h3>
-                            <p>Источник данных для цепочки шифрования</p>
-                        </div>
-                    </div>
-                    <p><strong>Принцип работы:</strong> Берет текст из общего поля ввода в нижней панели и передает его в цепочку обработки. Является начальной точкой любой схемы шифрования.</p>
-                    <div class="example-box">
-                        <h4>Использование:</h4>
-                        <div class="example-input">1. Введите текст в поле внизу экрана</div>
-                        <div class="example-input">2. Соедините выход нода "Ввод текста" со входом следующего алгоритма</div>
-                        <div class="example-output">Данные автоматически передаются в цепочку</div>
-                    </div>
-                    <div class="data-loss-warning">
-                        <h4>Особенности</h4>
-                        <p>• Только один выход, нет входов<br>• Автоматически обновляется при изменении текста в поле ввода<br>• Может быть несколько нодов ввода в одной схеме</p>
-                    </div>
-                </div>
-
-                <div class="algorithm-card" data-node-type="output">
-                    <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </div>
-                        <div class="algorithm-info">
-                            <h3>Вывод текста</h3>
-                            <p>Отображение результата цепочки шифрования</p>
-                        </div>
-                    </div>
-                    <p><strong>Принцип работы:</strong> Получает обработанные данные и отображает их в поле вывода в нижней панели. Является конечной точкой схемы шифрования.</p>
-                    <div class="example-box">
-                        <h4>Использование:</h4>
-                        <div class="example-input">1. Соедините вход нода "Вывод текста" с выходом последнего алгоритма</div>
-                        <div class="example-input">2. Результат автоматически появится в поле вывода внизу экрана</div>
-                        <div class="example-output">Можно копировать результат из поля вывода</div>
-                    </div>
-                    <div class="data-loss-warning">
-                        <h4>Особенности</h4>
-                        <p>• Только один вход, нет выходов<br>• Автоматически обновляется при изменении данных<br>• Может быть несколько нодов вывода для промежуточных результатов</p>
-                    </div>
-                </div>
-
                 <div class="help-subtitle">Классические шифры</div>
                 
-                <div class="algorithm-card" data-node-type="caesar">
                 <div class="algorithm-card" data-node-type="caesar">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">
@@ -823,7 +694,6 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="algorithm-card" data-node-type="morse">
                 <div class="algorithm-card" data-node-type="morse">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
@@ -859,7 +729,6 @@ class HelpSystem {
                 </div>
 
                 <div class="algorithm-card" data-node-type="braille-cat">
-                <div class="algorithm-card" data-node-type="braille-cat">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #f472b6, #ec4899);">
                             <i class="fas fa-cat"></i>
@@ -892,7 +761,6 @@ class HelpSystem {
                 <div class="help-subtitle">Преобразования</div>
 
                 <div class="algorithm-card" data-node-type="a1z26">
-                <div class="algorithm-card" data-node-type="a1z26">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #14b8a6, #0d9488);">
                             <i class="fas fa-sort-numeric-up"></i>
@@ -910,7 +778,6 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="algorithm-card" data-node-type="vigenere">
                 <div class="algorithm-card" data-node-type="vigenere">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">
@@ -935,7 +802,6 @@ class HelpSystem {
                 </div>
 
                 <div class="algorithm-card" data-node-type="secret-word">
-                <div class="algorithm-card" data-node-type="secret-word">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #f87171, #ef4444);">
                             <i class="fas fa-key"></i>
@@ -953,7 +819,6 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="algorithm-card" data-node-type="numbers-to-words">
                 <div class="algorithm-card" data-node-type="numbers-to-words">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #84cc16, #65a30d);">
@@ -978,7 +843,6 @@ class HelpSystem {
                 </div>
 
                 <div class="algorithm-card" data-node-type="math">
-                <div class="algorithm-card" data-node-type="math">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #facc15, #eab308);">
                             <i class="fas fa-calculator"></i>
@@ -1000,7 +864,6 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="algorithm-card" data-node-type="reverse">
                 <div class="algorithm-card" data-node-type="reverse">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #fb923c, #f97316);">
@@ -1025,7 +888,6 @@ class HelpSystem {
                 </div>
 
                 <div class="algorithm-card" data-node-type="case-transform">
-                <div class="algorithm-card" data-node-type="case-transform">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #c084fc, #a855f7);">
                             <i class="fas fa-text-height"></i>
@@ -1045,7 +907,6 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="algorithm-card" data-node-type="binary">
                 <div class="algorithm-card" data-node-type="binary">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
@@ -1083,6 +944,174 @@ class HelpSystem {
                         <h4>Пример:</h4>
                         <div class="example-input">Вход: МИР</div>
                         <div class="example-output">Выход: 55.7558, 37.6176 (Москва)<br>55.7558, 49.2076 (Иркутск)<br>61.2181, 73.4529 (Рига)</div>
+                    </div>
+                </div>
+
+                <div class="help-subtitle">Продвинутая обработка</div>
+
+                <div class="algorithm-card" data-node-type="multi-replacer">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Мульти-Замена</h3>
+                            <p>Множественная замена символов или слов по правилам</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Выполняет замену по списку правил "что→на что". Каждое правило записывается в отдельной строке.</p>
+                    <div class="example-box">
+                        <h4>Пример правил:</h4>
+                        <div class="example-input">а→@<br>е→3<br>о→0<br>кот→cat</div>
+                        <div class="example-input">Вход: "Привет кот"</div>
+                        <div class="example-output">Выход: "При3т cat"</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Особенности</h4>
+                        <p>• Замены выполняются последовательно<br>• Регистр символов учитывается<br>• Если правило пустое или некорректное, оно игнорируется</p>
+                    </div>
+                </div>
+
+                <div class="help-subtitle">Логические операции</div>
+
+                <div class="algorithm-card" data-node-type="text-router">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                            <i class="fas fa-sitemap"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Маршрутизатор Текста</h3>
+                            <p>Направляет текст по разным путям на основе условий</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Анализирует входной текст и направляет его в один из двух выходов в зависимости от заданного условия.</p>
+                    <div class="example-box">
+                        <h4>Доступные условия:</h4>
+                        <div class="example-input">• Содержит цифры → Выход 1, иначе → Выход 2</div>
+                        <div class="example-input">• Длина больше N символов → Выход 1, иначе → Выход 2</div>
+                        <div class="example-input">• Содержит определенные символы → Выход 1, иначе → Выход 2</div>
+                        <div class="example-output">Полезно для создания условных цепочек шифрования</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Особенности</h4>
+                        <p>• Один вход, два выхода<br>• Данные идут только в один из выходов<br>• Если условие не выполнено, данные идут во второй выход</p>
+                    </div>
+                </div>
+
+                <div class="algorithm-card" data-node-type="stream-merger">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Слияние Потоков</h3>
+                            <p>Объединяет несколько входных потоков в один выход</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Принимает данные с нескольких входов и объединяет их в один поток согласно выбранному методу слияния.</p>
+                    <div class="example-box">
+                        <h4>Методы слияния:</h4>
+                        <div class="example-input">• Конкатенация: "ABC" + "123" = "ABC123"</div>
+                        <div class="example-input">• Чередование: "ABC" + "123" = "A1B2C3"</div>
+                        <div class="example-input">• Через разделитель: "ABC" + "123" = "ABC | 123"</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Особенности</h4>
+                        <p>• Несколько входов, один выход<br>• Если входы пустые, они игнорируются<br>• Порядок входов влияет на результат</p>
+                    </div>
+                </div>
+
+                <div class="help-subtitle">Современные шифры</div>
+
+                <div class="algorithm-card" data-node-type="atbash">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">
+                            <i class="fas fa-retweet"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Шифр Атбаш</h3>
+                            <p>Замена каждой буквы на симметричную в алфавите</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Каждая буква заменяется на букву, стоящую на симметричной позиции с конца алфавита (А↔Я, Б↔Ю, В↔Э, и т.д.).</p>
+                    <div class="example-box">
+                        <h4>Пример:</h4>
+                        <div class="example-input">Вход: "ПРИВЕТ"</div>
+                        <div class="example-output">Выход: "ТКЛЕЗХ" (П→Т, Р→К, И→Л, В→Е, Е→З, Т→Х)</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Особенности</h4>
+                        <p>• Симметричное шифрование (шифрование = дешифрование)<br>• Поддерживает русский и английский алфавиты<br>• Цифры и символы остаются без изменений</p>
+                    </div>
+                </div>
+
+                <div class="algorithm-card" data-node-type="base64">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                            <i class="fas fa-file-export"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Base64 Кодировщик</h3>
+                            <p>Кодирование/декодирование в формат Base64</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Преобразует текст в Base64 - стандартный способ кодирования двоичных данных в текстовом формате.</p>
+                    <div class="example-box">
+                        <h4>Пример:</h4>
+                        <div class="example-input">Вход: "Привет"</div>
+                        <div class="example-output">Выход: "0J/RgNC40LLQtdGC" (Base64)</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Особенности</h4>
+                        <p>• Полностью обратимое кодирование<br>• Увеличивает размер текста примерно на 33%<br>• Использует символы A-Z, a-z, 0-9, +, /</p>
+                    </div>
+                </div>
+
+                <div class="help-subtitle">Забавные шифры</div>
+
+                <div class="algorithm-card" data-node-type="gawr-gura">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+                            <i class="fas fa-fish"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Акулий Шифр</h3>
+                            <p>Превращает текст в акульи звуки "a" разной длины</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Каждая буква кодируется как последовательность символов "a", где количество "a" соответствует позиции буквы в алфавите.</p>
+                    <div class="example-box">
+                        <h4>Пример:</h4>
+                        <div class="example-input">Вход: "КОТ"</div>
+                        <div class="example-output">К(12) → aaaaaaaaaaaa<br>О(16) → aaaaaaaaaaaaaaaa<br>Т(20) → aaaaaaaaaaaaaaaaaaaa</div>
+                        <div class="example-output">Результат: "aaaaaaaaaaaa aaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaa"</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Особенности</h4>
+                        <p>• Результат может быть очень длинным<br>• Пробелы разделяют закодированные буквы<br>• Поддерживает только буквы (цифры и символы игнорируются)</p>
+                    </div>
+                </div>
+
+                <div class="algorithm-card" data-node-type="uwu-ifier">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f472b6, #ec4899);">
+                            <i class="fas fa-grin-stars"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>UwU-фикатор (Шифр Няшек)</h3>
+                            <p>Превращает обычный текст в милый "uwu-speak"</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Применяет правила "uwu-speak": заменяет "r" и "l" на "w", добавляет смайлики и междометия.</p>
+                    <div class="example-box">
+                        <h4>Правила преобразования:</h4>
+                        <div class="example-input">• "r" и "l" → "w"<br>• "н" → "нь"<br>• В конце добавляются: UwU, OwO, >w<, ^w^</div>
+                        <div class="example-input">Вход: "Привет мир"</div>
+                        <div class="example-output">Выход: "Пвивет миw UwU"</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Потеря данных</h4>
+                        <p>Замены "r/l→w" и "н→нь" необратимы. При дешифровке невозможно восстановить исходные символы.</p>
                     </div>
                 </div>
                 
@@ -1239,6 +1268,70 @@ class HelpSystem {
                     </div>
                 </div>
 
+                <div class="algorithm-card">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f472b6, #ec4899);">
+                            <i class="fas fa-grin-stars"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>UwU-фикатор (Шифр Няшек)</h3>
+                            <p>Необратимые замены символов</p>
+                        </div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Потеря информации</h4>
+                        <p>Замены "r/l→w" и "н→нь" необратимы. При дешифровке невозможно различить исходные символы "r" и "l", "н" и "нь".</p>
+                    </div>
+                    <div class="example-box">
+                        <h4>Проблемные примеры:</h4>
+                        <div class="example-input">Вход: "real" и "weal" → оба становятся "weal"</div>
+                        <div class="example-input">Вход: "нота" и "ньота" → невозможно различить при дешифровке</div>
+                    </div>
+                </div>
+
+                <div class="algorithm-card">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+                            <i class="fas fa-fish"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Акулий шифр</h3>
+                            <p>Потеря различий между буквами одинаковой длины</p>
+                        </div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Потеря информации</h4>
+                        <p>Цифры, символы пунктуации и специальные символы полностью игнорируются и теряются.</p>
+                    </div>
+                    <div class="example-box">
+                        <h4>Проблемный пример:</h4>
+                        <div class="example-input">Вход: "КОТ-123!" → теряются "-", "1", "2", "3", "!"</div>
+                        <div class="example-output">Выход: только "КОТ" в виде "a" последовательностей</div>
+                    </div>
+                </div>
+
+                <div class="algorithm-card">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Мульти-замена</h3>
+                            <p>Последовательные замены могут создавать неоднозначность</p>
+                        </div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Потеря информации</h4>
+                        <p>Если правила замены пересекаются или применяются в неправильном порядке, может произойти потеря данных.</p>
+                    </div>
+                    <div class="example-box">
+                        <h4>Проблемный пример:</h4>
+                        <div class="example-input">Правила: "а→@" и "ар→#"</div>
+                        <div class="example-input">Слово "кар": если сначала а→@, то "к@р", потом нет "ар" для замены</div>
+                        <div class="example-output">Порядок правил критически важен!</div>
+                    </div>
+                </div>
+
                 <div class="help-subtitle">Рекомендации</div>
                 <div style="background: var(--accent-primary-10); border: 1px solid var(--accent-primary-30); border-radius: 8px; padding: 1.5rem; margin: 1rem 0;">
                     <h4 style="color: var(--accent-primary); margin: 0 0 1rem 0;">💡 Советы по избежанию потерь:</h4>
@@ -1246,6 +1339,8 @@ class HelpSystem {
                         <li>Включайте переключатель "Поддержка Ё" в нодах Морзе</li>
                         <li>Избегайте смешивания языков в A1Z26</li>
                         <li>Осторожно используйте "Числа в слова" с текстами, содержащими числительные</li>
+                        <li>В Мульти-замене тщательно продумывайте порядок правил</li>
+                        <li>Помните, что UwU-фикатор и Акулий шифр частично необратимы</li>
                         <li>Тестируйте цепочки в режиме дешифрования</li>
                         <li>Используйте нод "Монитор" для отслеживания изменений на каждом этапе</li>
                     </ul>
@@ -1282,11 +1377,6 @@ class HelpSystem {
                         <button class="example-load-btn" onclick="window.helpSystem.loadExample('simple-caesar')">
                             <i class="fas fa-download"></i> Загрузить пример
                         </button>
-                        <div class="example-input">[Ввод текста] → [Шифр Цезаря, сдвиг +3] → [Вывод текста]</div>
-                        <div class="example-output">Результат: "ПРИВЕТ" → "ТУЛЖЗЧ"</div>
-                        <button class="example-load-btn" onclick="window.helpSystem.loadExample('simple-caesar')">
-                            <i class="fas fa-download"></i> Загрузить пример
-                        </button>
                     </div>
                 </div>
 
@@ -1309,9 +1399,6 @@ class HelpSystem {
                         <button class="example-load-btn" onclick="window.helpSystem.loadExample('multilevel-encryption')">
                             <i class="fas fa-download"></i> Загрузить пример
                         </button>
-                        <button class="example-load-btn" onclick="window.helpSystem.loadExample('multilevel-encryption')">
-                            <i class="fas fa-download"></i> Загрузить пример
-                        </button>
                     </div>
                 </div>
 
@@ -1329,9 +1416,6 @@ class HelpSystem {
                         <h4>Схема:</h4>
                         <div class="example-input">[Ввод текста] → [Текст] ↘<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Шифр Виженера] → [Вывод]<br>[Секретное слово] → [Ключ] ↗</div>
                         <div class="example-output">Результат: полиалфавитное шифрование с вашим секретным словом</div>
-                        <button class="example-load-btn" onclick="window.helpSystem.loadExample('vigenere-with-secret')">
-                            <i class="fas fa-download"></i> Загрузить пример
-                        </button>
                         <button class="example-load-btn" onclick="window.helpSystem.loadExample('vigenere-with-secret')">
                             <i class="fas fa-download"></i> Загрузить пример
                         </button>
@@ -1357,9 +1441,6 @@ class HelpSystem {
                         <button class="example-load-btn" onclick="window.helpSystem.loadExample('planet-enchanter')">
                             <i class="fas fa-download"></i> Загрузить пример
                         </button>
-                        <button class="example-load-btn" onclick="window.helpSystem.loadExample('planet-enchanter')">
-                            <i class="fas fa-download"></i> Загрузить пример
-                        </button>
                     </div>
                     <p>💡 Можно использовать для создания квестов или головоломок!</p>
                 </div>
@@ -1381,33 +1462,8 @@ class HelpSystem {
                         <button class="example-load-btn" onclick="window.helpSystem.loadExample('cat-morse')">
                             <i class="fas fa-download"></i> Загрузить пример
                         </button>
-                        <div class="example-output">Результат: "КОТ" → "мрряyмяy мрряyмрряyмрряy мрряy"</div>
-                        <button class="example-load-btn" onclick="window.helpSystem.loadExample('cat-morse')">
-                            <i class="fas fa-download"></i> Загрузить пример
-                        </button>
                     </div>
                     <p>🐱 Отлично подходит для обучения основам криптографии в игровой форме!</p>
-                </div>
-
-                <div class="algorithm-card">
-                    <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #64748b, #475569);">
-                            <i class="fas fa-desktop"></i>
-                        </div>
-                        <div class="algorithm-info">
-                            <h3>Отладка с мониторами</h3>
-                            <p>Отслеживание промежуточных результатов</p>
-                        </div>
-                    </div>
-                    <div class="example-box">
-                        <h4>Схема:</h4>
-                        <div class="example-input">[Ввод] → [Числа в слова] → [Монитор] + [Цезарь] → [Монитор] + [Реверс] → [Вывод]</div>
-                        <div class="example-output">Результат: возможность видеть результат на каждом этапе обработки</div>
-                        <button class="example-load-btn" onclick="window.helpSystem.loadExample('monitoring-chain')">
-                            <i class="fas fa-download"></i> Загрузить пример
-                        </button>
-                    </div>
-                    <p>🔍 Полезно для понимания того, как работают сложные цепочки алгоритмов!</p>
                 </div>
 
                 <div class="algorithm-card">
@@ -1641,11 +1697,66 @@ class HelpSystem {
                     </div>
                 </div>
 
+                <div class="help-subtitle">Дополнительные возможности</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+                    <div class="algorithm-card">
+                        <div class="algorithm-header">
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #22d3ee, #06b6d4);">
+                                <i class="fas fa-mouse-pointer"></i>
+                            </div>
+                            <div class="algorithm-info">
+                                <h3>Shift + ПКМ</h3>
+                                <p>Быстрый разрыв соединения на точке</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="algorithm-card">
+                        <div class="algorithm-header">
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #f472b6, #ec4899);">
+                                <i class="fas fa-arrows-alt"></i>
+                            </div>
+                            <div class="algorithm-info">
+                                <h3>Колесо мыши</h3>
+                                <p>Масштабирование канваса</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="algorithm-card">
+                        <div class="algorithm-header">
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #84cc16, #65a30d);">
+                                <i class="fas fa-hand-paper"></i>
+                            </div>
+                            <div class="algorithm-info">
+                                <h3>Средняя кнопка / ПКМ</h3>
+                                <p>Панорамирование канваса</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div style="background: var(--accent-primary-10); border: 1px solid var(--accent-primary-30); border-radius: 8px; padding: 1.5rem; margin: 2rem 0;">
                     <h4 style="color: var(--accent-primary); margin: 0 0 1rem 0;">🌐 Поддержка русской раскладки</h4>
                     <p style="margin: 0; color: var(--text-secondary);">
                         Все горячие клавиши работают с русской раскладкой клавиатуры! В скобках указаны соответствующие русские буквы на тех же клавишах.
                     </p>
+                </div>
+
+                <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin: 1rem 0;">
+                    <h4 style="color: var(--text-primary); margin: 0 0 1rem 0;">🎵 Звуковые эффекты</h4>
+                    <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary);">
+                        При включенных звуковых эффектах в настройках вы услышите различные звуки:
+                    </p>
+                    <ul style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
+                        <li><strong>Соединение нодов:</strong> восходящий звук</li>
+                        <li><strong>Разрыв соединений:</strong> нисходящий звук</li>
+                        <li><strong>Создание нода:</strong> мажорный аккорд</li>
+                        <li><strong>Удаление нода:</strong> минорный аккорд</li>
+                        <li><strong>Переключение режимов:</strong> мелодичный переход</li>
+                        <li><strong>Сохранение/загрузка:</strong> подтверждающие звуки</li>
+                        <li><strong>Обработка шифра:</strong> быстрая трель</li>
+                    </ul>
                 </div>
             </div>
         `;

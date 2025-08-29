@@ -654,7 +654,6 @@ class SettingsSystem {
                 gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
                 
-                // === ИСПРАВЛЕНИЕ: Добавляем запуск перед планированием остановки ===
                 oscillator.start(audioContext.currentTime); 
                 oscillator.stop(audioContext.currentTime + 0.3);
                 return; 
@@ -665,14 +664,87 @@ class SettingsSystem {
                 gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.25);
                 
-                // === ИСПРАВЛЕНИЕ: Добавляем запуск перед планированием остановки ===
                 oscillator.start(audioContext.currentTime);
                 oscillator.stop(audioContext.currentTime + 0.25);
                 return;
             case 'node_create':
-                // Звук создания нода
+                // Звук создания нода - восходящий аккорд
                 oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
                 oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
+                oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2); // G5
+                gainNode.gain.setValueAtTime(0.12, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+                return;
+            case 'node_delete':
+                // Звук удаления нода - нисходящий
+                oscillator.frequency.setValueAtTime(659, audioContext.currentTime); // E5
+                oscillator.frequency.setValueAtTime(523, audioContext.currentTime + 0.1); // C5
+                oscillator.frequency.setValueAtTime(392, audioContext.currentTime + 0.2); // G4
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.25);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.25);
+                return;
+            case 'cipher_process':
+                // Звук обработки шифра - быстрая трель
+                oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(554, audioContext.currentTime + 0.05);
+                oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1);
+                oscillator.frequency.setValueAtTime(440, audioContext.currentTime + 0.15);
+                break;
+            case 'success':
+                // Звук успеха - мажорный аккорд
+                oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+                oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.05); // E5
+                oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.1); // G5
+                oscillator.frequency.setValueAtTime(1047, audioContext.currentTime + 0.15); // C6
+                gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.4);
+                return;
+            case 'error':
+                // Звук ошибки - диссонанс
+                oscillator.frequency.setValueAtTime(220, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(233, audioContext.currentTime + 0.1);
+                oscillator.frequency.setValueAtTime(196, audioContext.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+                return;
+            case 'hover':
+                // Тихий звук при наведении
+                oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.03, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+                return;
+            case 'mode_switch':
+                // Звук переключения режима шифрования/дешифрования
+                oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(880, audioContext.currentTime + 0.1);
+                oscillator.frequency.setValueAtTime(440, audioContext.currentTime + 0.2);
+                break;
+            case 'file_save':
+                // Звук сохранения файла
+                oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+                oscillator.frequency.setValueAtTime(698, audioContext.currentTime + 0.1); // F5
+                oscillator.frequency.setValueAtTime(523, audioContext.currentTime + 0.2); // C5
+                break;
+            case 'file_load':
+                // Звук загрузки файла
+                oscillator.frequency.setValueAtTime(392, audioContext.currentTime); // G4
+                oscillator.frequency.setValueAtTime(523, audioContext.currentTime + 0.1); // C5
+                oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.2); // E5
                 break;
             default:
                 oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
