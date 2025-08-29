@@ -282,6 +282,9 @@ class CipherEngine {
                 case 'stream-merger':
                     return this.processStreamMerger(node, inputData, allNodeResults);
                     
+                case 'stream-splitter':
+                    return this.processStreamSplitter(node, inputData, allNodeResults);
+                    
                 case 'atbash':
                     return this.processAtbash(nodeData, inputData);
                     
@@ -1746,6 +1749,34 @@ class CipherEngine {
             default:
                 return ''; // Безопасное значение по умолчанию
         }
+    }
+    
+    processStreamSplitter(node, inputData, allNodeResults) {
+        const isReverseMode = window.connectionManager?.reverseMode;
+        const nodeData = node.data;
+        const mode = nodeData.fields?.find(f => f.name === 'mode')?.value || 'alternating_chars';
+
+        if (isReverseMode) {
+            // В режиме дешифровки Stream Splitter работает как Stream Merger
+            const streamA = inputData.streamA || '';
+            const streamB = inputData.streamB || '';
+            
+            switch (mode) {
+                case 'alternating_chars':
+                    return this.mergeAlternatingChars(streamA, streamB);
+                case 'alternating_words':
+                    return this.mergeAlternatingWords(streamA, streamB);
+                case 'alternating_lines':
+                    return this.mergeAlternatingLines(streamA, streamB);
+                default:
+                    return '';
+            }
+        }
+
+        // Логика прямого режима (разделение одного потока на два)
+        if (typeof inputData !== 'string') inputData = '';
+        const { streamA, streamB } = this.unmergeStreams(inputData, mode);
+        return { streamA, streamB };
     }
 
     // Добавьте этот универсальный метод для разделения (если его еще нет)

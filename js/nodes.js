@@ -633,6 +633,29 @@ class NodeManager {
                     { name: 'streamB', label: 'Поток Б', color: '#f59e0b' }
                 ]
             },
+            'stream-splitter': {
+                title: 'Разрез Потоков',
+                icon: 'fas fa-cut',
+                fields: [
+                    {
+                        name: 'mode',
+                        type: 'select',
+                        label: 'Режим разреза',
+                        value: 'alternating_chars',
+                        options: [
+                            { value: 'alternating_chars', label: 'Разделение по символам (AB...→A,B)' },
+                            { value: 'alternating_words', label: 'Разделение по словам (A B...→A,B)' },
+                            { value: 'alternating_lines', label: 'Разделение по строкам (A\\nB...→A,B)' }
+                        ]
+                    }
+                ],
+                hasInput: true,
+                hasOutput: false,
+                multipleOutputs: [
+                    { name: 'streamA', label: 'Поток А', color: '#3b82f6' },
+                    { name: 'streamB', label: 'Поток Б', color: '#f59e0b' }
+                ]
+            },
             // === КАТЕГОРИЯ 3: НОВЫЕ ШИФРЫ И КОДИРОВЩИКИ ===
             'atbash': {
                 title: 'Шифр Атбаш',
@@ -746,27 +769,14 @@ class NodeManager {
                 inputPoint.dataset.nodeId = nodeId;
                 inputPoint.dataset.type = 'input';
                 inputPoint.dataset.inputName = input.name;
+                inputPoint.setAttribute('data-input-label', input.label); // Store label for tooltip
                 // Опускаем входы ниже, чтобы не накладывались на заголовок
                 inputPoint.style.top = `${80 + index * 35}px`;
                 if (input.color) {
                     inputPoint.style.backgroundColor = input.color;
                 }
                 
-                // Добавляем label для входа
-                const label = document.createElement('span');
-                label.className = 'input-label';
-                label.textContent = input.label;
-                label.style.position = 'absolute';
-                label.style.left = '25px';
-                // Также опускаем labels
-                label.style.top = `${75 + index * 35}px`;
-                label.style.fontSize = '0.75rem';
-                label.style.color = 'var(--text-muted)';
-                label.style.userSelect = 'none';
-                label.style.whiteSpace = 'nowrap';
-                
                 nodeElement.appendChild(inputPoint);
-                nodeElement.appendChild(label);
             });
         }
         
@@ -786,26 +796,14 @@ class NodeManager {
                 outputPoint.dataset.nodeId = nodeId;
                 outputPoint.dataset.type = 'output';
                 outputPoint.dataset.outputName = output.name;
+                outputPoint.setAttribute('data-output-label', output.label); // Store label for tooltip
                 // Размещаем выходы справа
                 outputPoint.style.top = `${80 + index * 35}px`;
                 if (output.color) {
                     outputPoint.style.backgroundColor = output.color;
                 }
                 
-                // Добавляем label для выхода
-                const label = document.createElement('span');
-                label.className = 'output-label';
-                label.textContent = output.label;
-                label.style.position = 'absolute';
-                label.style.right = '25px';
-                label.style.top = `${75 + index * 35}px`;
-                label.style.fontSize = '0.75rem';
-                label.style.color = 'var(--text-muted)';
-                label.style.userSelect = 'none';
-                label.style.whiteSpace = 'nowrap';
-                
                 nodeElement.appendChild(outputPoint);
-                nodeElement.appendChild(label);
             });
         }
         
