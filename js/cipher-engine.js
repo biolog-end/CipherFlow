@@ -133,7 +133,6 @@ class CipherEngine {
                 if (isNormalStartNode || isReverseStartNode) {
                     inputData = initialInputText;
                 } else {
-                    // === КЛЮЧЕВОЕ ИЗМЕНЕНИЕ №2: НАДЕЖНОЕ ПОЛУЧЕНИЕ ДАННЫХ ===
                     const sourceConnections = isReverseMode ? connections.outputs : connections.inputs;
                     
                     if (node.data.multipleInputs && !isReverseMode) { // Для слияния в прямом режиме
@@ -141,8 +140,41 @@ class CipherEngine {
                         sourceConnections.forEach(conn => {
                             const inputName = conn.inputName || 'default';
                             const sourceNodeId = conn.fromNodeId;
-                            // Если у источника еще нет результата, передаем пустую строку
-                            inputData[inputName] = nodeResults.get(sourceNodeId) || '';
+                            const sourceNode = window.nodeManager.nodes.get(sourceNodeId);
+                            const sourceResult = nodeResults.get(sourceNodeId);
+
+                            // Проверяем, если источник - это разделитель потока
+                            if (sourceNode && sourceNode.type === 'stream-splitter' && typeof sourceResult === 'object') {
+                                // Извлекаем нужный поток по имени выхода, к которому мы подключены
+                                const outputName = conn.fromOutputName; 
+                                inputData[inputName] = (sourceResult || {})[outputName] || '';
+                            } else {
+                                // Стандартная логика для всех остальных нодов
+                                inputData[inputName] = sourceResult || '';
+                            }
+                        });
+                    } else if (node.data.multipleOutputs && isReverseMode) { 
+                        inputData = {};
+                        sourceConnections.forEach(conn => {
+                            const sourceNodeId = conn.toNodeId; // ID нода-источника (в нашем случае, Соединителя)
+                            const sourceNode = window.nodeManager.nodes.get(sourceNodeId);
+                            const sourceResult = nodeResults.get(sourceNodeId); // Результат работы источника (объект {streamA, streamB})
+                            
+                            const originalConnection = Array.from(window.connectionManager.connections.values())
+                                .find(c => c.id === conn.connectionId);
+                            
+                            if (originalConnection) {
+                                const inputName = originalConnection.from.outputName || 'default'; // Имя "входа" для Разделителя ('streamA' или 'streamB')
+
+                                // ДОБАВЛЕНА ПРОВЕРКА: Если источник - это Соединитель (работающий как разделитель) и его результат - объект,
+                                // то мы извлекаем из этого объекта только нужную нам часть.
+                                if (sourceNode && sourceNode.type === 'stream-merger' && typeof sourceResult === 'object') {
+                                    inputData[inputName] = (sourceResult || {})[inputName] || ''; 
+                                } else {
+                                    // В противном случае, работаем как раньше.
+                                    inputData[inputName] = sourceResult || '';
+                                }
+                            }
                         });
                     } else if (sourceConnections.length > 0) { // Для всех остальных нодов
                         const sourceConn = sourceConnections[0];
@@ -176,8 +208,11 @@ class CipherEngine {
                                 } else {
                                     inputData = '';
                                 }
+                            } else if (sourceNode.type === 'stream-splitter' && !isReverseMode) {
+                                const outputName = sourceConn.fromOutputName; 
+                                inputData = sourceResult[outputName] || '';
                             } else {
-                            inputData = sourceResult;
+                                inputData = sourceResult;
                             }
                         } else {
                             inputData = sourceResult;
@@ -281,6 +316,9 @@ class CipherEngine {
                     
                 case 'stream-merger':
                     return this.processStreamMerger(node, inputData, allNodeResults);
+                    
+                case 'stream-splitter':
+                    return this.processStreamSplitter(node, inputData, allNodeResults);
                     
                 case 'atbash':
                     return this.processAtbash(nodeData, inputData);
@@ -646,6 +684,19 @@ class CipherEngine {
                         }
                     }
                 });
+                if (node.element) {
+                        const titleElement = node.element.querySelector('.node-title');
+                        const iconElement = node.element.querySelector('.node-header i');
+
+                        if (titleElement && node.data.title) {
+                            titleElement.textContent = node.data.title;
+                        }
+                        if (iconElement && node.data.icon) {
+                            // Просто заменяем классы иконки на сохраненные.
+                            iconElement.className = node.data.icon;
+                        }
+                    }
+                    
             }
         }
 
@@ -1746,6 +1797,34 @@ class CipherEngine {
             default:
                 return ''; // Безопасное значение по умолчанию
         }
+    }
+    
+    processStreamSplitter(node, inputData, allNodeResults) {
+        const isReverseMode = window.connectionManager?.reverseMode;
+        const nodeData = node.data;
+        const mode = nodeData.fields?.find(f => f.name === 'mode')?.value || 'alternating_chars';
+
+        if (isReverseMode) {
+            // В режиме дешифровки Stream Splitter работает как Stream Merger
+            const streamA = inputData.streamA || '';
+            const streamB = inputData.streamB || '';
+            
+            switch (mode) {
+                case 'alternating_chars':
+                    return this.mergeAlternatingChars(streamA, streamB);
+                case 'alternating_words':
+                    return this.mergeAlternatingWords(streamA, streamB);
+                case 'alternating_lines':
+                    return this.mergeAlternatingLines(streamA, streamB);
+                default:
+                    return '';
+            }
+        }
+
+        // Логика прямого режима (разделение одного потока на два)
+        if (typeof inputData !== 'string') inputData = '';
+        const { streamA, streamB } = this.unmergeStreams(inputData, mode);
+        return { streamA, streamB };
     }
 
     // Добавьте этот универсальный метод для разделения (если его еще нет)

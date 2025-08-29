@@ -608,6 +608,12 @@ input:checked + .slider {
     transform: none;
 }
 
+.connection-point.output.multiple {
+    position: absolute;
+    right: -8px; 
+    transform: none; 
+}
+
 /* Метки для множественных входов */
 .input-label {
     font-size: 0.75rem;
