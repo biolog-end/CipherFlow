@@ -748,11 +748,24 @@ class NodeManager {
         
         // Если это монитор, добавляем дисплей
         if (nodeData.isMonitor) {
+            const displayWrapper = document.createElement('div');
+            displayWrapper.style.position = 'relative'; // Обертка для позиционирования кнопки
+
             const display = document.createElement('div');
             display.className = 'monitor-display';
             display.dataset.nodeId = nodeId;
             display.textContent = 'Ожидание данных...';
-            content.appendChild(display);
+            
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'monitor-copy-btn';
+            copyBtn.title = 'Скопировать содержимое';
+            copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+            copyBtn.onclick = () => this.copyMonitorContent(nodeId); // Используем this
+            
+            displayWrapper.appendChild(display);
+            displayWrapper.appendChild(copyBtn);
+            content.appendChild(displayWrapper);
+
         }
         
         // Добавляем поля
@@ -1328,6 +1341,28 @@ class NodeManager {
                 console.error('Ошибка обработки условной видимости:', e);
             }
         });
+    }
+    
+    async copyMonitorContent(nodeId) {
+        const node = this.nodes.get(nodeId);
+        if (!node || !node.element) return;
+
+        const display = node.element.querySelector('.monitor-display');
+        if (!display) return;
+
+        const textToCopy = display.innerText;
+
+        try {
+            await navigator.clipboard.writeText(textToCopy);
+            if (window.fileManager) {
+                window.fileManager.showNotification('Содержимое монитора скопировано!', 'success');
+            }
+        } catch (err) {
+            console.error('Ошибка копирования:', err);
+            if (window.fileManager) {
+                window.fileManager.showNotification('Не удалось скопировать', 'error');
+            }
+        }
     }
 }
 

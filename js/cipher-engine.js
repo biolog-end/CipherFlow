@@ -973,6 +973,28 @@ class CipherEngine {
         return inputData; 
     }
 
+    async copyMonitorContent(nodeId) {
+        const node = this.nodes.get(nodeId);
+        if (!node || !node.element) return;
+
+        const display = node.element.querySelector('.monitor-display');
+        if (!display) return;
+
+        const textToCopy = display.innerText;
+
+        try {
+            await navigator.clipboard.writeText(textToCopy);
+            if (window.fileManager) {
+                window.fileManager.showNotification('Содержимое монитора скопировано!', 'success');
+            }
+        } catch (err) {
+            console.error('Ошибка копирования:', err);
+            if (window.fileManager) {
+                window.fileManager.showNotification('Не удалось скопировать', 'error');
+            }
+        }
+    }
+
     _decodeCatMorseWord(word) {
         let result = '';
         let remainingWord = word;
