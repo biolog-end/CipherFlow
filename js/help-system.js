@@ -784,16 +784,26 @@ class HelpSystem {
                             <i class="fas fa-shield-alt"></i>
                         </div>
                         <div class="algorithm-info">
-                            <h3>Шифр Виженера</h3>
-                            <p>Полиалфавитный шифр с ключевым словом</p>
+                            <h3>Шифр Виженера / Бофора</h3>
+                            <p>Полиалфавитный шифр с двумя режимами работы</p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Каждая буква текста сдвигается на количество позиций, соответствующее букве ключа в том же положении.</p>
+                    <p><strong>Принцип работы:</strong> Шифр с двумя режимами: классический Виженер и шифр Бофора.</p>
                     <div class="example-box">
-                        <h4>Пример (ключ: КОТ):</h4>
-                        <div class="example-input">Текст: ПРИВЕТ</div>
-                        <div class="example-input">Ключ: КОТКО(Т)</div>
-                        <div class="example-output">Результат: П+К=Э, Р+О=Е, И+Т=Б, В+К=И, Е+О=С, Т+Т=М → ЕБИСМ</div>
+                        <h4>Режим Виженер (ключ: КОТ):</h4>
+                        <div class="example-input">Формула: (Текст + Ключ) mod m</div>
+                        <div class="example-input">Текст: ПРИВЕТ, Ключ: КОТКО(Т)</div>
+                        <div class="example-output">Результат: П+К=Э, Р+О=Е, И+Т=Б → ЕБИСМ</div>
+                    </div>
+                    <div class="example-box">
+                        <h4>Режим Бофор (ключ: КОТ):</h4>
+                        <div class="example-input">Формула: (Ключ - Текст) mod m</div>
+                        <div class="example-input">Текст: ПРИВЕТ, Ключ: КОТКО(Т)</div>
+                        <div class="example-output">Результат: К-П=Ь, О-Р=Ч, Т-И=Л → ЬЧЛФПВ</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Шифр Бофора</h4>
+                        <p>• Реципрокный (инволютивный) шифр<br>• Дешифровка = повторное применение с тем же ключом<br>• Формула одинакова для шифровки и дешифровки</p>
                     </div>
                     <div class="data-loss-warning">
                         <h4>Особенности</h4>
@@ -818,6 +828,109 @@ class HelpSystem {
                         <div class="example-output">Использование: подключить к ключевому входу Виженера</div>
                     </div>
                 </div>
+
+                <div class="algorithm-card" data-node-type="complex-substitution">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #dc2626, #b91c1c);">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Шифр сложной замены</h3>
+                            <p>Пользовательский алфавит замены на основе ключа с любыми символами</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Создает уникальный алфавит для замены, используя ключ с любыми символами. Ключ обрабатывается: удаляются повторения, разделяется на алфавитную и неалфавитную части, неалфавитные символы добавляются в начало нового алфавита.</p>
+                    <div class="example-box">
+                        <h4>Пример (ключ: "Кот!#", русский алфавит):</h4>
+                        <div class="example-input">Базовый алфавит: абвгдеёжзийклмнопрстуфхцчшщъыьэюя</div>
+                        <div class="example-input">Обработка ключа: кот!# → алфавитная часть: кот, неалфавитная: !#</div>
+                        <div class="example-input">Новый алфавит: !#котабвгдеёжзийклмнпрсуфхцчшщъыьэ</div>
+                        <div class="example-output">Шифрование "бак": б→#, а→!, к→ж → "#!ж"</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Особенности</h4>
+                        <p>• Поддерживает русский и английский алфавиты<br>• Ключ может содержать любые символы<br>• Реверсивный: та же операция для шифровки и дешифровки</p>
+                    </div>
+                </div>
+
+                <div class="algorithm-card" data-node-type="simple-substitution">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ea580c, #dc2626);">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Шифр простой замены</h3>
+                            <p>Классический шифр замены с ключевым словом</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Создает алфавит замены, где в начале идут уникальные буквы ключа, за ними — остальные буквы алфавита. Работает с русским и английским алфавитами одновременно, не смешивая их.</p>
+                    <div class="example-box">
+                        <h4>Пример (ключ: "cipher"):</h4>
+                        <div class="example-input">Английский алфавит: abcdefghijklmnopqrstuvwxyz</div>
+                        <div class="example-input">Новый алфавит: cipherabdfgjklmnoqstuvwxyz</div>
+                        <div class="example-output">Шифрование "attack": a→c, t→t, c→p, k→j → "cttcpj"</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Особенности</h4>
+                        <p>• Одновременная работа с двумя алфавитами<br>• Русские буквы заменяются по русскому словарю<br>• Английские — по английскому</p>
+                    </div>
+                </div>
+
+                <div class="algorithm-card" data-node-type="route-transposition">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #7c2d12, #92400e);">
+                            <i class="fas fa-route"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Шифр маршрутной перестановки</h3>
+                            <p>Перестановка символов через матричную запись текста</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Текст записывается в матрицу по строкам, ширина которой равна длине ключа. Порядок считывания столбцов определяется алфавитным порядком букв ключа.</p>
+                    <div class="example-box">
+                        <h4>Пример (ключ: "КОД"):</h4>
+                        <div class="example-input">Текст: ПРИВЕТСТВУЮ</div>
+                        <div class="example-input">Порядок столбцов: Д(1), К(2), О(3)</div>
+                        <div class="example-input">Матрица:
+К О Д
+П Р И
+В Е Т
+С Т В
+У Ю  </div>
+                        <div class="example-output">Считывание по столбцам: И+Т+В + П+В+С+У + Р+Е+Т+Ю = "ИТВПВСУРЕТЮ"</div>
+                    </div>
+                </div>
+
+                <div class="help-subtitle">Сжатие данных</div>
+
+                <div class="algorithm-card" data-node-type="rle-compression">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #059669, #047857);">
+                            <i class="fas fa-compress-arrows-alt"></i>
+                        </div>
+                        <div class="algorithm-info">
+                            <h3>Сжатие RLE</h3>
+                            <p>Кодирование длин серий (Run Length Encoding)</p>
+                        </div>
+                    </div>
+                    <p><strong>Принцип работы:</strong> Алгоритм сжатия, который заменяет последовательности одинаковых символов на количество повторений и сам символ.</p>
+                    <div class="example-box">
+                        <h4>Пример сжатия:</h4>
+                        <div class="example-input">Текст: ААААААБББВВГГГГГ</div>
+                        <div class="example-output">Результат: 6А3Б2В5Г</div>
+                    </div>
+                    <div class="example-box">
+                        <h4>Пример декомпрессии:</h4>
+                        <div class="example-input">Текст: 6А3Б2В5Г</div>
+                        <div class="example-output">Результат: ААААААБББВВГГГГГ</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Особенности</h4>
+                        <p>• Не является шифром — алгоритм сжатия<br>• Эффективен для текстов с повторяющимися символами<br>• Полностью обратимый процесс</p>
+                    </div>
+                </div>
+
+                <div class="help-subtitle">Преобразования</div>
 
                 <div class="algorithm-card" data-node-type="numbers-to-words">
                     <div class="algorithm-header">
@@ -871,7 +984,7 @@ class HelpSystem {
                         </div>
                         <div class="algorithm-info">
                             <h3>Обратить текст</h3>
-                            <p>Реверс всего текста или отдельных слов</p>
+                            <p>Реверс всего текста, отдельных слов или режим "Змейка"</p>
                         </div>
                     </div>
                     <p><strong>Принцип работы:</strong> Изменяет порядок символов в тексте в обратном направлении.</p>
@@ -884,6 +997,21 @@ class HelpSystem {
                         <h4>Режим "По словам":</h4>
                         <div class="example-input">Вход: ПРИВЕТ МИР</div>
                         <div class="example-output">Выход: ТЕВИРП РИМ</div>
+                    </div>
+                    <div class="example-box">
+                        <h4>Режим "Змейка (Бустрофедон)":</h4>
+                        <div class="example-input">Вход: 
+Первая строка
+Вторая строка
+Третья строка</div>
+                        <div class="example-output">Выход:
+Первая строка
+акортс яаротВ
+Третья строка</div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4>Режим "Змейка"</h4>
+                        <p>• Каждая четная строка (2-я, 4-я, 6-я...) переворачивается<br>• Нечетные строки остаются без изменений<br>• Операция является своей собственной инверсией</p>
                     </div>
                 </div>
 

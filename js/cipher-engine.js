@@ -256,16 +256,14 @@ class CipherEngine {
     
     processNode(node, inputData, allNodeResults) {
         const nodeData = node.data;
-        
+        const isReverse = window.connectionManager?.reverseMode;
+
         try {
             switch (node.type) {
                 case 'input':
                     return this.processInputNode(node, inputData);
                     
                 case 'output':
-                    // В режиме шифрования output нод просто возвращает то, что получил.
-                    // В режиме расшифровки он является стартовой точкой, и его обработка
-                    // происходит в executeChain, поэтому здесь тоже просто возвращаем inputData.
                     return inputData;
                     
                 case 'caesar':
@@ -291,7 +289,7 @@ class CipherEngine {
                     
                 case 'vigenere':
                     return this.processVigenereCipher(node, inputData, allNodeResults);
-                    
+
                 case 'a1z26':
                     return this.processA1Z26(nodeData, inputData);
                     
@@ -307,7 +305,6 @@ class CipherEngine {
                 case 'planet-enchanter':
                     return this.processPlanetEnchanter(nodeData, inputData);
                     
-                // === НОВЫЕ НОДЫ ===
                 case 'multi-replacer':
                     return this.processMultiReplacer(nodeData, inputData);
                     
@@ -331,6 +328,18 @@ class CipherEngine {
                     
                 case 'uwu-ifier':
                     return this.processUwuIfier(nodeData, inputData);
+                    
+                case 'complex-substitution':
+                    return this.processComplexSubstitution(node, inputData, allNodeResults);
+                    
+                case 'simple-substitution':
+                    return this.processSimpleSubstitution(node, inputData, allNodeResults);
+                    
+                case 'rle-compression':
+                    return this.processRleCompression(nodeData, inputData);
+                    
+                case 'route-transposition':
+                    return this.processRouteTransposition(node, inputData, allNodeResults);
                     
                 default:
                     return inputData;
@@ -561,6 +570,12 @@ class CipherEngine {
             return text.split('').reverse().join('');
         } else if (mode === 'words') {
             return text.split(' ').map(word => word.split('').reverse().join('')).join(' ');
+        } else if (mode === 'boustrophedon') {
+            const words = text.split(' ');
+            return words.map((word, index) => {
+                
+                return index % 2 === 1 ? word.split('').reverse().join('') : word;
+            }).join(' '); 
         }
         
         return text;
@@ -751,9 +766,13 @@ class CipherEngine {
 
     processVigenereCipher(node, inputData, allNodeResults) {
         const isReverse = window.connectionManager?.reverseMode || false;
+        
+        // Получаем режим шифра (обычный Виженер или Бофор)
+        const modeField = node.data.fields.find(f => f.name === 'mode');
+        const mode = modeField?.value || 'vigenere';
 
         if (isReverse) {
-            // Логика дешифровки, которая была исправлена в прошлый раз, остается корректной
+            // Логика дешифровки
             const textToDecrypt = inputData || '';
             let key = 'DEFAULT_KEY';
 
@@ -769,18 +788,18 @@ class CipherEngine {
                 }
             }
             
-            return this.vigenereTransform(textToDecrypt, key, false);
+            return this.vigenereTransform(textToDecrypt, key, false, mode);
 
         } else { // Режим шифрования
             // [ИСПРАВЛЕНО] Корректно обрабатываем ситуацию, когда текст не подан на вход
             const textToEncrypt = (typeof inputData === 'object' && inputData !== null) ? (inputData.text || '') : (inputData || '');
             const key = (typeof inputData === 'object' && inputData !== null) ? (inputData.key || 'DEFAULT_KEY') : 'DEFAULT_KEY';
             
-            return this.vigenereTransform(textToEncrypt, key, true);
+            return this.vigenereTransform(textToEncrypt, key, true, mode);
         }
     }
     
-    vigenereTransform(text, key, encrypt = true) {
+    vigenereTransform(text, key, encrypt = true, mode = 'vigenere') {
         if (!key || typeof text !== 'string') return text;
 
         const russianAlphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'; // 33 буквы
@@ -820,10 +839,17 @@ class CipherEngine {
                 const charIndex = alphabet.indexOf(upperChar);
                 let newIndex;
                 
-                if (encrypt) {
-                    newIndex = (charIndex + keyShift) % alphabet.length;
-                } else { // decrypt
-                    newIndex = (charIndex - keyShift + alphabet.length) % alphabet.length;
+                if (mode === 'beaufort') {
+                    // Шифр Бофора: (Ключ - Текст) mod m
+                    // Для шифровки и дешифровки используется одна и та же формула
+                    newIndex = (keyShift - charIndex + alphabet.length) % alphabet.length;
+                } else {
+                    // Обычный Виженер
+                    if (encrypt) {
+                        newIndex = (charIndex + keyShift) % alphabet.length;
+                    } else { // decrypt
+                        newIndex = (charIndex - keyShift + alphabet.length) % alphabet.length;
+                    }
                 }
                 
                 const newChar = alphabet[newIndex];
@@ -2075,7 +2101,304 @@ class CipherEngine {
         return uwuifiedWords.join(' ');
     }
     
-    // Вспомогательный метод для получения данных из множественных входов
+    processComplexSubstitution(node, inputData, allNodeResults) {
+        const isReverse = window.connectionManager?.reverseMode;
+
+        let text, key;
+
+        if (isReverse) {
+           
+            text = inputData || '';
+            key = '';
+            const connections = window.connectionManager.getNodeConnections(node.id);
+            const keyConnection = connections.inputs.find(c => c.inputName === 'key');
+            if (keyConnection) {
+                const keySourceNode = window.nodeManager.nodes.get(keyConnection.fromNodeId);
+                if (keySourceNode) {
+                    
+                    key = this.processNode(keySourceNode, null, allNodeResults);
+                }
+            }
+        } else {
+            
+            text = (typeof inputData === 'object' && inputData !== null) ? (inputData.text || '') : '';
+            key = (typeof inputData === 'object' && inputData !== null) ? (inputData.key || '') : '';
+        }
+
+        const decryptField = node.data.fields.find(f => f.name === 'decrypt');
+        const decrypt = decryptField ? decryptField.value : false;
+        const actualDecrypt = isReverse ? !decrypt : decrypt;
+
+        const langField = node.data.fields.find(f => f.name === 'language');
+        const language = langField ? langField.value : 'ru';
+        
+        const baseAlphabet = language === 'ru' ? 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя' : 'abcdefghijklmnopqrstuvwxyz';
+        const substitutionAlphabet = this.generateComplexSubstitutionAlphabet(key, baseAlphabet);
+
+        const fromAlphabet = actualDecrypt ? substitutionAlphabet : baseAlphabet;
+        const toAlphabet = actualDecrypt ? baseAlphabet : substitutionAlphabet;
+
+        const substitutionMap = {};
+        for (let i = 0; i < fromAlphabet.length; i++) {
+            substitutionMap[fromAlphabet[i]] = toAlphabet[i];
+        }
+
+        return text.split('').map(char => {
+            const lowerChar = char.toLowerCase();
+            const resultChar = substitutionMap[lowerChar];
+            if (resultChar === undefined) return char;
+            return char === lowerChar ? resultChar : resultChar.toUpperCase();
+        }).join('');
+    }
+    
+    generateComplexSubstitutionAlphabet(key, baseAlphabet) {
+        if (!key) return baseAlphabet;
+
+        const processedKey = [...new Set(key.toLowerCase().split(''))].join('');
+        
+        const alphabetPart = [];
+        const nonAlphabetPart = [];
+        
+        for (const char of processedKey) {
+            if (baseAlphabet.includes(char)) {
+                alphabetPart.push(char);
+            } else {
+                nonAlphabetPart.push(char);
+            }
+        }
+        
+        const remainingChars = baseAlphabet.split('').filter(char => !alphabetPart.includes(char));
+        let newAlphabet = [...alphabetPart, ...remainingChars];
+        
+        newAlphabet.unshift(...nonAlphabetPart);
+        
+        return newAlphabet.slice(0, baseAlphabet.length).join('');
+    }
+    
+    processSimpleSubstitution(node, inputData, allNodeResults) {
+        const isReverse = window.connectionManager?.reverseMode;
+
+        let text, key;
+
+        if (isReverse) {
+            text = inputData || '';
+            key = '';
+            const connections = window.connectionManager.getNodeConnections(node.id);
+            const keyConnection = connections.inputs.find(c => c.inputName === 'key');
+            if (keyConnection) {
+                const keySourceNode = window.nodeManager.nodes.get(keyConnection.fromNodeId);
+                if (keySourceNode) {
+                    key = this.processNode(keySourceNode, null, allNodeResults);
+                }
+            }
+        } else {
+            text = (typeof inputData === 'object' && inputData !== null) ? (inputData.text || '') : '';
+            key = (typeof inputData === 'object' && inputData !== null) ? (inputData.key || '') : '';
+        }
+
+        const decryptField = node.data.fields.find(f => f.name === 'decrypt');
+        const decrypt = decryptField ? decryptField.value : false;
+        const actualDecrypt = isReverse ? !decrypt : decrypt;
+
+        const ruAlphabet = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя';
+        const enAlphabet = 'abcdefghijklmnopqrstuvwxyz';
+
+        const ruSubst = this.generateSimpleSubstitutionAlphabet(key, ruAlphabet);
+        const enSubst = this.generateSimpleSubstitutionAlphabet(key, enAlphabet);
+        
+        const ruMap = this.createSubstitutionMap(ruAlphabet, ruSubst, actualDecrypt);
+        const enMap = this.createSubstitutionMap(enAlphabet, enSubst, actualDecrypt);
+
+        return text.split('').map(char => {
+            const lowerChar = char.toLowerCase();
+            let resultChar;
+            if (ruAlphabet.includes(lowerChar)) {
+                resultChar = ruMap[lowerChar];
+            } else if (enAlphabet.includes(lowerChar)) {
+                resultChar = enMap[lowerChar];
+            } else {
+                return char;
+            }
+            return char === lowerChar ? resultChar : resultChar.toUpperCase();
+        }).join('');
+    }
+
+    generateSimpleSubstitutionAlphabet(key, baseAlphabet) {
+        if (!key) return baseAlphabet;
+        const uniqueKeyChars = [...new Set(key.toLowerCase().split(''))].filter(char => baseAlphabet.includes(char));
+        const remainingChars = baseAlphabet.split('').filter(char => !uniqueKeyChars.includes(char));
+        return [...uniqueKeyChars, ...remainingChars].join('');
+    }
+    
+    createSubstitutionMap(fromAlphabet, toAlphabet, reverse = false) {
+        const map = {};
+        const source = reverse ? toAlphabet : fromAlphabet;
+        const target = reverse ? fromAlphabet : toAlphabet;
+        for (let i = 0; i < source.length; i++) {
+            map[source[i]] = target[i];
+        }
+        return map;
+    }
+
+
+    // --- Узел сжатия (RLE) ---
+processRleCompression(nodeData, text) {
+        if (!text) return '';
+        const isReverse = window.connectionManager?.reverseMode;
+
+        const decryptField = nodeData.fields.find(f => f.name === 'decrypt');
+        const decrypt = decryptField ? decryptField.value : false;
+        const actualDecrypt = isReverse ? !decrypt : decrypt;
+
+        const OPEN = '#';
+        const START_PATTERN = '[';
+        const END_PATTERN = ']';
+
+        if (actualDecrypt) { // Декомпрессия
+            // Это регулярное выражение ищет ОДНОВРЕМЕННО:
+            // 1. Сжатые паттерны: #число[паттерн]
+            // 2. Сжатые RLE: #число<символ>
+            // 3. Экранированные символы: ##, [[, ]]
+            // 4. Любой другой одиночный символ
+            const regex = /#(\d+)(?:\[([\s\S]*?)]|([\s\S]))|##|\[\[|]]|[\s\S]/g;
+            
+            return text.replace(regex, (match, count, pattern, singleChar) => {
+                // Если сработала группа сжатия (есть `count`)
+                if (count) {
+                    const repeatCount = parseInt(count);
+                    // Если это паттерн в скобках
+                    if (pattern !== undefined) return pattern.repeat(repeatCount);
+                    // Если это одиночный символ
+                    if (singleChar !== undefined) return singleChar.repeat(repeatCount);
+                }
+                // Если это экранированные символы
+                if (match === '##') return '#';
+                if (match === '[[') return '[';
+                if (match === ']]') return ']';
+                // Иначе это обычный, нетронутый символ
+                return match;
+            });
+
+        } else { // Компрессия
+            let result = '';
+            let i = 0;
+            const len = text.length;
+
+            while (i < len) {
+                let bestMatch = { benefit: 0, compressed: '', length: 0 };
+
+                // Ищем самый выгодный паттерн (включая одиночные символы)
+                const maxPatternLen = Math.min(Math.floor(len / 2), 50);
+
+                for (let pLen = 1; pLen <= maxPatternLen && i + pLen <= len; pLen++) {
+                    const pattern = text.substring(i, i + pLen);
+                    let count = 0;
+                    while (text.startsWith(pattern, i + count * pLen)) {
+                        count++;
+                    }
+
+                    const originalLength = pattern.length * count;
+                    let compressed = '';
+                    let compressedLength = Infinity;
+                    
+                    // Условия для RLE (один символ, >= 4 повторов)
+                    if (pLen === 1 && count >= 4) {
+                        compressed = `${OPEN}${count}${pattern}`;
+                        compressedLength = compressed.length;
+                    // Условия для паттернов (>1 символа, >= 3 повторов)
+                    } else if (pLen > 1 && count >= 3) {
+                        compressed = `${OPEN}${count}${START_PATTERN}${pattern}${END_PATTERN}`;
+                        compressedLength = compressed.length;
+                    }
+                    
+                    const benefit = originalLength - compressedLength;
+                    if (benefit > bestMatch.benefit) {
+                        bestMatch = { benefit, compressed, length: originalLength };
+                    }
+                }
+
+                // Если нашли выгодное сжатие, используем его
+                if (bestMatch.benefit > 0) {
+                    result += bestMatch.compressed;
+                    i += bestMatch.length;
+                } else {
+                    // Иначе берем один символ, экранируем если нужно, и идем дальше
+                    const char = text[i];
+                    if (char === OPEN) result += '##';
+                    else if (char === START_PATTERN) result += '[[';
+                    else if (char === END_PATTERN) result += ']]';
+                    else result += char;
+                    i++;
+                }
+            }
+            return result;
+        }
+    }
+    processRouteTransposition(node, inputData, allNodeResults) {
+        const isReverse = window.connectionManager?.reverseMode;
+
+        let text, key;
+
+        if (isReverse) {
+            text = inputData || '';
+            key = '';
+            const connections = window.connectionManager.getNodeConnections(node.id);
+            const keyConnection = connections.inputs.find(c => c.inputName === 'key');
+            if (keyConnection) {
+                const keySourceNode = window.nodeManager.nodes.get(keyConnection.fromNodeId);
+                if (keySourceNode) {
+                    key = this.processNode(keySourceNode, null, allNodeResults);
+                }
+            }
+        } else {
+            text = (typeof inputData === 'object' && inputData !== null) ? (inputData.text || '') : '';
+            key = (typeof inputData === 'object' && inputData !== null) ? (inputData.key || '') : '';
+        }
+
+        if (!text || !key) return text;
+
+        const decryptField = node.data.fields.find(f => f.name === 'decrypt');
+        const decrypt = decryptField ? decryptField.value : false;
+        const actualDecrypt = isReverse ? !decrypt : decrypt;
+        
+        const keyLen = key.length;
+        const textLen = text.length;
+
+        const keyOrder = key.split('').map((char, index) => ({ char, index }))
+            .sort((a, b) => a.char.localeCompare(b.char))
+            .map(item => item.index);
+
+        if (actualDecrypt) { 
+            const numRows = Math.ceil(textLen / keyLen);
+            const numFullCols = textLen % keyLen || keyLen;
+            
+            const table = Array.from({ length: numRows }, () => Array(keyLen).fill(null));
+            let textIdx = 0;
+            
+            for (const col of keyOrder) {
+                const len = keyOrder.indexOf(col) < numFullCols ? numRows : numRows - 1;
+                for (let row = 0; row < len; row++) {
+                    table[row][col] = text[textIdx++];
+                }
+            }
+
+            return table.flat().join('');
+
+        } else { 
+             const numRows = Math.ceil(textLen / keyLen);
+             let result = '';
+             for (const col of keyOrder) {
+                 for (let row = 0; row < numRows; row++) {
+                     const index = row * keyLen + col;
+                     if (index < textLen) {
+                         result += text[index];
+                     }
+                 }
+             }
+             return result;
+        }
+    }
+
     getMultipleInputs(node, allNodeResults) {
         const inputs = {};
         
@@ -2083,7 +2406,6 @@ class CipherEngine {
             return inputs;
         }
         
-        // Получаем соединения для этого нода
         const connections = window.connectionManager?.connections || new Map();
         
         for (const connection of connections.values()) {

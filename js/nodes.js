@@ -5,7 +5,6 @@ class NodeManager {
     constructor() {
         this.nodes = new Map();
         this.nodeIdCounter = 0;
-        // this.selectedNode = null; // УДАЛЕНО: Управляется через selectionManager
         this.draggedNode = null;
         this.dragOffset = { x: 0, y: 0 };
         
@@ -20,13 +19,12 @@ class NodeManager {
         const nodeItems = document.querySelectorAll('.node-item');
         
         nodeItems.forEach(item => {
-            // Отключаем стандартный drag & drop для избежания дублирования
             item.draggable = false;
             
-            // Используем только кастомный механизм перетаскивания
+            
             item.addEventListener('mousedown', (e) => {
-                if (e.button === 0) { // Левая кнопка мыши
-                    e.preventDefault(); // Предотвращаем выделение текста
+                if (e.button === 0) { 
+                    e.preventDefault(); 
                     this.startNodeDrag(item, e);
                 }
             });
@@ -126,7 +124,6 @@ class NodeManager {
     }
     
     bindEvents() {
-        // === ИЗМЕНЕНИЕ: Обработка кликов по canvas для снятия выделения ===
         this.canvas.addEventListener('mousedown', (e) => {
             if (e.target === this.canvas || e.target.classList.contains('canvas-background')) {
                 if (window.selectionManager) {
@@ -135,27 +132,25 @@ class NodeManager {
             }
         });
         
-        // === ИЗМЕНЕНИЕ: Унифицированная обработка выделения и перетаскивания нодов ===
         this.nodesLayer.addEventListener('mousedown', (e) => {
             const nodeElement = e.target.closest('.canvas-node');
             if (!nodeElement) return;
 
             const nodeId = nodeElement.dataset.nodeId;
 
-            // 1. Логика выделения по клику
-            if (e.button === 0) { // Только для ЛКМ
+            
+            if (e.button === 0) { 
                 const isSelected = window.selectionManager.selectedNodes.has(nodeId);
 
                 if (e.ctrlKey || e.metaKey) {
-                    // С Ctrl/Cmd переключаем состояние выделения
+                    
                     if (isSelected) {
                         window.selectionManager.removeFromSelection(nodeId);
                     } else {
                         window.selectionManager.addToSelection(nodeId);
                     }
                 } else {
-                    // Без Ctrl, если кликнутый нод не входит в группу выделенных,
-                    // то снимаем выделение со всех и выделяем только его.
+
                     if (!isSelected) {
                         window.selectionManager.clearSelection();
                         window.selectionManager.addToSelection(nodeId);
@@ -163,7 +158,6 @@ class NodeManager {
                 }
             }
 
-            // 2. Логика начала перетаскивания
             if (e.button === 0 && !e.target.closest('.node-remove') && !e.target.closest('.connection-point')) {
                 this.startNodeMove(nodeElement, e);
             }
@@ -177,12 +171,9 @@ class NodeManager {
         let worldX, worldY;
 
         if (isWorldCoords) {
-            // Координаты уже в "мировом" формате, используем их напрямую.
             worldX = x;
             worldY = y;
         } else {
-            // Координаты в "экранном" формате, нужно преобразовать.
-            // Преобразуем экранные координаты относительно canvas в мировые координаты
             if (window.canvasManager) {
                 const worldCoords = window.canvasManager.screenToWorld(x, y);
                 worldX = worldCoords.x;
@@ -214,24 +205,19 @@ class NodeManager {
         const node = this.nodes.get(nodeId);
         node.element = nodeElement;
 
-        // Добавляем анимацию появления
         nodeElement.classList.add('fade-in');
 
-        // Инициализируем обработчики для нового нода
         this.initializeNodeHandlers(nodeId);
 
-        // === ИЗМЕНЕНИЕ: Автоматически выбираем созданный нод через selectionManager ===
         if (window.selectionManager) {
             window.selectionManager.clearSelection();
             window.selectionManager.addToSelection(nodeId);
         }
 
-        // Воспроизводим звук создания нода
         if (window.settingsSystem?.settings.soundEffects) {
             window.settingsSystem.playSound('node_create');
         }
 
-        // Добавляем в историю
         if (window.historyManager) {
             window.historyManager.addAction({
                 type: 'create_node',
@@ -372,7 +358,8 @@ class NodeManager {
                         value: 'full',
                         options: [
                             { value: 'full', label: 'Полностью' },
-                            { value: 'words', label: 'По словам' }
+                            { value: 'words', label: 'По словам' },
+                            { value: 'boustrophedon', label: 'Змейка (Бустрофедон)' }
                         ]
                     }
                 ],
@@ -416,12 +403,23 @@ class NodeManager {
             'vigenere': {
                 title: 'Шифр Виженера',
                 icon: 'fas fa-shield-alt',
-                fields: [],
+                fields: [
+                    {
+                        name: 'mode',
+                        type: 'select',
+                        label: 'Тип шифра',
+                        value: 'vigenere',
+                        options: [
+                            { value: 'vigenere', label: 'Виженер ((T+K) mod m)' },
+                            { value: 'beaufort', label: 'Бофор ((K-T) mod m)' }
+                        ]
+                    }
+                ],
                 hasInput: false,
                 hasOutput: true,
                 multipleInputs: [
-                    { name: 'key', label: 'Ключ', color: '#f59e0b' },
-                    { name: 'text', label: 'Текст', color: '#3b82f6' }
+                    { name: 'text', label: 'Текст', color: '#3b82f6' },
+                    { name: 'key', label: 'Ключ', color: '#f59e0b' }
                 ]
             },
             'a1z26': {
@@ -656,7 +654,7 @@ class NodeManager {
                     { name: 'streamB', label: 'Поток Б', color: '#f59e0b' }
                 ]
             },
-            // === КАТЕГОРИЯ 3: НОВЫЕ ШИФРЫ И КОДИРОВЩИКИ ===
+            
             'atbash': {
                 title: 'Шифр Атбаш',
                 icon: 'fas fa-retweet',
@@ -682,7 +680,7 @@ class NodeManager {
                 hasInput: true,
                 hasOutput: true
             },
-            // === КАТЕГОРИЯ 4: ЗАБАВНЫЕ И ТЕМАТИЧЕСКИЕ НОДЫ ===
+            
             'gawr-gura': {
                 title: 'Акулий Шифр',
                 icon: 'fas fa-fish',
@@ -696,6 +694,84 @@ class NodeManager {
                 fields: [],
                 hasInput: true,
                 hasOutput: true
+            },
+            'complex-substitution': {
+                title: 'Сложная замена',
+                icon: 'fas fa-mask', 
+                fields: [
+                    {
+                        name: 'language',
+                        type: 'select',
+                        label: 'Базовый алфавит',
+                        value: 'ru',
+                        options: [
+                            { value: 'ru', label: 'Русский (33 буквы)' },
+                            { value: 'en', label: 'Английский (26 букв)' }
+                        ]
+                    },
+                    {
+                        name: 'decrypt',
+                        type: 'checkbox',
+                        label: 'Дешифровка',
+                        value: false
+                    }
+                ],
+                hasInput: false, 
+                hasOutput: true,
+                multipleInputs: [
+                    { name: 'text', label: 'Текст', color: '#3b82f6' },
+                    { name: 'key', label: 'Ключ', color: '#f59e0b' }
+                ]
+            },
+            'simple-substitution': {
+                title: 'Простая замена',
+                icon: 'fas fa-random', 
+                fields: [
+                    {
+                        name: 'decrypt',
+                        type: 'checkbox',
+                        label: 'Дешифровка',
+                        value: false
+                    }
+                ],
+                hasInput: false, 
+                hasOutput: true,
+                multipleInputs: [
+                    { name: 'text', label: 'Текст', color: '#3b82f6' },
+                    { name: 'key', label: 'Ключ', color: '#f59e0b' }
+                ]
+            },
+            'rle-compression': {
+                title: 'Сжатие (RLE)',
+                icon: 'fas fa-compress-arrows-alt',
+                fields: [
+                    {
+                        name: 'decrypt',
+                        type: 'checkbox',
+                        label: 'Декомпрессия',
+                        value: false
+                    }
+                ],
+                hasInput: true,
+                hasOutput: true
+            },
+            'route-transposition': {
+                title: 'Маршрутная перестановка',
+                icon: 'fas fa-route',
+                fields: [
+                    {
+                        name: 'decrypt',
+                        type: 'checkbox',
+                        label: 'Дешифровка',
+                        value: false
+                    }
+                ],
+                hasInput: false, 
+                hasOutput: true,
+                multipleInputs: [
+                    { name: 'text', label: 'Текст', color: '#3b82f6' },
+                    { name: 'key', label: 'Ключ', color: '#f59e0b' }
+                ]
             }
         };
         
@@ -1002,7 +1078,6 @@ class NodeManager {
                 animationFrameId = null;
             }
             
-            // === НАЧАЛО ИЗМЕНЕНИЯ: Логика сохранения истории для группы ===
             if (window.historyManager) {
                 const movedNodesData = [];
                 let hasMoved = false;
@@ -1033,7 +1108,6 @@ class NodeManager {
                     });
                 }
             }
-            // === КОНЕЦ ИЗМЕНЕНИЯ ===
             
             document.removeEventListener('mousemove', moveHandler);
             document.removeEventListener('mouseup', upHandler);
@@ -1061,9 +1135,7 @@ class NodeManager {
             window.connectionManager.updateConnections(nodeId);
         }
     }
-    
-    // УДАЛЕНО: selectNode и deselectAllNodes. Их функциональность теперь в SelectionManager.
-    
+        
     removeNode(nodeId, skipHistory = false) {
         const node = this.nodes.get(nodeId);
         if (!node) return;
@@ -1105,18 +1177,14 @@ class NodeManager {
             window.connectionManager.removeNodeConnections(nodeId);
         }
         
-        // Удаляем элемент из DOM
         node.element.remove();
         
-        // Удаляем из карты нодов
         this.nodes.delete(nodeId);
         
-        // === ИЗМЕНЕНИЕ: Сообщаем менеджеру выделения, что нод удален ===
         if (window.selectionManager) {
             window.selectionManager.removeFromSelection(nodeId);
         }
         
-        // Запускаем обновление выполнения
         this.triggerExecution();
     }
     
@@ -1206,8 +1274,6 @@ class NodeManager {
             }
         }, 100);
     }
-    
-    // === НОВЫЕ МЕТОДЫ ДЛЯ СПЕЦИАЛЬНЫХ ПОЛЕЙ ===
     
     createMultiRulesField(field, nodeId) {
         const container = document.createElement('div');

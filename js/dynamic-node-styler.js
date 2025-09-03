@@ -27,6 +27,10 @@ class DynamicNodeStyler {
             'base64': '#06b6d4',
             'gawr-gura': '#0891b2',
             'uwu-ifier': '#fb7185',
+            'complex-substitution': '#dc2626',
+            'simple-substitution': '#ea580c',
+            'rle-compression': '#059669',
+            'route-transposition': '#7c2d12',
         };
 
         this.generateAndInjectStyles();
