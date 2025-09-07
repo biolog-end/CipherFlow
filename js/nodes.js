@@ -13,6 +13,13 @@ class NodeManager {
         
         this.initializeDragAndDrop();
         this.bindEvents();
+        
+        // Подписываемся на изменения языка
+        if (window.i18n) {
+            window.i18n.onLanguageChange(() => {
+                this.updateNodeTexts();
+            });
+        }
     }
     
     initializeDragAndDrop() {
@@ -236,29 +243,31 @@ class NodeManager {
     }
     
     getNodeTemplate(type) {
+        const t = window.i18n ? window.i18n.t.bind(window.i18n) : (key) => key;
+        
         const templates = {
             'input': {
-                title: 'Ввод текста',
+                title: t('node.text_input'),
                 icon: 'fas fa-sign-in-alt',
                 fields: [],
                 hasInput: false,
                 hasOutput: true
             },
             'output': {
-                title: 'Вывод текста',
+                title: t('node.text_output'),
                 icon: 'fas fa-sign-out-alt',
                 fields: [],
                 hasInput: true,
                 hasOutput: false
             },
             'caesar': {
-                title: 'Шифр Цезаря',
+                title: t('node.caesar_cipher'),
                 icon: 'fas fa-exchange-alt',
                 fields: [
                     {
                         name: 'shift',
                         type: 'number',
-                        label: 'Сдвиг',
+                        label: t('param.shift'),
                         value: 3,
                         min: 1,
                         max: 25
@@ -268,13 +277,13 @@ class NodeManager {
                 hasOutput: true
             },
             'morse': {
-                title: 'Код Морзе',
+                title: t('node.morse_code'),
                 icon: 'fas fa-broadcast-tower',
                 fields: [
                     {
                         name: 'mode',
                         type: 'select',
-                        label: 'Режим',
+                        label: t('param.operation'),
                         value: 'encode',
                         options: [
                             { value: 'encode', label: 'Кодировать' },
@@ -293,13 +302,13 @@ class NodeManager {
                 hasOutput: true
             },
             'numbers-to-words': {
-                title: 'Числа в слова',
+                title: t('node.numbers_to_words'),
                 icon: 'fas fa-hashtag',
                 fields: [
                     {
                         name: 'language',
                         type: 'select',
-                        label: 'Язык',
+                        label: t('param.language'),
                         value: 'ru',
                         options: [
                             { value: 'ru', label: 'Русский' },
@@ -1430,6 +1439,33 @@ class NodeManager {
             }
         }
     }
+<<<<<<< HEAD
+    
+    /**
+     * Обновляет тексты всех нодов при смене языка
+     */
+    updateNodeTexts() {
+        this.nodes.forEach(node => {
+            const template = this.getNodeTemplate(node.type);
+            const titleElement = node.element.querySelector('.node-title');
+            if (titleElement) {
+                titleElement.textContent = template.title;
+            }
+            
+            // Обновляем лейблы полей
+            template.fields.forEach(field => {
+                const fieldElement = node.element.querySelector(`[name="${field.name}"]`);
+                if (fieldElement) {
+                    const label = fieldElement.closest('.field-group')?.querySelector('label');
+                    if (label) {
+                        label.textContent = field.label;
+                    }
+                }
+            });
+        });
+    }
+=======
+>>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
 }
 
 // Инициализация после загрузки DOM

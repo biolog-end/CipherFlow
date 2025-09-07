@@ -49,14 +49,15 @@ class CipherFlowApp {
         
         while (attempts < maxAttempts) {
             if (window.nodeManager && window.connectionManager && 
-                window.cipherEngine && window.fileManager) {
+                window.cipherEngine && window.fileManager && window.i18n) {
                 
                 this.components = {
                     nodeManager: window.nodeManager,
                     connectionManager: window.connectionManager,
                     cipherEngine: window.cipherEngine,
                     fileManager: window.fileManager,
-                    canvasManager: window.canvasManager
+                    canvasManager: window.canvasManager,
+                    i18n: window.i18n
                 };
                 
                 return Promise.resolve();
@@ -70,6 +71,13 @@ class CipherFlowApp {
     }
     
     setupGlobalEventListeners() {
+        // Настройка i18n подписок
+        if (window.i18n) {
+            window.i18n.onLanguageChange(() => {
+                this.updateInterfaceLanguage();
+            });
+        }
+        
         // Обработка клика по логотипу для показа справки
         const logo = document.querySelector('.logo');
         if (logo) {
@@ -523,6 +531,42 @@ class CipherFlowApp {
                 className: node.className
             });
         });
+    }
+    
+    /**
+     * Обновляет интерфейс при смене языка
+     */
+    updateInterfaceLanguage() {
+        if (!window.i18n) return;
+        
+        const t = window.i18n.t.bind(window.i18n);
+        
+        // Обновляем заголовок документа
+        document.title = t('app.title');
+        
+        // Обновляем placeholder'ы для ввода/вывода
+        const inputTextArea = document.getElementById('inputText');
+        if (inputTextArea) {
+            inputTextArea.placeholder = t('io.input_placeholder');
+        }
+        
+        const outputTextArea = document.getElementById('outputText');
+        if (outputTextArea) {
+            outputTextArea.placeholder = t('io.output_placeholder');
+        }
+        
+        // Уведомляем другие компоненты об изменении языка
+        this.notifyComponentsLanguageChange();
+    }
+    
+    /**
+     * Уведомляет компоненты об изменении языка
+     */
+    notifyComponentsLanguageChange() {
+        // Обновляем панель нодов
+        if (window.nodeManager && window.nodeManager.updateNodeTexts) {
+            window.nodeManager.updateNodeTexts();
+        }
     }
 }
 

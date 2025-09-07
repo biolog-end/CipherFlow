@@ -18,15 +18,22 @@
                     <i class="fas fa-project-diagram"></i>
                     <span>CipherFlow</span>
                 </div>
+<<<<<<< HEAD
+                <button class="help-btn" onclick="window.showHelp()" data-i18n-title="header.help">
+                    <i class="fas fa-question-circle"></i>
+                </button>
+                <button class="settings-btn" onclick="window.settingsSystem?.show()" data-i18n-title="header.settings">
+=======
                 <button class="help-btn" onclick="window.showHelp()" title="Показать справку (F1)">
                     <i class="fas fa-question-circle"></i>
                 </button>
                 <button class="settings-btn" onclick="window.settingsSystem?.show()" title="Настройки">
+>>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
                     <i class="fas fa-cog"></i>
                 </button>
                 <div class="controls">
                     <div class="mode-toggle">
-                        <span class="mode-label">Шифрование</span>
+                        <span class="mode-label" data-i18n="header.encryption">Шифрование</span>
                         <label class="switch">
                             <input type="checkbox" id="modeSwitch">
                             <span class="slider">
@@ -34,20 +41,20 @@
                                 <i class="fas fa-unlock"></i>
                             </span>
                         </label>
-                        <span class="mode-label">Расшифровка</span>
+                        <span class="mode-label" data-i18n="header.decryption">Расшифровка</span>
                     </div>
                     <div class="file-controls">
                         <button class="btn btn-outline" id="loadBtn">
                             <i class="fas fa-folder-open"></i>
-                            Загрузить схему
+                            <span data-i18n="header.load_scheme">Загрузить схему</span>
                         </button>
                         <button class="btn btn-outline" id="saveBtn">
                             <i class="fas fa-save"></i>
-                            Сохранить схему
+                            <span data-i18n="header.save_scheme">Сохранить схему</span>
                         </button>
                         <button class="btn btn-primary" id="clearBtn">
                             <i class="fas fa-trash"></i>
-                            Очистить
+                            <span data-i18n="header.clear">Очистить</span>
                         </button>
                     </div>
                 </div>
@@ -60,34 +67,46 @@
                 <h3>Ноды шифрования</h3>
                 <div class="node-categories">
                     <div class="category">
-                        <h4>Входные/Выходные</h4>
+                        <h4 data-i18n="nodes.input_output">Входные/Выходные</h4>
                         <div class="node-item" data-type="input" draggable="true">
                             <i class="fas fa-sign-in-alt"></i>
-                            <span>Ввод текста</span>
+                            <span data-i18n="node.text_input">Ввод текста</span>
                         </div>
                         <div class="node-item" data-type="output" draggable="true">
                             <i class="fas fa-sign-out-alt"></i>
-                            <span>Вывод текста</span>
+                            <span data-i18n="node.text_output">Вывод текста</span>
                         </div>
                     </div>
                     
                     <div class="category">
-                        <h4>Классические шифры</h4>
+                        <h4 data-i18n="nodes.classic_ciphers">Классические шифры</h4>
                         <div class="node-item" data-type="caesar" draggable="true">
                             <i class="fas fa-exchange-alt"></i>
-                            <span>Шифр Цезаря</span>
+                            <span data-i18n="node.caesar_cipher">Шифр Цезаря</span>
                         </div>
                         <div class="node-item" data-type="morse" draggable="true">
                             <i class="fas fa-broadcast-tower"></i>
-                            <span>Код Морзе</span>
+                            <span data-i18n="node.morse_code">Код Морзе</span>
                         </div>
                         <div class="node-item" data-type="secret-word" draggable="true">
                             <i class="fas fa-key"></i>
-                            <span>Секретное слово</span>
+                            <span data-i18n="node.secret_word">Секретное слово</span>
                         </div>
                         <div class="node-item" data-type="vigenere" draggable="true">
                             <i class="fas fa-shield-alt"></i>
-                            <span>Шифр Виженера</span>
+                            <span data-i18n="node.vigenere_cipher">Шифр Виженера</span>
+                        </div>
+                        <div class="node-item" data-type="complex-substitution" draggable="true">
+                            <i class="fas fa-mask"></i>
+                            <span>Сложная замена</span>
+                        </div>
+                        <div class="node-item" data-type="simple-substitution" draggable="true">
+                            <i class="fas fa-random"></i>
+                            <span>Простая замена</span>
+                        </div>
+                        <div class="node-item" data-type="route-transposition" draggable="true">
+                            <i class="fas fa-route"></i>
+                            <span>Маршрутная перестановка</span>
                         </div>
                         <div class="node-item" data-type="complex-substitution" draggable="true">
                             <i class="fas fa-mask"></i>
@@ -230,11 +249,11 @@
         <footer class="input-output-panel">
             <div class="input-section" id="inputSection">
                 <label for="inputText" id="inputLabel">Входной текст:</label>
-                <textarea id="inputText" placeholder="Введите текст для шифрования..."></textarea>
+                <textarea id="inputText" data-i18n-placeholder="io.input_placeholder" placeholder="Введите текст для шифрования..."></textarea>
             </div>
             <div class="output-section" id="outputSection">
                 <label for="outputText" id="outputLabel">Результат:</label>
-                <textarea id="outputText" readonly placeholder="Результат появится здесь..."></textarea>
+                <textarea id="outputText" readonly data-i18n-placeholder="io.output_placeholder" placeholder="Результат появится здесь..."></textarea>
             </div>
         </footer>
     </div>
@@ -242,6 +261,10 @@
     <!-- Скрытый input для загрузки файлов -->
     <input type="file" id="fileInput" accept=".json" style="display: none;">
     
+<<<<<<< HEAD
+    <script src="js/i18n.js"></script>
+=======
+>>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
     <script src="js/dynamic-node-styler.js"></script> 
     <script src="js/help-system.js"></script>
     <script src="js/settings-system.js"></script>

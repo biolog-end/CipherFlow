@@ -6,10 +6,40 @@ class SettingsSystem {
         this.settings = this.loadSettings();
         this.initializeStyles();
         this.applySettings();
+<<<<<<< HEAD
+        
+        // Синхронизируем язык с системой i18n при инициализации
+        if (window.i18n && this.settings.language !== window.i18n.getCurrentLanguage()) {
+            window.i18n.setLanguage(this.settings.language);
+        }
+=======
+>>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
     }
 
     loadSettings() {
         const saved = localStorage.getItem('cipherflow-settings');
+<<<<<<< HEAD
+        const defaultSettings = {
+            theme: 'dark',
+            autoSave: true,
+            soundEffects: true,
+            animations: true,
+            compactMode: false,
+            showGrid: false,
+            language: window.i18n ? window.i18n.getCurrentLanguage() : 'ru'
+        };
+        
+        if (saved) {
+            const parsedSettings = JSON.parse(saved);
+            // Синхронизируем с i18n, если система уже инициализирована
+            if (window.i18n) {
+                parsedSettings.language = window.i18n.getCurrentLanguage();
+            }
+            return {...defaultSettings, ...parsedSettings};
+        }
+        
+        return defaultSettings;
+=======
         return saved ? JSON.parse(saved) : {
             theme: 'dark',
             autoSave: true,
@@ -19,6 +49,7 @@ class SettingsSystem {
             compactMode: false,
             language: 'ru'
         };
+>>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
     }
 
     saveSettings() {
@@ -338,12 +369,20 @@ class SettingsSystem {
         const overlay = document.createElement('div');
         overlay.className = 'settings-overlay';
         
+<<<<<<< HEAD
+        const t = window.i18n ? window.i18n.t.bind(window.i18n) : (key) => key;
+=======
+>>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
         overlay.innerHTML = `
             <div class="settings-modal">
                 <div class="settings-header">
                     <div class="settings-title">
                         <i class="fas fa-cog"></i>
+<<<<<<< HEAD
+                        ${t('settings.title')}
+=======
                         Настройки
+>>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
                     </div>
                     <button class="settings-close">
                         <i class="fas fa-times"></i>
@@ -355,11 +394,19 @@ class SettingsSystem {
                 <div class="settings-actions">
                     <button class="settings-button secondary" onclick="window.settingsSystem.resetSettings()">
                         <i class="fas fa-undo"></i>
+<<<<<<< HEAD
+                        ${t('settings.reset')}
+                    </button>
+                    <button class="settings-button" onclick="window.settingsSystem.hide()">
+                        <i class="fas fa-save"></i>
+                        ${t('settings.close')}
+=======
                         Сбросить
                     </button>
                     <button class="settings-button" onclick="window.settingsSystem.hide()">
                         <i class="fas fa-save"></i>
                         Сохранить
+>>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
                     </button>
                 </div>
             </div>
@@ -393,6 +440,16 @@ class SettingsSystem {
     }
 
     generateSettingsContent() {
+<<<<<<< HEAD
+        const t = window.i18n ? window.i18n.t.bind(window.i18n) : (key) => key;
+        return `
+            <div class="settings-section">
+                <h3><i class="fas fa-palette"></i> ${t('settings.theme')}</h3>
+                
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>${t('settings.theme')}</h4>
+=======
         return `
             <div class="settings-section">
                 <h3><i class="fas fa-palette"></i> Внешний вид</h3>
@@ -400,20 +457,31 @@ class SettingsSystem {
                 <div class="setting-item">
                     <div class="setting-info">
                         <h4>Тема оформления</h4>
+>>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
                         <p>Выберите цветовую схему приложения</p>
                     </div>
                     <div class="setting-control">
                         <select class="setting-select" data-setting="theme">
+<<<<<<< HEAD
+                            <option value="dark" ${this.settings.theme === 'dark' ? 'selected' : ''}>${t('theme.dark')}</option>
+                            <option value="light" ${this.settings.theme === 'light' ? 'selected' : ''}>${t('theme.light')}</option>
+                            <option value="auto" ${this.settings.theme === 'auto' ? 'selected' : ''}>${t('theme.auto')}</option>
+=======
                             <option value="dark" ${this.settings.theme === 'dark' ? 'selected' : ''}>Темная</option>
                             <option value="light" ${this.settings.theme === 'light' ? 'selected' : ''}>Светлая</option>
                             <option value="colorful" ${this.settings.theme === 'colorful' ? 'selected' : ''}>Цветная</option>
+>>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
                         </select>
                     </div>
                 </div>
 
                 <div class="setting-item">
                     <div class="setting-info">
+<<<<<<< HEAD
+                        <h4>${t('settings.animations')}</h4>
+=======
                         <h4>Анимации</h4>
+>>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
                         <p>Включить плавные анимации и переходы</p>
                     </div>
                     <div class="setting-control">
@@ -430,6 +498,19 @@ class SettingsSystem {
                         <button class="toggle-switch ${this.settings.compactMode ? 'active' : ''}" data-setting="compactMode"></button>
                     </div>
                 </div>
+<<<<<<< HEAD
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>${t('settings.grid')}</h4>
+                        <p>Показать сетку на холсте</p>
+                    </div>
+                    <div class="setting-control">
+                        <button class="toggle-switch ${this.settings.showGrid ? 'active' : ''}" data-setting="showGrid"></button>
+                    </div>
+                </div>
+=======
+>>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
             </div>
 
             <div class="settings-section">
@@ -437,7 +518,11 @@ class SettingsSystem {
                 
                 <div class="setting-item">
                     <div class="setting-info">
+<<<<<<< HEAD
+                        <h4>${t('settings.autosave')}</h4>
+=======
                         <h4>Автосохранение</h4>
+>>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
                         <p>Автоматически сохранять изменения в браузере</p>
                     </div>
                     <div class="setting-control">
@@ -451,7 +536,11 @@ class SettingsSystem {
                 
                 <div class="setting-item">
                     <div class="setting-info">
+<<<<<<< HEAD
+                        <h4>${t('settings.sound_effects')}</h4>
+=======
                         <h4>Звуковые эффекты</h4>
+>>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
                         <p>Звуки при соединении нодов и других действиях</p>
                         ${this.settings.soundEffects ? '<div class="sound-indicator"><i class="fas fa-volume-up"></i> Звук включен</div>' : ''}
                     </div>
@@ -462,17 +551,30 @@ class SettingsSystem {
             </div>
 
             <div class="settings-section">
+<<<<<<< HEAD
+                <h3><i class="fas fa-globe"></i> ${t('settings.language')}</h3>
+                
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>${t('settings.language')}</h4>
+=======
                 <h3><i class="fas fa-globe"></i> Язык и регион</h3>
                 
                 <div class="setting-item">
                     <div class="setting-info">
                         <h4>Язык интерфейса</h4>
+>>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
                         <p>Основной язык приложения</p>
                     </div>
                     <div class="setting-control">
                         <select class="setting-select" data-setting="language">
+<<<<<<< HEAD
+                            <option value="ru" ${this.settings.language === 'ru' ? 'selected' : ''}>${t('language.ru')}</option>
+                            <option value="en" ${this.settings.language === 'en' ? 'selected' : ''}>${t('language.en')}</option>
+=======
                             <option value="ru" ${this.settings.language === 'ru' ? 'selected' : ''}>Русский</option>
                             <option value="en" ${this.settings.language === 'en' ? 'selected' : ''}>English</option>
+>>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
                         </select>
                     </div>
                 </div>
@@ -528,6 +630,28 @@ class SettingsSystem {
             select.onchange = () => {
                 const setting = select.dataset.setting;
                 this.settings[setting] = select.value;
+<<<<<<< HEAD
+                
+                // Особая обработка для языка
+                if (setting === 'language' && window.i18n) {
+                    window.i18n.setLanguage(select.value);
+                    // Перегенерируем содержимое настроек с новым языком
+                    setTimeout(() => {
+                        const content = document.querySelector('.settings-content');
+                        if (content) {
+                            content.innerHTML = this.generateSettingsContent();
+                            this.initializeControls();
+                        }
+                        // Обновляем заголовки
+                        const title = document.querySelector('.settings-title');
+                        if (title) {
+                            title.innerHTML = `<i class="fas fa-cog"></i> ${window.i18n.t('settings.title')}`;
+                        }
+                    }, 100);
+                }
+                
+=======
+>>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
                 this.saveSettings();
                 
                 if (this.settings.soundEffects) {
