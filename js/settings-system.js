@@ -418,12 +418,13 @@ class SettingsSystem {
                 <div class="setting-item">
                     <div class="setting-info">
                         <h4>${t('settings.theme')}</h4>
-                        <p>Выберите цветовую схему приложения</p>
+                        <p>${t('settings.theme_desc')}</p>
                     </div>
                     <div class="setting-control">
                         <select class="setting-select" data-setting="theme">
                             <option value="dark" ${this.settings.theme === 'dark' ? 'selected' : ''}>${t('theme.dark')}</option>
                             <option value="light" ${this.settings.theme === 'light' ? 'selected' : ''}>${t('theme.light')}</option>
+                            <option value="colorful" ${this.settings.theme === 'colorful' ? 'selected' : ''}>${t('theme.colorful')}</option>
                             <option value="auto" ${this.settings.theme === 'auto' ? 'selected' : ''}>${t('theme.auto')}</option>
                         </select>
                     </div>
@@ -432,7 +433,7 @@ class SettingsSystem {
                 <div class="setting-item">
                     <div class="setting-info">
                         <h4>${t('settings.animations')}</h4>
-                        <p>Включить плавные анимации и переходы</p>
+                        <p>${t('settings.animations_desc')}</p>
                     </div>
                     <div class="setting-control">
                         <button class="toggle-switch ${this.settings.animations ? 'active' : ''}" data-setting="animations"></button>
@@ -441,8 +442,8 @@ class SettingsSystem {
 
                 <div class="setting-item">
                     <div class="setting-info">
-                        <h4>Компактный режим</h4>
-                        <p>Уменьшенные размеры нодов и панелей</p>
+                        <h4>${t('settings.compact_mode')}</h4>
+                        <p>${t('settings.compact_mode_desc')}</p>
                     </div>
                     <div class="setting-control">
                         <button class="toggle-switch ${this.settings.compactMode ? 'active' : ''}" data-setting="compactMode"></button>
@@ -452,7 +453,7 @@ class SettingsSystem {
                 <div class="setting-item">
                     <div class="setting-info">
                         <h4>${t('settings.grid')}</h4>
-                        <p>Показать сетку на холсте</p>
+                        <p>${t('settings.grid_desc')}</p>
                     </div>
                     <div class="setting-control">
                         <button class="toggle-switch ${this.settings.showGrid ? 'active' : ''}" data-setting="showGrid"></button>
@@ -461,12 +462,12 @@ class SettingsSystem {
             </div>
 
             <div class="settings-section">
-                <h3><i class="fas fa-save"></i> Сохранение</h3>
+                <h3><i class="fas fa-save"></i> ${t('settings.section_saving')}</h3>
                 
                 <div class="setting-item">
                     <div class="setting-info">
                         <h4>${t('settings.autosave')}</h4>
-                        <p>Автоматически сохранять изменения в браузере</p>
+                        <p>${t('settings.autosave_desc')}</p>
                     </div>
                     <div class="setting-control">
                         <button class="toggle-switch ${this.settings.autoSave ? 'active' : ''}" data-setting="autoSave"></button>
@@ -475,13 +476,13 @@ class SettingsSystem {
             </div>
 
             <div class="settings-section">
-                <h3><i class="fas fa-volume-up"></i> Звук и эффекты</h3>
+                <h3><i class="fas fa-volume-up"></i> ${t('settings.section_sound')}</h3>
                 
                 <div class="setting-item">
                     <div class="setting-info">
                         <h4>${t('settings.sound_effects')}</h4>
-                        <p>Звуки при соединении нодов и других действиях</p>
-                        ${this.settings.soundEffects ? '<div class="sound-indicator"><i class="fas fa-volume-up"></i> Звук включен</div>' : ''}
+                        <p>${t('settings.sound_effects_desc')}</p>
+                        ${this.settings.soundEffects ? `<div class="sound-indicator"><i class="fas fa-volume-up"></i> ${t('settings.sound_on_indicator')}</div>` : ''}
                     </div>
                     <div class="setting-control">
                         <button class="toggle-switch ${this.settings.soundEffects ? 'active' : ''}" data-setting="soundEffects"></button>
@@ -495,7 +496,7 @@ class SettingsSystem {
                 <div class="setting-item">
                     <div class="setting-info">
                         <h4>${t('settings.language')}</h4>
-                        <p>Основной язык приложения</p>
+                        <p>${t('settings.language_desc')}</p>
                     </div>
                     <div class="setting-control">
                         <select class="setting-select" data-setting="language">
@@ -507,24 +508,24 @@ class SettingsSystem {
             </div>
 
             <div class="settings-section">
-                <h3><i class="fas fa-info-circle"></i> Информация</h3>
+                <h3><i class="fas fa-info-circle"></i> ${t('settings.section_info')}</h3>
                 
                 <div class="setting-item">
                     <div class="setting-info">
-                        <h4>Версия приложения</h4>
-                        <p>CipherFlow v2.0 - Улучшенная версия с новыми возможностями</p>
+                        <h4>${t('settings.app_version')}</h4>
+                        <p>${t('settings.app_version_desc')}</p>
                     </div>
                 </div>
 
                 <div class="setting-item">
                     <div class="setting-info">
-                        <h4>Горячие клавиши</h4>
-                        <p>Нажмите F1 или кнопку справки для просмотра всех комбинаций</p>
+                        <h4>${t('settings.hotkeys')}</h4>
+                        <p>${t('settings.hotkeys_desc')}</p>
                     </div>
                     <div class="setting-control">
                         <button class="settings-button secondary" onclick="window.showHelp(); window.settingsSystem.hide();">
                             <i class="fas fa-keyboard"></i>
-                            Показать
+                            ${t('button.show')}
                         </button>
                     </div>
                 </div>
@@ -585,14 +586,14 @@ class SettingsSystem {
     }
 
     updateIndicators() {
-        // Обновляем индикатор звуковых эффектов
+        const t = window.i18n.t.bind(window.i18n);
         const soundItem = document.querySelector('[data-setting="soundEffects"]').closest('.setting-item');
         const existingIndicator = soundItem.querySelector('.sound-indicator');
         
         if (this.settings.soundEffects && !existingIndicator) {
             const indicator = document.createElement('div');
             indicator.className = 'sound-indicator';
-            indicator.innerHTML = '<i class="fas fa-volume-up"></i> Звук включен';
+            indicator.innerHTML = `<i class="fas fa-volume-up"></i> ${t('settings.sound_on_indicator')}`;
             soundItem.querySelector('.setting-info').appendChild(indicator);
         } else if (!this.settings.soundEffects && existingIndicator) {
             existingIndicator.remove();
@@ -649,6 +650,7 @@ class SettingsSystem {
     }
 
     showAutoSaveIndicator() {
+        const t = window.i18n.t.bind(window.i18n);
         const indicator = document.createElement('div');
         indicator.style.cssText = `
             position: fixed;
@@ -662,7 +664,7 @@ class SettingsSystem {
             z-index: 1000;
             animation: slideInUp 0.3s ease, slideOutDown 0.3s ease 2s forwards;
         `;
-        indicator.innerHTML = '<i class="fas fa-save"></i> Автосохранение выполнено';
+        indicator.innerHTML = `<i class="fas fa-save"></i> ${t('notification.autosave_complete')}`;
         document.body.appendChild(indicator);
 
         setTimeout(() => {
@@ -805,7 +807,8 @@ class SettingsSystem {
     }
 
     resetSettings() {
-        if (confirm('Сбросить все настройки до значений по умолчанию?')) {
+        const t = window.i18n.t.bind(window.i18n); 
+        if (confirm(t('dialog.reset_settings_confirm'))) {
             this.settings = {
                 theme: 'dark',
                 autoSave: true,
@@ -820,7 +823,7 @@ class SettingsSystem {
             
             // Показываем уведомление
             setTimeout(() => {
-                alert('Настройки сброшены до значений по умолчанию');
+                alert(t('dialog.settings_reset_alert'));
             }, 100);
         }
     }

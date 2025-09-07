@@ -75,15 +75,6 @@ class ConnectionManager {
             }
         });
         
-        // Подсказка при наведении на точку соединения
-        this.canvas.addEventListener('mouseover', (e) => {
-            const connectionPoint = e.target.closest('.connection-point');
-            if (connectionPoint && e.shiftKey) {
-                connectionPoint.style.cursor = 'not-allowed';
-                connectionPoint.title = 'Удерживайте Shift и кликните правой кнопкой для разрыва связей';
-            }
-        });
-        
         this.canvas.addEventListener('mouseout', (e) => {
             const connectionPoint = e.target.closest('.connection-point');
             if (connectionPoint) {
@@ -101,21 +92,6 @@ class ConnectionManager {
             this.updateAllConnectionDirections();
             this.swapInputOutputFields();
         });
-        
-        // Обработка кликов по соединительным линиям для удаления
-        this.svg.addEventListener('click', (e) => {
-            if (e.target.classList.contains('connection-line')) {
-                const connectionId = e.target.dataset.connectionId;
-                if (connectionId) {
-                    // Показываем подтверждение удаления
-                    if (confirm('Удалить соединение?')) {
-                        this.removeConnection(connectionId);
-                    }
-                }
-            }
-        });
-        
-        // Удален код hover эффекта для соединений по запросу пользователя
     }
     
     startConnection(connectionPoint, e) {
@@ -601,23 +577,21 @@ class ConnectionManager {
         const inputSection = document.getElementById('inputSection');
         const outputSection = document.getElementById('outputSection');
         
+        // Получаем функцию перевода для удобства
+        const t = window.i18n.t.bind(window.i18n);
+
         if (this.reverseMode) {
             // В режиме дешифровки меняем роли полей
             inputText.readOnly = true;
             outputText.readOnly = false;
-            inputText.placeholder = 'Дешифрованный текст появится здесь...';
-            outputText.placeholder = 'Введите зашифрованный текст...';
-            inputLabel.textContent = 'Дешифрованный текст:';
-            outputLabel.textContent = 'Зашифрованный текст:';
+            inputText.placeholder = t('io.decrypted_placeholder');
+            outputText.placeholder = t('io.encrypted_placeholder');
+            inputLabel.textContent = t('io.decrypted_label');
+            outputLabel.textContent = t('io.encrypted_label');
             
-            // Добавляем CSS классы для стилизации
             inputSection.classList.add('decrypt-result');
             outputSection.classList.add('decrypt-input');
             
-            // НЕ меняем содержимое полей местами - просто оставляем как есть
-            // Поле outputText теперь становится полем ввода
-            
-            // Добавляем обработчик для нового поля ввода (бывшего вывода)
             if (!this.handleDecryptModeInput) {
                 this.handleDecryptModeInput = () => {
                     if (window.cipherEngine) {
@@ -632,24 +606,20 @@ class ConnectionManager {
             // В обычном режиме: восстанавливаем исходное состояние
             inputText.readOnly = false;
             outputText.readOnly = true;
-            inputText.placeholder = 'Введите текст для шифрования...';
-            outputText.placeholder = 'Результат появится здесь...';
-            inputLabel.textContent = 'Входной текст:';
-            outputLabel.textContent = 'Результат:';
+            // Используем стандартные ключи
+            inputText.placeholder = t('io.input_placeholder');
+            outputText.placeholder = t('io.output_placeholder');
+            inputLabel.textContent = t('io.input_label');
+            outputLabel.textContent = t('io.output_label');
             
-            // Удаляем CSS классы для стилизации
             inputSection.classList.remove('decrypt-result');
             outputSection.classList.remove('decrypt-input');
             
-            // НЕ меняем содержимое полей местами
-            
-            // Удаляем обработчик с поля вывода
             if (this.handleDecryptModeInput) {
                 outputText.removeEventListener('input', this.handleDecryptModeInput);
             }
         }
         
-        // Запускаем выполнение цепочки после переключения режима
         if (window.cipherEngine) {
             window.cipherEngine.executeChain();
         }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CipherFlow - Нодовый Шифратор</title>
+    <title data-i18n="app.title">CipherFlow - Нодовый Шифратор</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
@@ -18,17 +18,10 @@
                     <i class="fas fa-project-diagram"></i>
                     <span>CipherFlow</span>
                 </div>
-<<<<<<< HEAD
                 <button class="help-btn" onclick="window.showHelp()" data-i18n-title="header.help">
                     <i class="fas fa-question-circle"></i>
                 </button>
                 <button class="settings-btn" onclick="window.settingsSystem?.show()" data-i18n-title="header.settings">
-=======
-                <button class="help-btn" onclick="window.showHelp()" title="Показать справку (F1)">
-                    <i class="fas fa-question-circle"></i>
-                </button>
-                <button class="settings-btn" onclick="window.settingsSystem?.show()" title="Настройки">
->>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
                     <i class="fas fa-cog"></i>
                 </button>
                 <div class="controls">
@@ -64,7 +57,7 @@
         <div class="main-content">
             <!-- Панель нодов -->
             <aside class="nodes-panel">
-                <h3>Ноды шифрования</h3>
+                <h3 data-i18n="nodes.title">Ноды шифрования</h3>
                 <div class="node-categories">
                     <div class="category">
                         <h4 data-i18n="nodes.input_output">Входные/Выходные</h4>
@@ -104,49 +97,33 @@
                             <i class="fas fa-random"></i>
                             <span>Простая замена</span>
                         </div>
-                        <div class="node-item" data-type="route-transposition" draggable="true">
-                            <i class="fas fa-route"></i>
-                            <span>Маршрутная перестановка</span>
-                        </div>
-                        <div class="node-item" data-type="complex-substitution" draggable="true">
-                            <i class="fas fa-mask"></i>
-                            <span>Сложная замена</span>
-                        </div>
-                        <div class="node-item" data-type="simple-substitution" draggable="true">
-                            <i class="fas fa-random"></i>
-                            <span>Простая замена</span>
-                        </div>
-                        <div class="node-item" data-type="route-transposition" draggable="true">
-                            <i class="fas fa-route"></i>
-                            <span>Маршрутная перестановка</span>
-                        </div>
                         <div class="node-item" data-type="a1z26" draggable="true">
                             <i class="fas fa-sort-numeric-up"></i>
-                            <span>Шифр A1Z26</span>
+                            <span data-i18n="node.a1z26_cipher">Шифр A1Z26</span>
                         </div>
                     </div>
                     
                     <div class="category">
-                        <h4>Преобразования</h4>
+                        <h4 data-i18n="nodes.transformations">Преобразования</h4>
                         <div class="node-item" data-type="numbers-to-words" draggable="true">
                             <i class="fas fa-hashtag"></i>
-                            <span>Числа в слова</span>
+                            <span data-i18n="node.numbers_to_words">Числа в слова</span>
                         </div>
                         <div class="node-item" data-type="math" draggable="true">
                             <i class="fas fa-calculator"></i>
-                            <span>Математика</span>
+                            <span data-i18n="node.math">Математика</span>
                         </div>
                         <div class="node-item" data-type="reverse" draggable="true">
                             <i class="fas fa-undo"></i>
-                            <span>Обратить текст</span>
+                            <span data-i18n="node.reverse_text">Обратить текст</span>
                         </div>
                         <div class="node-item" data-type="case-transform" draggable="true">
                             <i class="fas fa-text-height"></i>
-                            <span>Регистр</span>
+                            <span data-i18n="node.case_transform">Регистр</span>
                         </div>
                         <div class="node-item" data-type="binary" draggable="true">
                             <i class="fas fa-microchip"></i>
-                            <span>Бинарный код</span>
+                            <span data-i18n="node.binary_code">Бинарный код</span>
                         </div>
                         <div class="node-item" data-type="rle-compression" draggable="true">
                             <i class="fas fa-compress-arrows-alt"></i>
@@ -154,30 +131,30 @@
                         </div>
                         <div class="node-item" data-type="braille-cat" draggable="true">
                             <i class="fas fa-cat"></i>
-                            <span>Морзе (Кошачий)</span>
+                            <span data-i18n="node.morse_cat">Морзе (Кошачий)</span>
                         </div>
                         <div class="node-item" data-type="planet-enchanter" draggable="true">
                             <i class="fas fa-globe"></i>
-                            <span>Зачаровыватель планет</span>
+                            <span data-i18n="node.planet_enchanter">Зачаровыватель планет</span>
                         </div>
                     </div>
                     <div class="category">
-                        <h4>Продвинутая обработка</h4>
+                        <h4 data-i18n="nodes.advanced_processing">Продвинутая обработка</h4>
                         <div class="node-item" data-type="multi-replacer" draggable="true">
                             <i class="fas fa-exchange-alt"></i>
-                            <span>Мульти-Замена</span>
+                            <span data-i18n="node.multi_replace">Мульти-Замена</span>
                         </div>
                     </div>
 
                     <div class="category">
-                        <h4>Логические операции</h4>
+                        <h4 data-i18n="nodes.logical_operations">Логические операции</h4>
                         <div class="node-item" data-type="text-router" draggable="true">
                             <i class="fas fa-sitemap"></i>
-                            <span>Маршрутизатор Текста</span>
+                            <span data-i18n="node.text_router">Маршрутизатор Текста</span>
                         </div>
                         <div class="node-item" data-type="stream-merger" draggable="true">
                             <i class="fas fa-link"></i>
-                            <span>Слияние Потоков</span>
+                            <span data-i18n="node.stream_merger">Слияние Потоков</span>
                         </div>
                         <div class="node-item" data-type="stream-splitter" draggable="true">
                             <i class="fas fa-cut"></i>
@@ -186,38 +163,38 @@
                     </div>
 
                     <div class="category">
-                        <h4>Современные шифры</h4>
+                        <h4 data-i18n="nodes.modern_ciphers">Современные шифры</h4>
                         <div class="node-item" data-type="atbash" draggable="true">
                             <i class="fas fa-retweet"></i>
-                            <span>Шифр Атбаш</span>
+                            <span data-i18n="node.atbash_cipher">Шифр Атбаш</span>
                         </div>
                         <div class="node-item" data-type="base64" draggable="true">
                             <i class="fas fa-file-export"></i>
-                            <span>Base64 Кодировщик</span>
+                            <span data-i18n="node.base64">Base64 Кодировщик</span>
                         </div>
                     </div>
 
                     <div class="category">
-                        <h4>Забавные шифры</h4>
+                        <h4 data-i18n="nodes.fun_ciphers">Забавные шифры</h4>
                         <div class="node-item" data-type="gawr-gura" draggable="true">
                             <i class="fas fa-fish"></i>
-                            <span>Акулий Шифр</span>
+                            <span data-i18n="node.shark_cipher">Акулий Шифр</span>
                         </div>
                         <div class="node-item" data-type="uwu-ifier" draggable="true">
                             <i class="fas fa-grin-stars"></i>
-                            <span>UwU-фикатор</span>
+                            <span data-i18n="node.uwu_cipher">UwU-фикатор</span>
                         </div>
                     </div>
 
                     <div class="category">
-                        <h4>Утилиты</h4>
+                        <h4 data-i18n="nodes.utilities">Утилиты</h4>
                         <div class="node-item" data-type="monitor" draggable="true">
                             <i class="fas fa-desktop"></i>
-                            <span>Монитор</span>
+                            <span data-i18n="node.monitor">Монитор</span>
                         </div>
                         <div class="node-item" data-type="comment" draggable="true">
                             <i class="fas fa-comment-alt"></i>
-                            <span>Комментарий</span>
+                            <span data-i18n="node.comment">Комментарий</span>
                         </div>
                     </div>
                 </div>
@@ -226,13 +203,13 @@
             <!-- Рабочая область -->
             <main class="workspace">
                 <div class="canvas-controls">
-                    <button class="canvas-control-btn" id="zoomInBtn" title="Увеличить">
+                    <button class="canvas-control-btn" id="zoomInBtn" data-i18n-title="canvas.zoom_in">
                         <i class="fas fa-search-plus"></i>
                     </button>
-                    <button class="canvas-control-btn" id="zoomOutBtn" title="Уменьшить">
+                    <button class="canvas-control-btn" id="zoomOutBtn" data-i18n-title="canvas.zoom_out">
                         <i class="fas fa-search-minus"></i>
                     </button>
-                    <button class="canvas-control-btn" id="resetZoomBtn" title="Сбросить масштаб">
+                    <button class="canvas-control-btn" id="resetZoomBtn" data-i18n-title="canvas.zoom_reset">
                         <i class="fas fa-expand-arrows-alt"></i>
                     </button>
                     <span class="zoom-level" id="zoomLevel">100%</span>
@@ -248,11 +225,11 @@
         <!-- Нижняя панель с вводом/выводом -->
         <footer class="input-output-panel">
             <div class="input-section" id="inputSection">
-                <label for="inputText" id="inputLabel">Входной текст:</label>
+                <label for="inputText" id="inputLabel" data-i18n="io.input_label">Входной текст:</label>
                 <textarea id="inputText" data-i18n-placeholder="io.input_placeholder" placeholder="Введите текст для шифрования..."></textarea>
             </div>
             <div class="output-section" id="outputSection">
-                <label for="outputText" id="outputLabel">Результат:</label>
+                <label for="outputText" id="outputLabel" data-i18n="io.output_label">Результат:</label>
                 <textarea id="outputText" readonly data-i18n-placeholder="io.output_placeholder" placeholder="Результат появится здесь..."></textarea>
             </div>
         </footer>

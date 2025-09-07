@@ -265,12 +265,13 @@ class CanvasManager {
     }
 
     initializeCuttingControls() {
+        const t = window.i18n.t.bind(window.i18n);
         const canvasControls = document.querySelector('.canvas-controls');
         if (canvasControls) {
             const scissorBtn = document.createElement('button');
             scissorBtn.className = 'canvas-control-btn';
             scissorBtn.id = 'scissorBtn';
-            scissorBtn.title = 'Режим резки соединений (X / Alt)';
+            scissorBtn.title = window.i18n.t('canvas.cut_mode_tooltip');
             scissorBtn.innerHTML = '<i class="fas fa-cut"></i>';
             scissorBtn.addEventListener('click', () => this.toggleCuttingMode());
             
@@ -338,13 +339,14 @@ class CanvasManager {
 
     showCuttingHint() {
         if (document.querySelector('.cutting-hint-tooltip')) return;
+        const t = window.i18n.t.bind(window.i18n);
 
         const hint = document.createElement('div');
         hint.className = 'cutting-hint-tooltip'; // Используем другое имя, чтобы не конфликтовать со стилями иконки
         hint.innerHTML = `
             <div class="cutting-hint">
                 <i class="fas fa-cut"></i>
-                <span>Режим резки активен: проведите линию через соединения</span>
+                <span>${t('canvas.cut_mode_hint')}</span> 
             </div>
         `;
         hint.style.cssText = `
@@ -495,6 +497,7 @@ class CanvasManager {
      */
     performCut() {
         if (this.cutPath.length < 2 || !window.connectionManager) return;
+        const t = window.i18n.t.bind(window.i18n);
 
         const connections = this.getConnectionsAsSegments();
         const connectionsToRemove = new Set();
@@ -511,7 +514,8 @@ class CanvasManager {
         if (connectionsToRemove.size > 0) {
             connectionsToRemove.forEach(id => window.connectionManager.removeConnection(id));
             if (window.fileManager) {
-                window.fileManager.showNotification(`✂️ Разрезано соединений: ${connectionsToRemove.size}`, 'success');
+                const message = window.i18n.t('notification.connections_cut', { count: connectionsToRemove.size });
+                window.fileManager.showNotification(message, 'success');
             }
             if (window.cipherEngine) {
                 window.cipherEngine.executeChain();

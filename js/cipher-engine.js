@@ -250,7 +250,7 @@ class CipherEngine {
         } catch (error) {
             console.error('Ошибка выполнения цепочки:', error);
             const outputElement = window.connectionManager.reverseMode ? document.getElementById('inputText') : document.getElementById('outputText');
-            if(outputElement) outputElement.value = 'Ошибка выполнения: ' + error.message;
+            if(outputElement) outputElement.value = window.i18n.t('error.execution_failed', { message: error.message });
         }
     }
     
@@ -346,7 +346,7 @@ class CipherEngine {
             }
         } catch (error) {
             console.error(`Ошибка в ноде ${node.type}:`, error);
-            return `Ошибка: ${error.message}`;
+            return window.i18n.t('error.node_processing', { message: error.message });
         }
     }
     
@@ -528,6 +528,8 @@ class CipherEngine {
         const value = parseFloat(valueField?.value || 1);
         
         const isReverse = window.connectionManager?.reverseMode || false;
+
+        const t = window.i18n.t.bind(window.i18n); 
         
         if (typeof text !== 'string') return '';
         
@@ -544,12 +546,12 @@ class CipherEngine {
                     break;
                 case 'multiply':
                     // Проверка деления на ноль при дешифрации
-                    if (value === 0) return isReverse ? 'Ошибка: деление на 0' : 0;
+                    if (value === 0) return isReverse ? t('error.division_by_zero') : 0;
                     result = isReverse ? num / value : num * value;
                     break;
                 case 'divide':
                     // Проверка деления на ноль при шифрации
-                    if (value === 0) return isReverse ? num * value : 'Ошибка: деление на 0';
+                    if (value === 0) return isReverse ? num * value : t('error.division_by_zero');
                     result = isReverse ? num * value : num / value;
                     break;
                 default:
@@ -612,7 +614,7 @@ class CipherEngine {
     // Методы для сохранения и загрузки схем
     exportScheme() {
         if (!window.nodeManager || !window.connectionManager) {
-            throw new Error('Системы нодов не инициализированы');
+            throw new Error(window.i18n.t('error.node_systems_not_ready'));
         }
         
         const nodes = window.nodeManager.getAllNodes().map(node => ({
@@ -761,7 +763,7 @@ class CipherEngine {
     
     processSecretWord(nodeData, inputData) {
         const keywordField = nodeData.fields.find(f => f.name === 'keyword');
-        return keywordField?.value || 'СЕКРЕТ';
+        return keywordField?.value || window.i18n.t('param.default_keyword');
     }
 
     processVigenereCipher(node, inputData, allNodeResults) {
@@ -944,6 +946,8 @@ class CipherEngine {
     }
     
     processBinary(nodeData, inputData) {
+        const t = window.i18n.t.bind(window.i18n); 
+
         const modeField = nodeData.fields.find(f => f.name === 'mode');
         const mode = modeField?.value || 'encode';
         
@@ -964,7 +968,7 @@ class CipherEngine {
             const binaryStrings = inputData.match(/[01]{8}/g); 
             
             if (!binaryStrings || binaryStrings.length === 0) {
-                return "Ошибка: Некорректный бинарный ввод для дешифровки.";
+                return t('error.invalid_binary_input');
             }
             
             const utf8Bytes = new Uint8Array(binaryStrings.map(binary => parseInt(binary, 2)));
@@ -974,24 +978,25 @@ class CipherEngine {
                 return decoder.decode(utf8Bytes);
             } catch (e) {
                 console.error("Binary decode error:", e);
-                return "Ошибка декодирования бинарного кода: " + e.message;
+                return t('error.binary_decode', { message: e.message });
             }
         }
     }
     
     processMonitor(node, inputData) {
+        const t = window.i18n.t.bind(window.i18n); 
         if (node.element) {
             const display = node.element.querySelector('.monitor-display');
             if (display) {
                 const isReverse = window.connectionManager?.reverseMode || false;
-                const direction = isReverse ? '⬅ Дешифровка' : '➡ Шифровка';
+                const direction = isReverse ? t('monitor.direction_decrypt') : t('monitor.direction_encrypt');
                 
                 let textToDisplay = inputData;
                 if (typeof inputData === 'object' && inputData !== null) {
                     textToDisplay = JSON.stringify(inputData, null, 2);
                 }
                 
-                const formattedInput = (textToDisplay || 'Пусто').toString().replace(/\n/g, '<br>');
+                const formattedInput = (textToDisplay || t('monitor.empty_input')).toString().replace(/\n/g, '<br>');
                 
                 display.innerHTML = `<small style="color: var(--accent-primary);">${direction}</small><br>${formattedInput}`;
             }
@@ -1011,12 +1016,12 @@ class CipherEngine {
         try {
             await navigator.clipboard.writeText(textToCopy);
             if (window.fileManager) {
-                window.fileManager.showNotification('Содержимое монитора скопировано!', 'success');
+                window.fileManager.showNotification(window.i18n.t('notification.monitor_copied'), 'success');
             }
         } catch (err) {
             console.error('Ошибка копирования:', err);
             if (window.fileManager) {
-                window.fileManager.showNotification('Не удалось скопировать', 'error');
+                window.fileManager.showNotification(window.i18n.t('error.copy_failed'), 'error');
             }
         }
     }
@@ -1962,6 +1967,7 @@ class CipherEngine {
     }
     
     processBase64(nodeData, inputData) {
+        const t = window.i18n.t.bind(window.i18n); 
         const isReverseMode = window.connectionManager?.reverseMode;
         const mode = nodeData.fields?.find(f => f.name === 'mode')?.value || 'encode';
         
@@ -1975,7 +1981,7 @@ class CipherEngine {
                 return decodeURIComponent(escape(atob(inputData)));
             }
         } catch (e) {
-            return `Ошибка Base64: ${e.message}`;
+            return window.i18n.t('error.base64', { message: e.message });
         }
     }
     

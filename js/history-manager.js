@@ -67,8 +67,9 @@ class HistoryManager {
     
     // Отменить действие
     undo() {
+        const t = window.i18n.t.bind(window.i18n);
         if (this.currentIndex < 0) {
-            this.showIndicator('Нечего отменять');
+            this.showIndicator(t('history.nothing_to_undo'));
             return;
         }
         
@@ -78,10 +79,10 @@ class HistoryManager {
         try {
             this.executeUndo(action);
             this.currentIndex--;
-            this.showIndicator('Отменено: ' + action.description);
+            this.showIndicator(t('history.undone', { description: action.description }));
         } catch (error) {
             console.error('Ошибка отмены действия:', error);
-            this.showIndicator('Ошибка отмены', 'error');
+            this.showIndicator(t('history.undo_error'), 'error');
         } finally {
             this.isExecutingCommand = false;
         }
@@ -89,8 +90,9 @@ class HistoryManager {
     
     // Повторить действие
     redo() {
+        const t = window.i18n.t.bind(window.i18n);
         if (this.currentIndex >= this.history.length - 1) {
-            this.showIndicator('Нечего повторять');
+            this.showIndicator(t('history.nothing_to_redo'));
             return;
         }
         
@@ -98,13 +100,13 @@ class HistoryManager {
         const action = this.history[this.currentIndex];
         this.isExecutingCommand = true;
         
-        try {
-            this.executeRedo(action);
-            this.showIndicator('Повторено: ' + action.description);
-        } catch (error) {
-            console.error('Ошибка повтора действия:', error);
-            this.showIndicator('Ошибка повтора', 'error');
-        } finally {
+    try {
+        this.executeRedo(action);
+        this.showIndicator(t('history.redone', { description: action.description }));
+    } catch (error) {
+        console.error('Action retry error:', error);
+        this.showIndicator(t('history.redo_error'), 'error');
+    } finally {
             this.isExecutingCommand = false;
         }
     }
@@ -508,31 +510,31 @@ class SelectionManager {
             });
         }
         
-        // 1. Сохраняем во внутренний буфер для быстрого копирования в пределах одной вкладки
+        // Сохраняем во внутренний буфер для быстрого копирования в пределах одной вкладки
         this.clipboard = copiedData;
         
-        // 2. Пытаемся записать в системный буфер обмена
+        // Пытаемся записать в системный буфер обмена
+        const t = window.i18n.t.bind(window.i18n);
         try {
             const jsonString = JSON.stringify(copiedData, null, 2);
             await navigator.clipboard.writeText(jsonString);
             
             if (window.historyManager) {
-                window.historyManager.showIndicator(`Скопировано в буфер: ${copiedData.nodes.length} нод(ов)`);
+                window.historyManager.showIndicator(t('selection.copied', { count: copiedData.nodes.length }));
             }
         } catch (err) {
             console.error('Ошибка записи в буфер обмена:', err);
             if (window.historyManager) {
-                window.historyManager.showIndicator('Ошибка: не удалось скопировать в системный буфер', 'error');
+                window.historyManager.showIndicator(t('selection.copy_error'), 'error');
             }
         }
     }
-    
-    // js/history-manager.js
 
     async paste() {
+        const t = window.i18n.t.bind(window.i18n); 
         let clipboardData = null;
 
-        // 1. Пытаемся прочитать данные из системного буфера обмена.
+        // Пытаемся прочитать данные из системного буфера обмена.
         try {
             const textFromClipboard = await navigator.clipboard.readText();
             const parsedData = JSON.parse(textFromClipboard);
@@ -547,20 +549,20 @@ class SelectionManager {
             console.warn('Не удалось прочитать данные из системного буфера, используется внутренний.', err);
         }
         
-        // 2. Фалбэк на внутренний буфер, если из системного ничего не получили.
+        // Фалбэк на внутренний буфер, если из системного ничего не получили.
         if (!clipboardData) {
             clipboardData = this.clipboard;
         }
 
-        // 3. Проверяем валидность данных перед вставкой.
+        // Проверяем валидность данных перед вставкой.
         if (!clipboardData || !clipboardData.nodes || clipboardData.nodes.length === 0) {
             if (window.historyManager) {
-                window.historyManager.showIndicator('Буфер обмена пуст или содержит неверные данные', 'error');
+                window.historyManager.showIndicator(t('selection.paste_empty'), 'error');
             }
             return;
         }
         
-        // 4. Логика вставки нодов.
+        // Логика вставки нодов.
         const nodeIdMapping = new Map();
 
         // Получаем центр видимой области канваса в мировых координатах.
@@ -614,7 +616,7 @@ class SelectionManager {
             }
         });
         
-        // 5. Восстанавливаем соединения между вставленными нодами.
+        // Восстанавливаем соединения между вставленными нодами.
         clipboardData.connections.forEach(connData => {
             const fromNodeId = nodeIdMapping.get(connData.from);
             const toNodeId = nodeIdMapping.get(connData.to);
@@ -647,14 +649,14 @@ class SelectionManager {
             }
         });
         
-        // 6. Выделяем вставленные ноды для удобства.
+        // Выделяем вставленные ноды для удобства.
         this.clearSelection();
         nodeIdMapping.forEach(newNodeId => {
             this.addToSelection(newNodeId);
         });
         
         if (window.historyManager) {
-            window.historyManager.showIndicator(`Вставлено нодов: ${nodeIdMapping.size}`);
+            window.historyManager.showIndicator(t('selection.pasted', { count: nodeIdMapping.size }));
         }
 
         // Запускаем пересчет цепочки
@@ -662,6 +664,8 @@ class SelectionManager {
     }
     
     deleteSelected() {
+        const t = window.i18n.t.bind(window.i18n); 
+
         if (this.selectedNodes.size === 0) return;
         
         const count = this.selectedNodes.size;
@@ -675,7 +679,7 @@ class SelectionManager {
         this.clearSelection();
         
         if (window.historyManager) {
-            window.historyManager.showIndicator(`Удалено нодов: ${count}`);
+            window.historyManager.showIndicator(t('selection.deleted', { count }));
         }
     }
 }

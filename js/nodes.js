@@ -172,6 +172,7 @@ class NodeManager {
     }
     
     createNode(type, x, y, isWorldCoords = false) {
+        const t = window.i18n ? window.i18n.t.bind(window.i18n) : (key) => key;
         const nodeId = `node_${this.nodeIdCounter++}`;
         const nodeData = this.getNodeTemplate(type);
 
@@ -228,7 +229,7 @@ class NodeManager {
         if (window.historyManager) {
             window.historyManager.addAction({
                 type: 'create_node',
-                description: `Создан нод: ${nodeData.title}`,
+                description: t('history.node_created', { title: nodeData.title }),
                 data: {
                     nodeId: nodeId,
                     type: type,
@@ -270,7 +271,7 @@ class NodeManager {
                         label: t('param.shift'),
                         value: 3,
                         min: 1,
-                        max: 25
+                        max: 32
                     }
                 ],
                 hasInput: true,
@@ -286,16 +287,16 @@ class NodeManager {
                         label: t('param.operation'),
                         value: 'encode',
                         options: [
-                            { value: 'encode', label: 'Кодировать' },
-                            { value: 'decode', label: 'Декодировать' }
+                            { value: 'encode', label: t('option.encode') },
+                            { value: 'decode', label: t('option.decode') }
                         ]
                     },
                     {
                         name: 'supportYo',
                         type: 'checkbox',
-                        label: 'Поддержка Ё (··−··)',
+                        label: t('param.yo_support'),
                         value: false,
-                        tooltip: 'Включить отдельный код для буквы Ё. По умолчанию Ё = Е'
+                        tooltip: t('param.yo_tooltip')
                     }
                 ],
                 hasInput: true,
@@ -311,19 +312,19 @@ class NodeManager {
                         label: t('param.language'),
                         value: 'ru',
                         options: [
-                            { value: 'ru', label: 'Русский' },
-                            { value: 'en', label: 'English' },
-                            { value: 'mix', label: 'Перемешать' }
+                            { value: 'ru', label: t('option.russian') },
+                            { value: 'en', label: t('option.english') },
+                            { value: 'mix', label: t('option.mix') }
                         ]
                     },
                     {
                         name: 'mode',
                         type: 'select',
-                        label: 'Направление',
+                        label: t('param.direction'),
                         value: 'to_words',
                         options: [
-                            { value: 'to_words', label: 'В слова' },
-                            { value: 'to_numbers', label: 'В числа' }
+                            { value: 'to_words', label: t('option.to_words') },
+                            { value: 'to_numbers', label: t('option.to_numbers') }
                         ]
                     }
                 ],
@@ -331,25 +332,25 @@ class NodeManager {
                 hasOutput: true
             },
             'math': {
-                title: 'Математика',
+                title: t('node.math'),
                 icon: 'fas fa-calculator',
                 fields: [
                     {
                         name: 'operation',
                         type: 'select',
-                        label: 'Операция',
+                        label: t('param.operation'),
                         value: 'add',
                         options: [
-                            { value: 'add', label: 'Прибавить' },
-                            { value: 'subtract', label: 'Вычесть' },
-                            { value: 'multiply', label: 'Умножить' },
-                            { value: 'divide', label: 'Разделить' }
+                            { value: 'add', label: t('option.add') },
+                            { value: 'subtract', label: t('option.subtract') },
+                            { value: 'multiply', label: t('option.multiply') },
+                            { value: 'divide', label: t('option.divide') }
                         ]
                     },
                     {
                         name: 'value',
                         type: 'number',
-                        label: 'Значение',
+                        label: t('param.value'),
                         value: 1
                     }
                 ],
@@ -357,18 +358,18 @@ class NodeManager {
                 hasOutput: true
             },
             'reverse': {
-                title: 'Обратить текст',
+                title: t('node.reverse_text'),
                 icon: 'fas fa-undo',
                 fields: [
                     {
                         name: 'mode',
                         type: 'select',
-                        label: 'Режим',
+                        label: t('param.mode'),
                         value: 'full',
                         options: [
-                            { value: 'full', label: 'Полностью' },
-                            { value: 'words', label: 'По словам' },
-                            { value: 'boustrophedon', label: 'Змейка (Бустрофедон)' }
+                            { value: 'full', label: t('option.full') },
+                            { value: 'words', label: t('option.words') },
+                            { value: 'boustrophedon', label: t('option.boustrophedon') }
                         ]
                     }
                 ],
@@ -376,19 +377,19 @@ class NodeManager {
                 hasOutput: true
             },
             'case-transform': {
-                title: 'Регистр',
+                title: t('node.case_transform'),
                 icon: 'fas fa-text-height',
                 fields: [
                     {
                         name: 'mode',
                         type: 'select',
-                        label: 'Режим',
+                        label: t('param.mode'),
                         value: 'upper',
                         options: [
-                            { value: 'upper', label: 'ВЕРХНИЙ' },
-                            { value: 'lower', label: 'нижний' },
-                            { value: 'title', label: 'Заглавные' },
-                            { value: 'toggle', label: 'иНВЕРТИРОВАТЬ' }
+                            { value: 'upper', label: t('option.upper') },
+                            { value: 'lower', label: t('option.lower') },
+                            { value: 'title', label: t('option.title') },
+                            { value: 'toggle', label: t('option.toggle') }
                         ]
                     }
                 ],
@@ -396,63 +397,63 @@ class NodeManager {
                 hasOutput: true
             },
             'secret-word': {
-                title: 'Секретное слово',
+                title: t('node.secret_word'),
                 icon: 'fas fa-key',
                 fields: [
                     {
                         name: 'keyword',
                         type: 'text',
-                        label: 'Ключевое слово',
-                        value: 'СЕКРЕТ'
+                        label: t('param.keyword'),
+                        value: t('param.default_keyword')
                     }
                 ],
                 hasInput: false,
                 hasOutput: true
             },
             'vigenere': {
-                title: 'Шифр Виженера',
+                title: t('node.vigenere_cipher'),
                 icon: 'fas fa-shield-alt',
                 fields: [
                     {
                         name: 'mode',
                         type: 'select',
-                        label: 'Тип шифра',
+                        label: t('param.cipher_type'),
                         value: 'vigenere',
                         options: [
-                            { value: 'vigenere', label: 'Виженер ((T+K) mod m)' },
-                            { value: 'beaufort', label: 'Бофор ((K-T) mod m)' }
+                            { value: 'vigenere', label: t('option.vigenere') },
+                            { value: 'beaufort', label: t('option.beaufort') }
                         ]
                     }
                 ],
                 hasInput: false,
                 hasOutput: true,
                 multipleInputs: [
-                    { name: 'text', label: 'Текст', color: '#3b82f6' },
-                    { name: 'key', label: 'Ключ', color: '#f59e0b' }
+                    { name: 'text', label: t('option.text_input'), color: '#3b82f6' },
+                    { name: 'key', label: t('option.key_input'), color: '#f59e0b' }
                 ]
             },
             'a1z26': {
-                title: 'Шифр A1Z26',
+                title: t('node.a1z26_cipher'),
                 icon: 'fas fa-sort-numeric-up',
                 fields: [
                     {
                         name: 'language', 
                         type: 'select',
-                        label: 'Язык',
+                        label: t('param.language'),
                         value: 'ru',
                         options: [
-                            { value: 'ru', label: 'Русский' },
-                            { value: 'en', label: 'English' }
+                            { value: 'ru', label: t('option.russian') },
+                            { value: 'en', label: t('option.english') }
                         ]
                     },
                     {
                         name: 'mode',
                         type: 'select',
-                        label: 'Режим',
+                        label: t('param.mode'),
                         value: 'encode',
                         options: [
-                            { value: 'encode', label: 'Буквы → Числа' },
-                            { value: 'decode', label: 'Числа → Буквы' }
+                            { value: 'encode', label: t('option.encode') },
+                            { value: 'decode', label: t('option.decode') }
                         ]
                     }
                 ],
@@ -460,17 +461,17 @@ class NodeManager {
                 hasOutput: true
             },
             'binary': {
-                title: 'Бинарный код',
+                title: t('node.binary_code'),
                 icon: 'fas fa-microchip',
                 fields: [
                     {
                         name: 'mode',
                         type: 'select',
-                        label: 'Режим',
+                        label: t('param.mode'),
                         value: 'encode',
                         options: [
-                            { value: 'encode', label: 'Текст → Бинарный' },
-                            { value: 'decode', label: 'Бинарный → Текст' }
+                            { value: 'encode', label: t('option.encode') },
+                            { value: 'decode', label: t('option.decode') }
                         ]
                     }
                 ],
@@ -478,53 +479,53 @@ class NodeManager {
                 hasOutput: true
             },
             'braille-cat': {
-                title: 'Морзе (Кошачий)',
+                title: t('node.morse_cat'),
                 icon: 'fas fa-cat',
                 fields: [
                     {
                         name: 'mode',
                         type: 'select',
-                        label: 'Режим',
+                        label: t('param.mode'),
                         value: 'encode',
                         options: [
-                            { value: 'encode', label: 'Текст → Кошачий код' },
-                            { value: 'decode', label: 'Кошачий код → Текст' }
+                            { value: 'encode', label: t('option.text_to_cat') },
+                            { value: 'decode', label: t('option.cat_to_text') }
                         ]
                     },
                     {
                         name: 'supportYo',
                         type: 'checkbox',
-                        label: 'Поддержка Ё (мяумяумрряумяумяу)',
+                        label: t('option.yo_support_cat'),
                         value: false,
-                        tooltip: 'Включить отдельный код для буквы Ё. По умолчанию Ё = Е'
+                        tooltip: t('param.yo_tooltip')
                     }
                 ],
                 hasInput: true,
                 hasOutput: true
             },
             'planet-enchanter': {
-                title: 'Зачаровыватель планет',
+                title: t('node.planet_enchanter'),
                 icon: 'fas fa-globe',
                 fields: [
                     {
                         name: 'mode',
                         type: 'select',
-                        label: 'Режим',
+                        label: t('param.mode'),
                         value: 'encode',
                         options: [
-                            { value: 'encode', label: 'Текст → Координаты' },
-                            { value: 'decode', label: 'Координаты → Текст' }
+                            { value: 'encode', label: t('option.text_to_coords') },
+                            { value: 'decode', label: t('option.coords_to_text') }
                         ]
                     },
                     {
                         name: 'language',
                         type: 'select',
-                        label: 'Язык',
+                        label: t('param.language'),
                         value: 'ru',
                         options: [
-                            { value: 'ru', label: 'Русский' },
-                            { value: 'en', label: 'English' },
-                            { value: 'mix', label: 'Смешанный' }
+                            { value: 'ru', label: t('option.russian') },
+                            { value: 'en', label: t('option.english') },
+                            { value: 'mix', label: t('option.mix') }
                         ]
                     }
                 ],
@@ -532,7 +533,7 @@ class NodeManager {
                 hasOutput: true
             },
             'monitor': {
-                title: 'Монитор',
+                title: t('node.monitor'),
                 icon: 'fas fa-desktop',
                 fields: [],
                 hasInput: true,
@@ -540,7 +541,7 @@ class NodeManager {
                 isMonitor: true
             },
             'comment': {
-                title: 'Комментарий',
+                title: t('node.comment'),
                 icon: 'fas fa-comment-alt',
                 fields: [
                     {
@@ -554,58 +555,56 @@ class NodeManager {
                 hasInput: false, 
                 hasOutput: false 
             },
-            // === КАТЕГОРИЯ 1: ПРОДВИНУТАЯ ОБРАБОТКА ТЕКСТА ===
             'multi-replacer': {
-                title: 'Мульти-Замена',
+                title: t('node.multi_replace'),
                 icon: 'fas fa-exchange-alt',
                 fields: [
                     {
                         name: 'rules',
                         type: 'multi-rules',
-                        label: 'Правила замены',
+                        label: t('param.rules'),
                         value: []
                     },
                     {
                         name: 'caseSensitive',
                         type: 'checkbox',
-                        label: 'Учитывать регистр',
+                        label: t('param.case_sensitive'),
                         value: false
                     },
                     {
                         name: 'wholeWords',
                         type: 'checkbox',
-                        label: 'Только целые слова',
+                        label: t('param.whole_words'),
                         value: false
                     }
                 ],
                 hasInput: true,
                 hasOutput: true
             },
-            // === КАТЕГОРИЯ 2: ЛОГИЧЕСКИЕ И СТРУКТУРНЫЕ НОДЫ ===
             'text-router': {
-                title: 'Маршрутизатор Текста',
+                title: t('node.text_router'),
                 icon: 'fas fa-sitemap',
                 fields: [
                     {
                         name: 'condition',
                         type: 'select',
-                        label: 'Условие',
+                        label: t('param.condition'),
                         value: 'contains_numbers',
                         options: [
-                            { value: 'contains_numbers', label: 'Содержит числа' },
-                            { value: 'no_numbers', label: 'Не содержит чисел' },
-                            { value: 'contains_latin', label: 'Содержит латиницу' },
-                            { value: 'no_latin', label: 'Не содержит латиницу' },
-                            { value: 'contains_cyrillic', label: 'Содержит кириллицу' },
-                            { value: 'no_cyrillic', label: 'Не содержит кириллицу' },
-                            { value: 'contains_text', label: 'Текст содержит...' },
-                            { value: 'regex_match', label: 'Соответствует Regex...' }
+                            { value: 'contains_numbers', label: t('option.contains_numbers') },
+                            { value: 'no_numbers', label: t('option.no_numbers') },
+                            { value: 'contains_latin', label: t('option.contains_latin') },
+                            { value: 'no_latin', label: t('option.no_latin') },
+                            { value: 'contains_cyrillic', label: t('option.contains_cyrillic') },
+                            { value: 'no_cyrillic', label: t('option.no_cyrillic') },
+                            { value: 'contains_text', label: t('option.contains_text') },
+                            { value: 'regex_match', label: t('option.regex_match') }
                         ]
                     },
                     {
                         name: 'searchText',
                         type: 'text',
-                        label: 'Поиск',
+                        label: t('param.search'),
                         value: '',
                         showWhen: ['contains_text', 'regex_match']
                     }
@@ -613,151 +612,149 @@ class NodeManager {
                 hasInput: true,
                 hasOutput: false,
                 multipleOutputs: [
-                    { name: 'true', label: 'Если ДА', color: '#22c55e' },
-                    { name: 'false', label: 'Если НЕТ', color: '#ef4444' }
+                    { name: 'true', label: t('output.if_true'), color: '#22c55e' },
+                    { name: 'false', label: t('output.if_false'), color: '#ef4444' }
                 ]
             },
             'stream-merger': {
-                title: 'Слияние Потоков',
+                title: t('node.stream_merger'),
                 icon: 'fas fa-link',
                 fields: [
                     {
                         name: 'mode',
                         type: 'select',
-                        label: 'Режим слияния',
+                        label: t('param.merge_mode'),
                         value: 'alternating_chars',
                         options: [
-                            { value: 'alternating_chars', label: 'Чередование символов (ABAB...)' },
-                            { value: 'alternating_words', label: 'Чередование слов (A_word B_word...)' },
-                            { value: 'alternating_lines', label: 'Чередование строк (A_line B_line...)' }
+                            { value: 'alternating_chars', label: t('option.alt_chars') },
+                            { value: 'alternating_words', label: t('option.alt_words') },
+                            { value: 'alternating_lines', label: t('option.alt_lines') }
                         ]
                     }
                 ],
                 hasInput: false,
                 hasOutput: true,
                 multipleInputs: [
-                    { name: 'streamA', label: 'Поток А', color: '#3b82f6' },
-                    { name: 'streamB', label: 'Поток Б', color: '#f59e0b' }
+                    { name: 'streamA', label: t('input.stream_a'), color: '#3b82f6' },
+                    { name: 'streamB', label: t('input.stream_b'), color: '#f59e0b' }
                 ]
             },
             'stream-splitter': {
-                title: 'Разрез Потоков',
+                title: t('node.stream_splitter'),
                 icon: 'fas fa-cut',
                 fields: [
                     {
                         name: 'mode',
                         type: 'select',
-                        label: 'Режим разреза',
+                        label: t('param.split_mode'),
                         value: 'alternating_chars',
                         options: [
-                            { value: 'alternating_chars', label: 'Разделение по символам (AB...→A,B)' },
-                            { value: 'alternating_words', label: 'Разделение по словам (A B...→A,B)' },
-                            { value: 'alternating_lines', label: 'Разделение по строкам (A\\nB...→A,B)' }
+                            { value: 'alternating_chars', label: t('option.split_chars') },
+                            { value: 'alternating_words', label: t('option.split_words') },
+                            { value: 'alternating_lines', label: t('option.split_lines') }
                         ]
                     }
                 ],
                 hasInput: true,
                 hasOutput: false,
                 multipleOutputs: [
-                    { name: 'streamA', label: 'Поток А', color: '#3b82f6' },
-                    { name: 'streamB', label: 'Поток Б', color: '#f59e0b' }
+                    { name: 'streamA', label: t('input.stream_a'), color: '#3b82f6' },
+                    { name: 'streamB', label: t('input.stream_b'), color: '#f59e0b' }
                 ]
             },
-            
             'atbash': {
-                title: 'Шифр Атбаш',
+                title: t('node.atbash_cipher'),
                 icon: 'fas fa-retweet',
                 fields: [],
                 hasInput: true,
                 hasOutput: true
             },
             'base64': {
-                title: 'Base64 Кодировщик',
+                title: t('node.base64'),
                 icon: 'fas fa-file-export',
                 fields: [
                     {
                         name: 'mode',
                         type: 'select',
-                        label: 'Режим',
+                        label: t('param.mode'),
                         value: 'encode',
                         options: [
-                            { value: 'encode', label: 'Кодировать' },
-                            { value: 'decode', label: 'Декодировать' }
+                            { value: 'encode', label: t('option.encode') },
+                            { value: 'decode', label: t('option.decode') }
                         ]
                     }
                 ],
                 hasInput: true,
                 hasOutput: true
             },
-            
             'gawr-gura': {
-                title: 'Акулий Шифр',
+                title: t('node.shark_cipher'),
                 icon: 'fas fa-fish',
                 fields: [],
                 hasInput: true,
                 hasOutput: true
             },
             'uwu-ifier': {
-                title: 'UwU-фикатор',
+                title: t('node.uwu_cipher'),
                 icon: 'fas fa-grin-stars',
                 fields: [],
                 hasInput: true,
                 hasOutput: true
             },
             'complex-substitution': {
-                title: 'Сложная замена',
+                title: t('node.complex_substitution'),
                 icon: 'fas fa-mask', 
                 fields: [
                     {
                         name: 'language',
                         type: 'select',
-                        label: 'Базовый алфавит',
+                        label: t('param.base_alphabet'),
                         value: 'ru',
                         options: [
-                            { value: 'ru', label: 'Русский (33 буквы)' },
-                            { value: 'en', label: 'Английский (26 букв)' }
+                            { value: 'ru', label: t('option.ru_alphabet_33') },
+                            { value: 'en', label: t('option.en_alphabet_26') }
                         ]
                     },
                     {
                         name: 'decrypt',
                         type: 'checkbox',
-                        label: 'Дешифровка',
+                        label: t('param.decryption'),
                         value: false
                     }
                 ],
                 hasInput: false, 
                 hasOutput: true,
                 multipleInputs: [
-                    { name: 'text', label: 'Текст', color: '#3b82f6' },
-                    { name: 'key', label: 'Ключ', color: '#f59e0b' }
+                    { name: 'text', label: t('option.text_input'), color: '#3b82f6' },
+                    { name: 'key', label: t('option.key_input'), color: '#f59e0b' }
                 ]
             },
             'simple-substitution': {
-                title: 'Простая замена',
+                title: t('node.simple_substitution'),
                 icon: 'fas fa-random', 
                 fields: [
                     {
                         name: 'decrypt',
                         type: 'checkbox',
-                        label: 'Дешифровка',
+                        label: t('param.decryption'),
                         value: false
                     }
                 ],
                 hasInput: false, 
                 hasOutput: true,
                 multipleInputs: [
-                    { name: 'text', label: 'Текст', color: '#3b82f6' },
-                    { name: 'key', label: 'Ключ', color: '#f59e0b' }
+                    { name: 'text', label: t('option.text_input'), color: '#3b82f6' },
+                    { name: 'key', label: t('option.key_input'), color: '#f59e0b' }
                 ]
             },
             'rle-compression': {
-                title: 'Сжатие (RLE)',
+                title: t('node.rle_compression'),
                 icon: 'fas fa-compress-arrows-alt',
                 fields: [
                     {
                         name: 'decrypt',
                         type: 'checkbox',
-                        label: 'Декомпрессия',
+                        label: t('param.decompression'),
                         value: false
                     }
                 ],
@@ -765,29 +762,31 @@ class NodeManager {
                 hasOutput: true
             },
             'route-transposition': {
-                title: 'Маршрутная перестановка',
+                title: t('node.route_transposition'), 
                 icon: 'fas fa-route',
                 fields: [
                     {
                         name: 'decrypt',
                         type: 'checkbox',
-                        label: 'Дешифровка',
+                        label: t('param.decryption'),
                         value: false
                     }
                 ],
                 hasInput: false, 
                 hasOutput: true,
                 multipleInputs: [
-                    { name: 'text', label: 'Текст', color: '#3b82f6' },
-                    { name: 'key', label: 'Ключ', color: '#f59e0b' }
+                    { name: 'text', label: t('option.text_input'), color: '#3b82f6' },
+                    { name: 'key', label: t('option.key_input'), color: '#f59e0b' }
                 ]
             }
         };
         
         return templates[type] || templates['input'];
     }
+
     
     createElement(nodeId, nodeData, x, y) {
+        const t = window.i18n.t.bind(window.i18n);
         const nodeElement = document.createElement('div');
         const nodeType = this.nodes.get(nodeId)?.type || 'default';
         nodeElement.className = 'canvas-node';
@@ -807,7 +806,7 @@ class NodeManager {
         header.innerHTML = `
             <i class="${nodeData.icon}"></i>
             <span class="node-title" contenteditable="true">${nodeData.title}</span> 
-            <button class="node-help-button" onclick="if(window.showNodeHelp) window.showNodeHelp('${nodeType}')" title="Показать справку">
+            <button class="node-help-button" onclick="if(window.showNodeHelp) window.showNodeHelp('${nodeType}')" title="${t('node.show_help_tooltip')}">
                 <i class="fas fa-question"></i>
             </button>
             <button class="node-remove" onclick="nodeManager.removeNode('${nodeId}')">
@@ -839,11 +838,11 @@ class NodeManager {
             const display = document.createElement('div');
             display.className = 'monitor-display';
             display.dataset.nodeId = nodeId;
-            display.textContent = 'Ожидание данных...';
+            display.textContent = t('monitor.waiting_for_data');
             
             const copyBtn = document.createElement('button');
             copyBtn.className = 'monitor-copy-btn';
-            copyBtn.title = 'Скопировать содержимое';
+            copyBtn.title = t('monitor.copy_content');
             copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
             copyBtn.onclick = () => this.copyMonitorContent(nodeId); // Используем this
             
@@ -1081,6 +1080,7 @@ class NodeManager {
         };
 
         const upHandler = () => {
+            const t = window.i18n.t.bind(window.i18n);
             isDragging = false;
             if (animationFrameId) {
                 cancelAnimationFrame(animationFrameId);
@@ -1110,7 +1110,7 @@ class NodeManager {
                 if (hasMoved) {
                     window.historyManager.addAction({
                         type: 'move_node_group',
-                        description: `Перемещено нодов: ${movedNodesData.length}`,
+                        description: t('history.group_moved', { count: movedNodesData.length }),
                         data: {
                             nodes: movedNodesData
                         }
@@ -1146,6 +1146,7 @@ class NodeManager {
     }
         
     removeNode(nodeId, skipHistory = false) {
+        const t = window.i18n.t.bind(window.i18n);
         const node = this.nodes.get(nodeId);
         if (!node) return;
         
@@ -1169,7 +1170,7 @@ class NodeManager {
             
             window.historyManager.addAction({
                 type: 'delete_node',
-                description: `Удален нод: ${node.data.title}`,
+                description: t('history.node_deleted', { title: node.data.title }),
                 data: {
                     nodeId: nodeId,
                     type: node.type,
@@ -1285,6 +1286,8 @@ class NodeManager {
     }
     
     createMultiRulesField(field, nodeId) {
+        const t = window.i18n.t.bind(window.i18n); 
+
         const container = document.createElement('div');
         container.className = 'multi-rules-container';
         
@@ -1292,9 +1295,9 @@ class NodeManager {
         const header = document.createElement('div');
         header.className = 'multi-rules-header';
         header.innerHTML = `
-            <span>Правила замены:</span>
+            <span>${t('param.rules')}:</span>
             <button type="button" class="add-rule-btn" onclick="nodeManager.addReplaceRule('${nodeId}')">
-                <i class="fas fa-plus"></i> Добавить
+                <i class="fas fa-plus"></i> ${t('button.add')}
             </button>
         `;
         container.appendChild(header);
@@ -1336,6 +1339,7 @@ class NodeManager {
     }
     
     createRuleElement(nodeId, ruleIndex, rule) {
+        const t = window.i18n.t.bind(window.i18n); 
         const rulesContainer = document.querySelector(`.rules-container[data-node-id="${nodeId}"]`);
         if (!rulesContainer) return;
         
@@ -1345,10 +1349,10 @@ class NodeManager {
         
         ruleDiv.innerHTML = `
             <div class="rule-inputs">
-                <input type="text" placeholder="Найти" value="${rule.find || ''}" 
-                       onchange="nodeManager.updateRule('${nodeId}', ${ruleIndex}, 'find', this.value)">
-                <input type="text" placeholder="Заменить" value="${rule.replace || ''}"
-                       onchange="nodeManager.updateRule('${nodeId}', ${ruleIndex}, 'replace', this.value)">
+                <input type="text" placeholder="${t('placeholder.find')}" value="${rule.find || ''}" 
+                    onchange="nodeManager.updateRule('${nodeId}', ${ruleIndex}, 'find', this.value)">
+                <input type="text" placeholder="${t('placeholder.replace')}" value="${rule.replace || ''}"
+                    onchange="nodeManager.updateRule('${nodeId}', ${ruleIndex}, 'replace', this.value)">
                 <button type="button" class="remove-rule-btn" 
                         onclick="nodeManager.removeRule('${nodeId}', ${ruleIndex})">
                     <i class="fas fa-times"></i>
@@ -1419,6 +1423,7 @@ class NodeManager {
     }
     
     async copyMonitorContent(nodeId) {
+        const t = window.i18n.t.bind(window.i18n);
         const node = this.nodes.get(nodeId);
         if (!node || !node.element) return;
 
@@ -1430,12 +1435,12 @@ class NodeManager {
         try {
             await navigator.clipboard.writeText(textToCopy);
             if (window.fileManager) {
-                window.fileManager.showNotification('Содержимое монитора скопировано!', 'success');
+                window.fileManager.showNotification(t('notification.monitor_copied'), 'success');
             }
         } catch (err) {
             console.error('Ошибка копирования:', err);
             if (window.fileManager) {
-                window.fileManager.showNotification('Не удалось скопировать', 'error');
+                window.fileManager.showNotification(t('error.copy_failed'), 'error');
             }
         }
     }

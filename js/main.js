@@ -10,6 +10,7 @@ class CipherFlowApp {
     }
     
     async init() {
+        const t = window.i18n.t.bind(window.i18n);
         try {
             console.log('🚀 Запуск CipherFlow...');
             
@@ -22,11 +23,12 @@ class CipherFlowApp {
             
         } catch (error) {
             console.error('❌ Ошибка инициализации приложения:', error);
-            this.showError('Ошибка инициализации приложения: ' + error.message);
+            this.showError(window.i18n.t('error.app_init', { message: error.message }));
         }
     }
     
     initializeApp() {
+        const t = window.i18n.t.bind(window.i18n);
         console.log('🎯 Инициализация компонентов...');
         
         // Ждем загрузки всех компонентов
@@ -39,12 +41,14 @@ class CipherFlowApp {
             console.log('✅ CipherFlow успешно запущен!');
         }).catch(error => {
             console.error('❌ Ошибка загрузки компонентов:', error);
-            this.showError('Ошибка загрузки компонентов: ' + error.message);
+            this.showError(window.i18n.t('error.components_load', { message: error.message }));
         });
     }
     
     async waitForComponents() {
-        const maxAttempts = 50; // 5 секунд максимум
+        const t = window.i18n.t.bind(window.i18n);
+
+        const maxAttempts = 50; 
         let attempts = 0;
         
         while (attempts < maxAttempts) {
@@ -67,10 +71,12 @@ class CipherFlowApp {
             attempts++;
         }
         
-        throw new Error('Не удалось загрузить все компоненты');
+            throw new Error(window.i18n.t('error.components_timeout'));
     }
     
     setupGlobalEventListeners() {
+        const t = window.i18n.t.bind(window.i18n);
+
         // Настройка i18n подписок
         if (window.i18n) {
             window.i18n.onLanguageChange(() => {
@@ -85,7 +91,7 @@ class CipherFlowApp {
                 this.showHelp();
             });
             logo.style.cursor = 'pointer';
-            logo.title = 'Показать справку (F1)';
+            logo.title = t('header.help'); 
         }
         
         // Обработка изменения размера окна
@@ -108,7 +114,7 @@ class CipherFlowApp {
         // Предотвращение случайного закрытия с несохраненными изменениями
         window.addEventListener('beforeunload', (e) => {
             if (this.components.nodeManager && this.components.nodeManager.getAllNodes().length > 0) {
-                const message = 'У вас есть несохраненная схема. Вы уверены, что хотите покинуть страницу?';
+                const message = t('dialog.unsaved_changes');
                 e.preventDefault();
                 e.returnValue = message;
                 return message;
@@ -118,7 +124,7 @@ class CipherFlowApp {
         // Обработка ошибок JavaScript
         window.addEventListener('error', (e) => {
             console.error('Необработанная ошибка:', e.error);
-            this.showError(`Произошла ошибка: ${e.error?.message || 'Неизвестная ошибка'}`);
+            this.showError(t('error.unhandled', { message: errorMessage }));
         });
     }
     
@@ -289,12 +295,13 @@ class CipherFlowApp {
     }
     
     showTutorial() {
+        const t = window.i18n.t.bind(window.i18n); 
         const tutorial = document.createElement('div');
         tutorial.className = 'tutorial-overlay';
         tutorial.innerHTML = `
             <div class="tutorial-modal">
                 <div class="tutorial-header">
-                    <h2>🎯 Добро пожаловать в CipherFlow!</h2>
+                    <h2>🎯 ${t('tutorial.welcome')}</h2>
                     <button class="tutorial-close" onclick="this.parentElement.parentElement.parentElement.remove()">
                         <i class="fas fa-times"></i>
                     </button>
@@ -303,38 +310,38 @@ class CipherFlowApp {
                     <div class="tutorial-step">
                         <div class="step-icon">1</div>
                         <div class="step-text">
-                            <h3>Перетащите ноды</h3>
-                            <p>Выберите ноды из левой панели и перетащите их на рабочую область</p>
+                            <h3>${t('tutorial.step1_title')}</h3>
+                            <p>${t('tutorial.step1_desc')}</p>
                         </div>
                     </div>
                     <div class="tutorial-step">
                         <div class="step-icon">2</div>
                         <div class="step-text">
-                            <h3>Соедините ноды</h3>
-                            <p>Кликните на точку вывода одного нода и перетащите к точке ввода другого</p>
+                            <h3>${t('tutorial.step2_title')}</h3>
+                            <p>${t('tutorial.step2_desc')}</p>
                         </div>
                     </div>
                     <div class="tutorial-step">
                         <div class="step-icon">3</div>
                         <div class="step-text">
-                            <h3>Настройте параметры</h3>
-                            <p>Измените настройки в нодах для получения нужного результата</p>
+                            <h3>${t('tutorial.step3_title')}</h3>
+                            <p>${t('tutorial.step3_desc')}</p>
                         </div>
                     </div>
                     <div class="tutorial-step">
                         <div class="step-icon">4</div>
                         <div class="step-text">
-                            <h3>Сохраните схему</h3>
-                            <p>Используйте кнопки сохранения для экспорта ваших схем шифрования</p>
+                            <h3>${t('tutorial.step4_title')}</h3>
+                            <p>${t('tutorial.step4_desc')}</p>
                         </div>
                     </div>
                 </div>
                 <div class="tutorial-footer">
                     <button class="btn btn-primary" onclick="this.parentElement.parentElement.parentElement.remove()">
-                        Понятно, спасибо!
+                        ${t('button.got_it')}
                     </button>
                     <button class="btn btn-outline" onclick="window.cipherFlowApp.loadExampleScheme()">
-                        Загрузить пример
+                        ${t('button.load_example')}
                     </button>
                 </div>
             </div>

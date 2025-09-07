@@ -390,23 +390,23 @@ class HelpSystem {
                 <div class="help-sidebar">
                     <button class="help-nav-item active" data-section="overview">
                         <i class="fas fa-home"></i>
-                        <span>Обзор</span>
+                        <span data-i18n="help.navigation.overview">Обзор</span>
                     </button>
                     <button class="help-nav-item" data-section="algorithms">
                         <i class="fas fa-cogs"></i>
-                        <span>Алгоритмы</span>
+                        <span data-i18n="help.navigation.algorithms">Алгоритмы</span>
                     </button>
                     <button class="help-nav-item" data-section="data-loss">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <span>Потеря данных</span>
+                        <span data-i18n="help.navigation.data_loss">Потеря данных</span>
                     </button>
                     <button class="help-nav-item" data-section="examples">
                         <i class="fas fa-lightbulb"></i>
-                        <span>Примеры</span>
+                        <span data-i18n="help.navigation.examples">Примеры</span>
                     </button>
                     <button class="help-nav-item" data-section="hotkeys">
                         <i class="fas fa-keyboard"></i>
-                        <span>Горячие клавиши</span>
+                        <span data-i18n="help.navigation.hotkeys">Горячие клавиши</span>
                     </button>
                 </div>
                 <div class="help-content">
@@ -424,6 +424,11 @@ class HelpSystem {
         requestAnimationFrame(() => {
             overlay.classList.add('show');
         });
+
+        // Обновляем переводы если i18n доступен
+        if (window.i18n) {
+            window.i18n.updateInterface();
+        }
 
         // Обработчики событий
         overlay.querySelector('.help-close').onclick = () => this.hide();
@@ -498,14 +503,10 @@ class HelpSystem {
     }
 
     showExampleLoadedNotification(exampleName) {
-        // Получаем данные примера для отображения имени
-        const exampleNames = {
-            'simple-caesar': 'Простой шифр Цезаря',
-            'vigenere-with-secret': 'Шифр Виженера с секретным словом',
-            'multilevel-encryption': 'Многоуровневое шифрование',
-            'planet-enchanter': 'Географическое шифрование',
-            'cat-morse': 'Забавный кошачий морзе',
-            'monitoring-chain': 'Отладка с мониторами'
+        // Получаем переведенные имена примеров
+        const getExampleName = (name) => {
+            const key = `help.example.${name.replace('-', '_')}`;
+            return window.i18n ? window.i18n.t(key) : name;
         };
 
         const notification = document.createElement('div');
@@ -526,11 +527,14 @@ class HelpSystem {
             gap: 0.75rem;
         `;
         
+        const loadedText = window.i18n ? window.i18n.t('help.examples.loaded') : 'Пример загружен!';
+        const exampleDisplayName = getExampleName(exampleName);
+        
         notification.innerHTML = `
             <i class="fas fa-check-circle" style="font-size: 1.2rem;"></i>
             <div>
-                <div style="font-weight: 600;">Пример загружен!</div>
-                <div style="font-size: 0.9rem; opacity: 0.9;">${exampleNames[exampleName] || exampleName}</div>
+                <div style="font-weight: 600;">${loadedText}</div>
+                <div style="font-size: 0.9rem; opacity: 0.9;">${exampleDisplayName}</div>
             </div>
         `;
         
@@ -558,10 +562,10 @@ class HelpSystem {
             <div id="help-overview" class="help-section active">
                 <div class="help-title">
                     <i class="fas fa-project-diagram"></i>
-                    CipherFlow - Визуальное программирование шифров
+                    <span data-i18n="help.overview.title">CipherFlow - Визуальное программирование шифров</span>
                 </div>
                 
-                <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;">
+                <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;" data-i18n="help.overview.description">
                     CipherFlow позволяет создавать сложные схемы шифрования с помощью визуальных нодов. 
                     Соединяйте алгоритмы в цепочки для создания уникальных методов шифрования.
                 </p>
@@ -575,7 +579,7 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="help-subtitle">Основные возможности</div>
+                <div class="help-subtitle" data-i18n="help.overview.features">Основные возможности</div>
                 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
                     <div class="algorithm-card">
@@ -584,8 +588,8 @@ class HelpSystem {
                                 <i class="fas fa-puzzle-piece"></i>
                             </div>
                             <div class="algorithm-info">
-                                <h3>Визуальное программирование</h3>
-                                <p>Создавайте алгоритмы без кодирования</p>
+                                <h3 data-i18n="help.overview.visual_programming">Визуальное программирование</h3>
+                                <p data-i18n="help.overview.visual_desc">Создавайте алгоритмы без кодирования</p>
                             </div>
                         </div>
                     </div>
@@ -596,8 +600,8 @@ class HelpSystem {
                                 <i class="fas fa-link"></i>
                             </div>
                             <div class="algorithm-info">
-                                <h3>Цепочки шифрования</h3>
-                                <p>Комбинируйте множество алгоритмов</p>
+                                <h3 data-i18n="help.overview.chain_encryption">Цепочки шифрования</h3>
+                                <p data-i18n="help.overview.chain_desc">Комбинируйте множество алгоритмов</p>
                             </div>
                         </div>
                     </div>
@@ -608,8 +612,8 @@ class HelpSystem {
                                 <i class="fas fa-exchange-alt"></i>
                             </div>
                             <div class="algorithm-info">
-                                <h3>Реверсивное шифрование</h3>
-                                <p>Автоматическое дешифрование</p>
+                                <h3 data-i18n="help.overview.reverse_encryption">Реверсивное шифрование</h3>
+                                <p data-i18n="help.overview.reverse_desc">Автоматическое дешифрование</p>
                             </div>
                         </div>
                     </div>
@@ -623,10 +627,10 @@ class HelpSystem {
             <div id="help-algorithms" class="help-section">
                 <div class="help-title">
                     <i class="fas fa-cogs"></i>
-                    Алгоритмы шифрования
+                    <span data-i18n="help.algorithms.title">Алгоритмы шифрования</span>
                 </div>
 
-                <div class="help-subtitle">Входные и выходные ноды</div>
+                <div class="help-subtitle" data-i18n="help.algorithms.input_output">Входные и выходные ноды</div>
                 
                 <div class="algorithm-card" data-node-type="input">
                     <div class="algorithm-header">
@@ -634,20 +638,20 @@ class HelpSystem {
                             <i class="fas fa-sign-in-alt"></i>
                         </div>
                         <div class="algorithm-info">
-                            <h3>Ввод текста</h3>
-                            <p>Источник данных для цепочки шифрования</p>
+                            <h3 data-i18n="help.algo.text_input">Ввод текста</h3>
+                            <p data-i18n="help.algo.text_input_desc">Источник данных для цепочки шифрования</p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Берет текст из общего поля ввода в нижней панели и передает его в цепочку обработки. Является начальной точкой любой схемы шифрования.</p>
+                    <p><strong data-i18n="help.general.principle">Принцип работы:</strong> <span data-i18n="help.algo.text_input_principle">Берет текст из общего поля ввода в нижней панели и передает его в цепочку обработки. Является начальной точкой любой схемы шифрования.</span></p>
                     <div class="example-box">
-                        <h4>Использование:</h4>
-                        <div class="example-input">1. Введите текст в поле внизу экрана</div>
-                        <div class="example-input">2. Соедините выход нода "Ввод текста" со входом следующего алгоритма</div>
-                        <div class="example-output">Данные автоматически передаются в цепочку</div>
+                        <h4 data-i18n="help.algo.text_input_usage">Использование:</h4>
+                        <div class="example-input" data-i18n="help.algo.text_input_step1">1. Введите текст в поле внизу экрана</div>
+                        <div class="example-input" data-i18n="help.algo.text_input_step2">2. Соедините выход нода "Ввод текста" со входом следующего алгоритма</div>
+                        <div class="example-output" data-i18n="help.algo.text_input_result">Данные автоматически передаются в цепочку</div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Особенности</h4>
-                        <p>• Только один выход, нет входов<br>• Автоматически обновляется при изменении текста в поле ввода<br>• Может быть несколько нодов ввода в одной схеме</p>
+                        <h4 data-i18n="help.algo.text_input_features">Особенности</h4>
+                        <p><span data-i18n="help.algo.text_input_feature1">• Только один выход, нет входов</span><br><span data-i18n="help.algo.text_input_feature2">• Автоматически обновляется при изменении текста в поле ввода</span><br><span data-i18n="help.algo.text_input_feature3">• Может быть несколько нодов ввода в одной схеме</span></p>
                     </div>
                 </div>
 
@@ -657,24 +661,24 @@ class HelpSystem {
                             <i class="fas fa-sign-out-alt"></i>
                         </div>
                         <div class="algorithm-info">
-                            <h3>Вывод текста</h3>
-                            <p>Отображение результата цепочки шифрования</p>
+                            <h3 data-i18n="help.algo.text_output">Вывод текста</h3>
+                            <p data-i18n="help.algo.text_output_desc">Отображение результата цепочки шифрования</p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Получает обработанные данные и отображает их в поле вывода в нижней панели. Является конечной точкой схемы шифрования.</p>
+                    <p><strong data-i18n="help.general.principle">Принцип работы:</strong> <span data-i18n="help.algo.text_output_principle">Получает обработанные данные и отображает их в поле вывода в нижней панели. Является конечной точкой схемы шифрования.</span></p>
                     <div class="example-box">
-                        <h4>Использование:</h4>
-                        <div class="example-input">1. Соедините вход нода "Вывод текста" с выходом последнего алгоритма</div>
-                        <div class="example-input">2. Результат автоматически появится в поле вывода внизу экрана</div>
-                        <div class="example-output">Можно копировать результат из поля вывода</div>
+                        <h4 data-i18n="help.algo.text_output_usage">Использование:</h4>
+                        <div class="example-input" data-i18n="help.algo.text_output_step1">1. Соедините вход нода "Вывод текста" с выходом последнего алгоритма</div>
+                        <div class="example-input" data-i18n="help.algo.text_output_step2">2. Результат автоматически появится в поле вывода внизу экрана</div>
+                        <div class="example-output" data-i18n="help.algo.text_output_result">Можно копировать результат из поля вывода</div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Особенности</h4>
-                        <p>• Только один вход, нет выходов<br>• Автоматически обновляется при изменении данных<br>• Может быть несколько нодов вывода для промежуточных результатов</p>
+                        <h4 data-i18n="help.algo.text_output_features">Особенности</h4>
+                        <p><span data-i18n="help.algo.text_output_feature1">• Только один вход, нет выходов</span><br><span data-i18n="help.algo.text_output_feature2">• Автоматически обновляется при изменении данных</span><br><span data-i18n="help.algo.text_output_feature3">• Может быть несколько нодов вывода для промежуточных результатов</span></p>
                     </div>
                 </div>
 
-                <div class="help-subtitle">Классические шифры</div>
+                <div class="help-subtitle" data-i18n="help.algorithms.classic_ciphers">Классические шифры</div>
                 
                 <div class="algorithm-card" data-node-type="caesar">
                     <div class="algorithm-header">
@@ -682,15 +686,15 @@ class HelpSystem {
                             <i class="fas fa-exchange-alt"></i>
                         </div>
                         <div class="algorithm-info">
-                            <h3>Шифр Цезаря</h3>
-                            <p>Сдвиг каждой буквы алфавита на фиксированное количество позиций</p>
+                            <h3 data-i18n="help.algo.caesar_cipher">Шифр Цезаря</h3>
+                            <p data-i18n="help.algo.caesar_desc">Сдвиг каждой буквы алфавита на фиксированное количество позиций</p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Каждая буква текста заменяется буквой, стоящей в алфавите на N позиций дальше (с циклическим переносом).</p>
+                    <p><strong data-i18n="help.general.principle">Принцип работы:</strong> <span data-i18n="help.algo.caesar_principle">Каждая буква текста заменяется буквой, стоящей в алфавите на N позиций дальше (с циклическим переносом).</span></p>
                     <div class="example-box">
-                        <h4>Пример (сдвиг +3):</h4>
-                        <div class="example-input">Вход: ПРИВЕТ</div>
-                        <div class="example-output">Выход: ТУЛГЖХ (П→Т, Р→У, И→Л, В→Г, Е→Ж, Т→Х)</div>
+                        <h4 data-i18n="help.algo.caesar_example">Пример (сдвиг +3):</h4>
+                        <div class="example-input" data-i18n="help.algo.caesar_input">Вход: ПРИВЕТ</div>
+                        <div class="example-output" data-i18n="help.algo.caesar_output">Выход: ТУЛГЖХ (П→Т, Р→У, И→Л, В→Г, Е→Ж, Т→Х)</div>
                     </div>
                 </div>
 
@@ -700,31 +704,31 @@ class HelpSystem {
                             <i class="fas fa-broadcast-tower"></i>
                         </div>
                         <div class="algorithm-info">
-                            <h3>Код Морзе</h3>
-                            <p>Представление текста в виде последовательности точек и тире</p>
+                            <h3 data-i18n="help.algo.morse_code">Код Морзе</h3>
+                            <p data-i18n="help.algo.morse_desc">Представление текста в виде последовательности точек и тире</p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Каждая буква, цифра и знак препинания кодируется уникальной комбинацией коротких (точка) и длинных (тире) сигналов.</p>
+                    <p><strong data-i18n="help.general.principle">Принцип работы:</strong> <span data-i18n="help.algo.morse_principle">Каждая буква, цифра и знак препинания кодируется уникальной комбинацией коротких (точка) и длинных (тире) сигналов.</span></p>
                     
                     <div class="example-box">
-                        <h4>Различия символов для языков:</h4>
-                        <div class="example-input"><strong>Русский:</strong> · (Unicode точка) и − (Unicode тире)</div>
-                        <div class="example-input"><strong>Английский:</strong> . (ASCII точка) и - (ASCII дефис)</div>
-                        <div class="example-output">Это позволяет различать язык при декодировании смешанного текста</div>
+                        <h4 data-i18n="help.algo.morse_languages">Различия символов для языков:</h4>
+                        <div class="example-input"><strong data-i18n="help.algo.morse_russian">Русский:</strong> · (Unicode точка) и − (Unicode тире)</div>
+                        <div class="example-input"><strong data-i18n="help.algo.morse_english">Английский:</strong> . (ASCII точка) и - (ASCII дефис)</div>
+                        <div class="example-output" data-i18n="help.algo.morse_distinction">Это позволяет различать язык при декодировании смешанного текста</div>
                     </div>
                     
                     <div class="example-box">
-                        <h4>Пример кодирования:</h4>
-                        <div class="example-input">Вход: "ПРИВЕТ SOS"</div>
-                        <div class="example-output">Выход: ·−−· ·−· ·· ·−·· · ·− ... --- ...</div>
-                        <div class="example-output">Русские буквы: ·−, английские: .--</div>
+                        <h4 data-i18n="help.algo.morse_example">Пример кодирования:</h4>
+                        <div class="example-input" data-i18n="help.algo.morse_input">Вход: "ПРИВЕТ SOS"</div>
+                        <div class="example-output" data-i18n="help.algo.morse_output">Выход: ·−−· ·−· ·· ·−·· · ·− ... --- ...</div>
+                        <div class="example-output" data-i18n="help.algo.morse_mix">Русские буквы: ·−, английские: .--</div>
                     </div>
                     
                     <div class="data-loss-warning">
-                        <h4>Настройка поддержки Ё</h4>
-                        <p>По умолчанию Ё кодируется как Е (·). Включите переключатель "Поддержка Ё" для отдельного кода ··−··</p>
-                        <div class="example-input">Без поддержки: ЁЛЬ → · ·−·· ·−··−</div>
-                        <div class="example-input">С поддержкой: ЁЛЬ → ··−·· ·−·· ·−··−</div>
+                        <h4 data-i18n="help.algo.morse_yo_setting">Настройка поддержки Ё</h4>
+                        <p data-i18n="help.algo.morse_yo_desc">По умолчанию Ё кодируется как Е (·). Включите переключатель "Поддержка Ё" для отдельного кода ··−··</p>
+                        <div class="example-input" data-i18n="help.algo.morse_yo_without">Без поддержки: ЁЛЬ → · ·−·· ·−··−</div>
+                        <div class="example-input" data-i18n="help.algo.morse_yo_with">С поддержкой: ЁЛЬ → ··−·· ·−·· ·−··−</div>
                     </div>
                 </div>
 

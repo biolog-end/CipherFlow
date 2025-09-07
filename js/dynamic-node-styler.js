@@ -84,14 +84,13 @@ class DynamicNodeStyler {
         styleElement.id = 'dynamic-node-styles';
         styleElement.textContent = cssString;
 
-        // Удаляем старые стили, если они есть, чтобы избежать дублирования при горячей перезагрузке
         const oldStyle = document.getElementById('dynamic-node-styles');
         if (oldStyle) {
             oldStyle.remove();
         }
 
         document.head.appendChild(styleElement);
-        console.log('🎨 Динамические стили для нодов успешно сгенерированы и применены.');
+        console.log('Динамические стили применены.');
     }
 }
 
