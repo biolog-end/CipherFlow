@@ -38,9 +38,11 @@ class FileManager {
     }
     
     saveScheme() {
+        const t = window.i18n.t.bind(window.i18n); 
+
         try {
             if (!window.cipherEngine) {
-                throw new Error('Движок шифрования не инициализирован');
+                throw new Error(t('error.node_systems_not_ready'));
             }
             
             // Показываем диалог для ввода имени схемы
@@ -48,38 +50,39 @@ class FileManager {
             
         } catch (error) {
             console.error('Ошибка сохранения схемы:', error);
-            this.showNotification('Ошибка сохранения: ' + error.message, 'error');
+            this.showNotification(t('error.save_failed', { message: error.message }), 'error');
         }
     }
     
     showSaveDialog() {
         const dialog = document.createElement('div');
         dialog.className = 'save-dialog-overlay';
+        const t = window.i18n.t.bind(window.i18n); 
         dialog.innerHTML = `
             <div class="save-dialog">
                 <div class="save-dialog-header">
-                    <h3>💾 Сохранить схему</h3>
+                    <h3>💾 ${t('dialog.save_scheme_title')}</h3>
                     <button class="dialog-close" onclick="this.parentElement.parentElement.parentElement.remove()">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
                 <div class="save-dialog-content">
                     <div class="form-group">
-                        <label for="schemeName">Название схемы:</label>
-                        <input type="text" id="schemeName" placeholder="Введите название схемы..." value="Моя схема шифрования">
+                        <label for="schemeName">${t('dialog.scheme_name_label')}</label>
+                        <input type="text" id="schemeName" placeholder="${t('dialog.scheme_name_placeholder')}" value="${t('dialog.default_scheme_name')}">
                     </div>
                     <div class="form-group">
-                        <label for="schemeDescription">Описание (необязательно):</label>
-                        <textarea id="schemeDescription" placeholder="Краткое описание того, что делает эта схема..." rows="3"></textarea>
+                        <label for="schemeDescription">${t('dialog.scheme_desc_label')}</label>
+                        <textarea id="schemeDescription" placeholder="${t('dialog.scheme_desc_placeholder')}" rows="3"></textarea>
                     </div>
                 </div>
                 <div class="save-dialog-footer">
                     <button class="btn btn-outline" onclick="this.parentElement.parentElement.parentElement.remove()">
-                        Отмена
+                        ${t('dialog.cancel')}
                     </button>
                     <button class="btn btn-primary" onclick="window.fileManager.performSave()">
                         <i class="fas fa-save"></i>
-                        Сохранить
+                        ${t('dialog.save')}
                     </button>
                 </div>
             </div>
@@ -196,10 +199,12 @@ class FileManager {
     }
     
     performSave() {
+        const t = window.i18n.t.bind(window.i18n);
+
         const nameInput = document.getElementById('schemeName');
         const descriptionInput = document.getElementById('schemeDescription');
         
-        const schemeName = nameInput?.value.trim() || 'Схема шифрования';
+        const schemeName = nameInput?.value.trim() || t('dialog.default_scheme_name');
         const schemeDescription = descriptionInput?.value.trim() || '';
         
         try {
@@ -241,11 +246,11 @@ class FileManager {
                 dialog.remove();
             }
             
-            this.showNotification(`Схема "${schemeName}" успешно сохранена!`, 'success');
+            this.showNotification(t('notification.scheme_saved_as', { name: schemeName }), 'success');
             
         } catch (error) {
             console.error('Ошибка сохранения схемы:', error);
-            this.showNotification('Ошибка сохранения: ' + error.message, 'error');
+            this.showNotification(t('error.save_failed', { message: error.message }), 'error');
         }
     }
     
@@ -256,9 +261,11 @@ class FileManager {
     
     handleFileLoad(file) {
         if (!file) return;
+
+        const t = window.i18n.t.bind(window.i18n);
         
         if (!file.name.endsWith('.json')) {
-            this.showNotification('Пожалуйста, выберите JSON файл', 'error');
+            this.showNotification(t('error.json_only'), 'error');
             return;
         }
         
@@ -274,20 +281,20 @@ class FileManager {
                 
                 // Подтверждение загрузки (если есть существующая схема)
                 if (window.nodeManager && window.nodeManager.getAllNodes().length > 0) {
-                    if (!confirm('Это заменит текущую схему. Продолжить?')) {
+                    if (!confirm(t('dialog.overwrite_confirm'))) {
                         return;
                     }
                 }
                 
                 const parsedScheme = JSON.parse(schemeData);
-                const schemeName = parsedScheme.name || 'Неизвестная схема';
+                const schemeName = parsedScheme.name || t('scheme.unknown_name');
                 const schemeDescription = parsedScheme.description || '';
                 
                 window.cipherEngine.importScheme(schemeData);
                 
-                let message = `Схема "${schemeName}" успешно загружена!`;
+                let message = t('notification.scheme_loaded_as', { name: schemeName });
                 if (schemeDescription) {
-                    message += `\nОписание: ${schemeDescription}`;
+                    message += `\n${t('notification.desc_prefix')} ${schemeDescription}`;
                 }
                 
                 this.showNotification(message, 'success');
@@ -297,7 +304,7 @@ class FileManager {
                 
             } catch (error) {
                 console.error('Ошибка загрузки схемы:', error);
-                this.showNotification('Ошибка загрузки: ' + error.message, 'error');
+                this.showNotification(t('error.load_failed', { message: error.message }), 'error');
             } finally {
                 const fileInput = document.getElementById('fileInput');
                 if (fileInput) {
@@ -307,15 +314,17 @@ class FileManager {
         };
         
         reader.onerror = () => {
-            this.showNotification('Ошибка чтения файла', 'error');
+            this.showNotification(t('error.file_read_error'), 'error');
         };
         
         reader.readAsText(file);
     }
     
     clearScheme() {
+        const t = window.i18n.t.bind(window.i18n); 
+
         if (window.nodeManager && window.nodeManager.getAllNodes().length > 0) {
-            if (!confirm('Это удалит все ноды и соединения. Продолжить?')) {
+            if (!confirm(t('dialog.clear_all_confirm'))) {
                 return;
             }
         }
@@ -332,11 +341,11 @@ class FileManager {
             // Очищаем localStorage
             this.clearLocalStorage();
             
-            this.showNotification('Схема очищена', 'success');
+            this.showNotification(t('notification.scheme_cleared'), 'success');
             
         } catch (error) {
             console.error('Ошибка очистки схемы:', error);
-            this.showNotification('Ошибка очистки: ' + error.message, 'error');
+            this.showNotification(t('error.clear_failed', { message: error.message }), 'error');
         }
     }
     
@@ -365,7 +374,7 @@ class FileManager {
             if (jsonFile) {
                 this.handleFileLoad(jsonFile);
             } else if (files.length > 0) {
-                this.showNotification('Поддерживаются только JSON файлы', 'error');
+                this.showNotification(window.i18n.t('error.dnd_json_only'), 'error');
             }
         });
     }
@@ -417,9 +426,9 @@ class FileManager {
                 // Предлагаем восстановить только если сохранение было недавно
                 if (saveTime > hourAgo) {
                     setTimeout(() => {
-                        if (confirm('Найдено автоматически сохраненная схема. Восстановить?')) {
+                        if (confirm(window.i18n.t('dialog.autosave_found_confirm'))) {
                             window.cipherEngine.importScheme(savedScheme);
-                            this.showNotification('Схема восстановлена из автосохранения', 'success');
+                            this.showNotification(window.i18n.t('notification.scheme_restored'), 'success');
                         }
                     }, 1000);
                 }
@@ -514,23 +523,25 @@ class FileManager {
     
     // Методы для работы с примерами схем
     loadExampleScheme(exampleName) {
+        const t = window.i18n.t.bind(window.i18n); 
+        
         const examples = this.getExampleSchemes();
         const example = examples[exampleName];
         
         if (example) {
             try {
                 if (window.nodeManager && window.nodeManager.getAllNodes().length > 0) {
-                    if (!confirm('Это заменит текущую схему. Продолжить?')) {
+                    if (!confirm(t('dialog.overwrite_confirm'))) {
                         return;
                     }
                 }
                 
                 window.cipherEngine.importScheme(JSON.stringify(example));
-                this.showNotification(`Пример "${example.name}" загружен!`, 'success');
+                this.showNotification(t('notification.example_loaded', { name: example.name }), 'success');
                 
             } catch (error) {
                 console.error('Ошибка загрузки примера:', error);
-                this.showNotification('Ошибка загрузки примера: ' + error.message, 'error');
+                this.showNotification(t('error.example_load_failed', { message: error.message }), 'error');
             }
         }
     }

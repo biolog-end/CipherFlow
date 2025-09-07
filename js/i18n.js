@@ -159,6 +159,15 @@ class I18n {
                 'dialog.clear_confirm': 'Вы уверены, что хотите очистить всю схему?',
                 'dialog.yes': 'Да',
                 'dialog.no': 'Нет',
+                'dialog.save_scheme_title': 'Сохранить схему',
+                'dialog.scheme_name_label': 'Название схемы:',
+                'dialog.scheme_name_placeholder': 'Введите название схемы...',
+                'dialog.default_scheme_name': 'Моя схема шифрования',
+                'dialog.scheme_desc_label': 'Описание (необязательно):',
+                'dialog.scheme_desc_placeholder': 'Краткое описание того, что делает эта схема...',
+                'dialog.overwrite_confirm': 'Это заменит текущую схему. Продолжить?',
+                'dialog.clear_all_confirm': 'Это удалит все ноды и соединения. Продолжить?',
+                'dialog.autosave_found_confirm': 'Найдено автоматически сохраненная схема. Восстановить?',
                 
                 // Настройки
                 'settings.title': 'Настройки',
@@ -209,6 +218,12 @@ class I18n {
                 'notification.connection_cut': 'Соединение разорвано',
                 'notification.cut_mode_on': 'Режим резки включен',
                 'notification.cut_mode_off': 'Режим резки выключен',
+                'notification.scheme_saved_as': 'Схема "{{name}}" успешно сохранена!',
+                'notification.scheme_loaded_as': 'Схема "{{name}}" успешно загружена!',
+                'notification.desc_prefix': 'Описание:',
+                'notification.scheme_cleared': 'Схема очищена',
+                'notification.scheme_restored': 'Схема восстановлена из автосохранения',
+                'notification.example_loaded': 'Пример "{{name}}" загружен!',
                 
                 // Горячие клавиши
                 'hotkey.save': 'Ctrl+S',
@@ -259,6 +274,18 @@ class I18n {
                 'error.binary_decode': 'Ошибка декодирования: {{message}}',
                 'error.base64': 'Ошибка Base64: {{message}}',
                 'error.node_systems_not_ready': 'Системы нодов или соединений не инициализированы',
+
+                // Ошибки сохранения 
+                'error.save_failed': 'Ошибка сохранения: {{message}}',
+                'error.load_failed': 'Ошибка загрузки: {{message}}',
+                'error.clear_failed': 'Ошибка очистки: {{message}}',
+                'error.example_load_failed': 'Ошибка загрузки примера: {{message}}',
+                'error.file_read_error': 'Ошибка чтения файла',
+                'error.json_only': 'Пожалуйста, выберите JSON файл',
+                'error.dnd_json_only': 'Поддерживаются только JSON файлы',
+
+                // Прочее
+                'scheme.unknown_name': 'Неизвестная схема',
 
                 // Диалоги
                 'dialog.unsaved_changes': 'У вас есть несохраненная схема. Вы уверены, что хотите покинуть страницу?',
@@ -619,6 +646,15 @@ class I18n {
                 'dialog.clear_confirm': 'Are you sure you want to clear the entire scheme?',
                 'dialog.yes': 'Yes',
                 'dialog.no': 'No',
+                'dialog.save_scheme_title': 'Save Scheme',
+                'dialog.scheme_name_label': 'Scheme Name:',
+                'dialog.scheme_name_placeholder': 'Enter scheme name...',
+                'dialog.default_scheme_name': 'My Encryption Scheme',
+                'dialog.scheme_desc_label': 'Description (optional):',
+                'dialog.scheme_desc_placeholder': 'A brief description of what this scheme does...',
+                'dialog.overwrite_confirm': 'This will replace the current scheme. Continue?',
+                'dialog.clear_all_confirm': 'This will delete all nodes and connections. Continue?',
+                'dialog.autosave_found_confirm': 'An automatically saved scheme was found. Restore it?',
                 
                 // Settings
                 'settings.title': 'Settings',
@@ -669,6 +705,12 @@ class I18n {
                 'notification.connection_cut': 'Connection cut',
                 'notification.cut_mode_on': 'Cut mode enabled',
                 'notification.cut_mode_off': 'Cut mode disabled',
+                'notification.scheme_saved_as': 'Scheme "{{name}}" saved successfully!',
+                'notification.scheme_loaded_as': 'Scheme "{{name}}" loaded successfully!',
+                'notification.desc_prefix': 'Description:',
+                'notification.scheme_cleared': 'Scheme cleared',
+                'notification.scheme_restored': 'Scheme restored from autosave',
+                'notification.example_loaded': 'Example "{{name}}" loaded!',
                 
                 // Hotkeys
                 'hotkey.save': 'Ctrl+S',
@@ -719,6 +761,18 @@ class I18n {
                 'error.binary_decode': 'Decoding error: {{message}}',
                 'error.base64': 'Base64 Error: {{message}}',
                 'error.node_systems_not_ready': 'Node or connection systems are not initialized',
+
+                // Save Errors
+                'error.save_failed': 'Save error: {{message}}',
+                'error.load_failed': 'Load error: {{message}}',
+                'error.clear_failed': 'Clear error: {{message}}',
+                'error.example_load_failed': 'Example load error: {{message}}',
+                'error.file_read_error': 'Error reading file',
+                'error.json_only': 'Please select a JSON file',
+                'error.dnd_json_only': 'Only JSON files are supported',
+
+                // Miscellaneous
+                'scheme.unknown_name': 'Unknown Scheme',
 
                 // Dialogs
                 'dialog.unsaved_changes': 'You have an unsaved scheme. Are you sure you want to leave the page?',
