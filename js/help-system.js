@@ -562,16 +562,13 @@ class HelpSystem {
             <div id="help-overview" class="help-section active">
                 <div class="help-title">
                     <i class="fas fa-project-diagram"></i>
-                    <span data-i18n="help.overview.title">CipherFlow - Визуальное программирование шифров</span>
+                    <span data-i18n="help.overview.title"></span>
                 </div>
                 
-                <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;" data-i18n="help.overview.description">
-                    CipherFlow позволяет создавать сложные схемы шифрования с помощью визуальных нодов. 
-                    Соединяйте алгоритмы в цепочки для создания уникальных методов шифрования.
-                </p>
+                <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;" data-i18n="help.overview.description"></p>
 
                 <div class="animated-diagram">
-                    <div class="cipher-animation">ТЕКСТ → ШИФР → РЕЗУЛЬТАТ</div>
+                    <div class="cipher-animation" data-i18n="help.overview.animation_text"></div>
                     <div class="progress-dots">
                         <div class="progress-dot"></div>
                         <div class="progress-dot"></div>
@@ -579,7 +576,7 @@ class HelpSystem {
                     </div>
                 </div>
 
-                <div class="help-subtitle" data-i18n="help.overview.features">Основные возможности</div>
+                <div class="help-subtitle" data-i18n="help.overview.features"></div>
                 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
                     <div class="algorithm-card">
@@ -588,8 +585,8 @@ class HelpSystem {
                                 <i class="fas fa-puzzle-piece"></i>
                             </div>
                             <div class="algorithm-info">
-                                <h3 data-i18n="help.overview.visual_programming">Визуальное программирование</h3>
-                                <p data-i18n="help.overview.visual_desc">Создавайте алгоритмы без кодирования</p>
+                                <h3 data-i18n="help.overview.visual_programming"></h3>
+                                <p data-i18n="help.overview.visual_desc"></p>
                             </div>
                         </div>
                     </div>
@@ -600,8 +597,8 @@ class HelpSystem {
                                 <i class="fas fa-link"></i>
                             </div>
                             <div class="algorithm-info">
-                                <h3 data-i18n="help.overview.chain_encryption">Цепочки шифрования</h3>
-                                <p data-i18n="help.overview.chain_desc">Комбинируйте множество алгоритмов</p>
+                                <h3 data-i18n="help.overview.chain_encryption"></h3>
+                                <p data-i18n="help.overview.chain_desc"></p>
                             </div>
                         </div>
                     </div>
@@ -612,8 +609,8 @@ class HelpSystem {
                                 <i class="fas fa-exchange-alt"></i>
                             </div>
                             <div class="algorithm-info">
-                                <h3 data-i18n="help.overview.reverse_encryption">Реверсивное шифрование</h3>
-                                <p data-i18n="help.overview.reverse_desc">Автоматическое дешифрование</p>
+                                <h3 data-i18n="help.overview.reverse_encryption"></h3>
+                                <p data-i18n="help.overview.reverse_desc"></p>
                             </div>
                         </div>
                     </div>
@@ -627,933 +624,820 @@ class HelpSystem {
             <div id="help-algorithms" class="help-section">
                 <div class="help-title">
                     <i class="fas fa-cogs"></i>
-                    <span data-i18n="help.algorithms.title">Алгоритмы шифрования</span>
+                    <span data-i18n="help.algorithms.title"></span>
                 </div>
 
-                <div class="help-subtitle" data-i18n="help.algorithms.input_output">Входные и выходные ноды</div>
+                <div class="help-subtitle" data-i18n="help.algorithms.input_output"></div>
                 
-                <div class="algorithm-card" data-node-type="input">
+                <div class="algorithm-card" data-node-type="text_input">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
-                            <i class="fas fa-sign-in-alt"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fas fa-sign-in-alt"></i></div>
                         <div class="algorithm-info">
-                            <h3 data-i18n="help.algo.text_input">Ввод текста</h3>
-                            <p data-i18n="help.algo.text_input_desc">Источник данных для цепочки шифрования</p>
+                            <h3 data-i18n="help.algo.text_input"></h3>
+                            <p data-i18n="help.algo.text_input_desc"></p>
                         </div>
                     </div>
-                    <p><strong data-i18n="help.general.principle">Принцип работы:</strong> <span data-i18n="help.algo.text_input_principle">Берет текст из общего поля ввода в нижней панели и передает его в цепочку обработки. Является начальной точкой любой схемы шифрования.</span></p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.text_input_principle"></span></p>
                     <div class="example-box">
-                        <h4 data-i18n="help.algo.text_input_usage">Использование:</h4>
-                        <div class="example-input" data-i18n="help.algo.text_input_step1">1. Введите текст в поле внизу экрана</div>
-                        <div class="example-input" data-i18n="help.algo.text_input_step2">2. Соедините выход нода "Ввод текста" со входом следующего алгоритма</div>
-                        <div class="example-output" data-i18n="help.algo.text_input_result">Данные автоматически передаются в цепочку</div>
+                        <h4 data-i18n="help.algo.text_input_usage"></h4>
+                        <div class="example-input" data-i18n="help.algo.text_input_step1"></div>
+                        <div class="example-input" data-i18n="help.algo.text_input_step2"></div>
+                        <div class="example-output" data-i18n="help.algo.text_input_result"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4 data-i18n="help.algo.text_input_features">Особенности</h4>
-                        <p><span data-i18n="help.algo.text_input_feature1">• Только один выход, нет входов</span><br><span data-i18n="help.algo.text_input_feature2">• Автоматически обновляется при изменении текста в поле ввода</span><br><span data-i18n="help.algo.text_input_feature3">• Может быть несколько нодов ввода в одной схеме</span></p>
+                        <h4 data-i18n="help.algo.text_input_features"></h4>
+                        <p><span data-i18n="help.algo.text_input_feature1"></span><br><span data-i18n="help.algo.text_input_feature2"></span><br><span data-i18n="help.algo.text_input_feature3"></span></p>
                     </div>
                 </div>
 
-                <div class="algorithm-card" data-node-type="output">
+                <div class="algorithm-card" data-node-type="text_output">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"><i class="fas fa-sign-out-alt"></i></div>
                         <div class="algorithm-info">
-                            <h3 data-i18n="help.algo.text_output">Вывод текста</h3>
-                            <p data-i18n="help.algo.text_output_desc">Отображение результата цепочки шифрования</p>
+                            <h3 data-i18n="help.algo.text_output"></h3>
+                            <p data-i18n="help.algo.text_output_desc"></p>
                         </div>
                     </div>
-                    <p><strong data-i18n="help.general.principle">Принцип работы:</strong> <span data-i18n="help.algo.text_output_principle">Получает обработанные данные и отображает их в поле вывода в нижней панели. Является конечной точкой схемы шифрования.</span></p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.text_output_principle"></span></p>
                     <div class="example-box">
-                        <h4 data-i18n="help.algo.text_output_usage">Использование:</h4>
-                        <div class="example-input" data-i18n="help.algo.text_output_step1">1. Соедините вход нода "Вывод текста" с выходом последнего алгоритма</div>
-                        <div class="example-input" data-i18n="help.algo.text_output_step2">2. Результат автоматически появится в поле вывода внизу экрана</div>
-                        <div class="example-output" data-i18n="help.algo.text_output_result">Можно копировать результат из поля вывода</div>
+                        <h4 data-i18n="help.algo.text_output_usage"></h4>
+                        <div class="example-input" data-i18n="help.algo.text_output_step1"></div>
+                        <div class="example-input" data-i18n="help.algo.text_output_step2"></div>
+                        <div class="example-output" data-i18n="help.algo.text_output_result"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4 data-i18n="help.algo.text_output_features">Особенности</h4>
-                        <p><span data-i18n="help.algo.text_output_feature1">• Только один вход, нет выходов</span><br><span data-i18n="help.algo.text_output_feature2">• Автоматически обновляется при изменении данных</span><br><span data-i18n="help.algo.text_output_feature3">• Может быть несколько нодов вывода для промежуточных результатов</span></p>
+                        <h4 data-i18n="help.algo.text_output_features"></h4>
+                        <p><span data-i18n="help.algo.text_output_feature1"></span><br><span data-i18n="help.algo.text_output_feature2"></span><br><span data-i18n="help.algo.text_output_feature3"></span></p>
                     </div>
                 </div>
 
-                <div class="help-subtitle" data-i18n="help.algorithms.classic_ciphers">Классические шифры</div>
+                <div class="help-subtitle" data-i18n="help.algorithms.classic_ciphers"></div>
                 
-                <div class="algorithm-card" data-node-type="caesar">
+                <div class="algorithm-card" data-node-type="caesar_cipher">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">
-                            <i class="fas fa-exchange-alt"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5);"><i class="fas fa-exchange-alt"></i></div>
                         <div class="algorithm-info">
-                            <h3 data-i18n="help.algo.caesar_cipher">Шифр Цезаря</h3>
-                            <p data-i18n="help.algo.caesar_desc">Сдвиг каждой буквы алфавита на фиксированное количество позиций</p>
+                            <h3 data-i18n="help.algo.caesar_cipher"></h3>
+                            <p data-i18n="help.algo.caesar_desc"></p>
                         </div>
                     </div>
-                    <p><strong data-i18n="help.general.principle">Принцип работы:</strong> <span data-i18n="help.algo.caesar_principle">Каждая буква текста заменяется буквой, стоящей в алфавите на N позиций дальше (с циклическим переносом).</span></p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.caesar_principle"></span></p>
                     <div class="example-box">
-                        <h4 data-i18n="help.algo.caesar_example">Пример (сдвиг +3):</h4>
-                        <div class="example-input" data-i18n="help.algo.caesar_input">Вход: ПРИВЕТ</div>
-                        <div class="example-output" data-i18n="help.algo.caesar_output">Выход: ТУЛГЖХ (П→Т, Р→У, И→Л, В→Г, Е→Ж, Т→Х)</div>
+                        <h4 data-i18n="help.algo.caesar_example"></h4>
+                        <div class="example-input" data-i18n="help.algo.caesar_input"></div>
+                        <div class="example-output" data-i18n="help.algo.caesar_output"></div>
                     </div>
                 </div>
 
-                <div class="algorithm-card" data-node-type="morse">
+                <div class="algorithm-card" data-node-type="morse_code">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
-                            <i class="fas fa-broadcast-tower"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);"><i class="fas fa-broadcast-tower"></i></div>
                         <div class="algorithm-info">
-                            <h3 data-i18n="help.algo.morse_code">Код Морзе</h3>
-                            <p data-i18n="help.algo.morse_desc">Представление текста в виде последовательности точек и тире</p>
+                            <h3 data-i18n="help.algo.morse_code"></h3>
+                            <p data-i18n="help.algo.morse_desc"></p>
                         </div>
                     </div>
-                    <p><strong data-i18n="help.general.principle">Принцип работы:</strong> <span data-i18n="help.algo.morse_principle">Каждая буква, цифра и знак препинания кодируется уникальной комбинацией коротких (точка) и длинных (тире) сигналов.</span></p>
-                    
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.morse_principle"></span></p>
                     <div class="example-box">
-                        <h4 data-i18n="help.algo.morse_languages">Различия символов для языков:</h4>
-                        <div class="example-input"><strong data-i18n="help.algo.morse_russian">Русский:</strong> · (Unicode точка) и − (Unicode тире)</div>
-                        <div class="example-input"><strong data-i18n="help.algo.morse_english">Английский:</strong> . (ASCII точка) и - (ASCII дефис)</div>
-                        <div class="example-output" data-i18n="help.algo.morse_distinction">Это позволяет различать язык при декодировании смешанного текста</div>
-                    </div>
-                    
-                    <div class="example-box">
-                        <h4 data-i18n="help.algo.morse_example">Пример кодирования:</h4>
-                        <div class="example-input" data-i18n="help.algo.morse_input">Вход: "ПРИВЕТ SOS"</div>
-                        <div class="example-output" data-i18n="help.algo.morse_output">Выход: ·−−· ·−· ·· ·−·· · ·− ... --- ...</div>
-                        <div class="example-output" data-i18n="help.algo.morse_mix">Русские буквы: ·−, английские: .--</div>
-                    </div>
-                    
-                    <div class="data-loss-warning">
-                        <h4 data-i18n="help.algo.morse_yo_setting">Настройка поддержки Ё</h4>
-                        <p data-i18n="help.algo.morse_yo_desc">По умолчанию Ё кодируется как Е (·). Включите переключатель "Поддержка Ё" для отдельного кода ··−··</p>
-                        <div class="example-input" data-i18n="help.algo.morse_yo_without">Без поддержки: ЁЛЬ → · ·−·· ·−··−</div>
-                        <div class="example-input" data-i18n="help.algo.morse_yo_with">С поддержкой: ЁЛЬ → ··−·· ·−·· ·−··−</div>
-                    </div>
-                </div>
-
-                <div class="algorithm-card" data-node-type="braille-cat">
-                    <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f472b6, #ec4899);">
-                            <i class="fas fa-cat"></i>
-                        </div>
-                        <div class="algorithm-info">
-                            <h3>Морзе (Кошачий)</h3>
-                            <p>Забавный вариант кода Морзе с кошачьими звуками</p>
-                        </div>
-                    </div>
-                    <p><strong>Принцип работы:</strong> Сначала текст кодируется в обычный код Морзе, затем символы заменяются на кошачьи звуки.</p>
-                    <div class="example-box">
-                        <h4>Замены:</h4>
-                        <div class="example-input">· (точка) → мяy</div>
-                        <div class="example-input">− (тире) → мрряy</div>
-                        <div class="example-input">/ (пробел между словами) → брряy</div>
+                        <h4 data-i18n="help.algo.morse_languages"></h4>
+                        <div class="example-input"><strong data-i18n="help.algo.morse_russian"></strong> <span data-i18n="help.algo.morse_russian" data-i18n-append=": · (Unicode точка) и − (Unicode тире)"></span></div>
+                        <div class="example-input"><strong data-i18n="help.algo.morse_english"></strong> <span data-i18n="help.algo.morse_english" data-i18n-append=": . (ASCII точка) и - (ASCII дефис)"></span></div>
+                        <div class="example-output" data-i18n="help.algo.morse_distinction"></div>
                     </div>
                     <div class="example-box">
-                        <h4>Пример кодирования:</h4>
-                        <div class="example-input">Вход: КОТ</div>
-                        <div class="example-output">Морзе: −·− −−− −</div>
-                        <div class="example-output">Кошачий: мрряyмяy мрряyмрряyмрряy мрряy</div>
+                        <h4 data-i18n="help.algo.morse_example"></h4>
+                        <div class="example-input" data-i18n="help.algo.morse_input"></div>
+                        <div class="example-output" data-i18n="help.algo.morse_output"></div>
+                        <div class="example-output" data-i18n="help.algo.morse_mix"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Поддержка Ё в кошачьем морзе</h4>
-                        <p>Также поддерживается переключатель Ё, как в обычном морзе</p>
-                        <div class="example-input">Ё с поддержкой → мяyмяyмрряyмяyмяy</div>
+                        <h4 data-i18n="help.algo.morse_yo_setting"></h4>
+                        <p data-i18n="help.algo.morse_yo_desc"></p>
+                        <div class="example-input" data-i18n="help.algo.morse_yo_without"></div>
+                        <div class="example-input" data-i18n="help.algo.morse_yo_with"></div>
                     </div>
                 </div>
 
-                <div class="help-subtitle">Преобразования</div>
-
-                <div class="algorithm-card" data-node-type="a1z26">
+                <div class="algorithm-card" data-node-type="morse_cat">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #14b8a6, #0d9488);">
-                            <i class="fas fa-sort-numeric-up"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f472b6, #ec4899);"><i class="fas fa-cat"></i></div>
                         <div class="algorithm-info">
-                            <h3>A1Z26 (Позиционный шифр)</h3>
-                            <p>Замена букв на их порядковые номера в алфавите</p>
+                            <h3 data-i18n="help.algo.morse_cat"></h3>
+                            <p data-i18n="help.algo.morse_cat_desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Каждая буква заменяется на её номер в алфавите (А=1, Б=2, ..., Я=33).</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.morse_cat_principle"></span></p>
                     <div class="example-box">
-                        <h4>Пример:</h4>
-                        <div class="example-input">Вход: КОТ</div>
-                        <div class="example-output">Выход: 12-16-20 (К=12, О=16, Т=20)</div>
-                    </div>
-                </div>
-
-                <div class="algorithm-card" data-node-type="vigenere">
-                    <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <div class="algorithm-info">
-                            <h3>Шифр Виженера / Бофора</h3>
-                            <p>Полиалфавитный шифр с двумя режимами работы</p>
-                        </div>
-                    </div>
-                    <p><strong>Принцип работы:</strong> Шифр с двумя режимами: классический Виженер и шифр Бофора.</p>
-                    <div class="example-box">
-                        <h4>Режим Виженер (ключ: КОТ):</h4>
-                        <div class="example-input">Формула: (Текст + Ключ) mod m</div>
-                        <div class="example-input">Текст: ПРИВЕТ, Ключ: КОТКО(Т)</div>
-                        <div class="example-output">Результат: П+К=Э, Р+О=Е, И+Т=Б → ЕБИСМ</div>
+                        <h4 data-i18n="help.algo.morse_cat_replacements"></h4>
+                        <div class="example-input" data-i18n="help.algo.morse_cat_dot"></div>
+                        <div class="example-input" data-i18n="help.algo.morse_cat_dash"></div>
+                        <div class="example-input" data-i18n="help.algo.morse_cat_space"></div>
                     </div>
                     <div class="example-box">
-                        <h4>Режим Бофор (ключ: КОТ):</h4>
-                        <div class="example-input">Формула: (Ключ - Текст) mod m</div>
-                        <div class="example-input">Текст: ПРИВЕТ, Ключ: КОТКО(Т)</div>
-                        <div class="example-output">Результат: К-П=Ь, О-Р=Ч, Т-И=Л → ЬЧЛФПВ</div>
+                        <h4 data-i18n="help.algo.morse_cat_example"></h4>
+                        <div class="example-input" data-i18n="help.algo.morse_cat_input"></div>
+                        <div class="example-output" data-i18n="help.algo.morse_cat_morse"></div>
+                        <div class="example-output" data-i18n="help.algo.morse_cat_output"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Шифр Бофора</h4>
-                        <p>• Реципрокный (инволютивный) шифр<br>• Дешифровка = повторное применение с тем же ключом<br>• Формула одинакова для шифровки и дешифровки</p>
+                        <h4 data-i18n="help.algo.morse_cat_yo"></h4>
+                        <p data-i18n="help.algo.morse_cat_yo_desc"></p>
+                        <div class="example-input" data-i18n="help.algo.morse_cat_yo_example"></div>
+                    </div>
+                </div>
+                
+                <div class="algorithm-card" data-node-type="a1z26_cipher">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #14b8a6, #0d9488);"><i class="fas fa-sort-numeric-up"></i></div>
+                        <div class="algorithm-info">
+                            <h3 data-i18n="help.algo.a1z26"></h3>
+                            <p data-i18n="help.algo.a1z26_desc"></p>
+                        </div>
+                    </div>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.a1z26_principle"></span></p>
+                    <div class="example-box">
+                        <h4 data-i18n="help.algo.a1z26_example"></h4>
+                        <div class="example-input" data-i18n="help.algo.a1z26_input"></div>
+                        <div class="example-output" data-i18n="help.algo.a1z26_output"></div>
+                    </div>
+                </div>
+
+                <div class="algorithm-card" data-node-type="vigenere_cipher">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);"><i class="fas fa-shield-alt"></i></div>
+                        <div class="algorithm-info">
+                            <h3 data-i18n="help.algo.vigenere"></h3>
+                            <p data-i18n="help.algo.vigenere_desc"></p>
+                        </div>
+                    </div>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.vigenere_principle"></span></p>
+                    <div class="example-box">
+                        <h4 data-i18n="help.algo.vigenere_mode"></h4>
+                        <div class="example-input" data-i18n="help.algo.vigenere_formula"></div>
+                        <div class="example-input" data-i18n="help.algo.vigenere_text"></div>
+                        <div class="example-output" data-i18n="help.algo.vigenere_result"></div>
+                    </div>
+                    <div class="example-box">
+                        <h4 data-i18n="help.algo.beaufort_mode"></h4>
+                        <div class="example-input" data-i18n="help.algo.beaufort_formula"></div>
+                        <div class="example-input" data-i18n="help.algo.beaufort_text"></div>
+                        <div class="example-output" data-i18n="help.algo.beaufort_result"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Особенности</h4>
-                        <p>• Имеет два входа: текст и ключ<br>• Ключ повторяется циклически<br>• Устойчив к частотному анализу</p>
-                    </div>
-                </div>
-
-                <div class="algorithm-card" data-node-type="secret-word">
-                    <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f87171, #ef4444);">
-                            <i class="fas fa-key"></i>
-                        </div>
-                        <div class="algorithm-info">
-                            <h3>Секретное слово</h3>
-                            <p>Генератор ключевых слов для других алгоритмов</p>
-                        </div>
-                    </div>
-                    <p><strong>Принцип работы:</strong> Создает ключевое слово, которое можно использовать в шифрах типа Виженер.</p>
-                    <div class="example-box">
-                        <h4>Пример:</h4>
-                        <div class="example-input">Секретное слово: ТАЙНА</div>
-                        <div class="example-output">Использование: подключить к ключевому входу Виженера</div>
-                    </div>
-                </div>
-
-                <div class="algorithm-card" data-node-type="complex-substitution">
-                    <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #dc2626, #b91c1c);">
-                            <i class="fas fa-key"></i>
-                        </div>
-                        <div class="algorithm-info">
-                            <h3>Шифр сложной замены</h3>
-                            <p>Пользовательский алфавит замены на основе ключа с любыми символами</p>
-                        </div>
-                    </div>
-                    <p><strong>Принцип работы:</strong> Создает уникальный алфавит для замены, используя ключ с любыми символами. Ключ обрабатывается: удаляются повторения, разделяется на алфавитную и неалфавитную части, неалфавитные символы добавляются в начало нового алфавита.</p>
-                    <div class="example-box">
-                        <h4>Пример (ключ: "Кот!#", русский алфавит):</h4>
-                        <div class="example-input">Базовый алфавит: абвгдеёжзийклмнопрстуфхцчшщъыьэюя</div>
-                        <div class="example-input">Обработка ключа: кот!# → алфавитная часть: кот, неалфавитная: !#</div>
-                        <div class="example-input">Новый алфавит: !#котабвгдеёжзийклмнпрсуфхцчшщъыьэ</div>
-                        <div class="example-output">Шифрование "бак": б→#, а→!, к→ж → "#!ж"</div>
+                        <h4 data-i18n="help.algo.beaufort_title"></h4>
+                        <p><span data-i18n="help.algo.beaufort_feature1"></span><br><span data-i18n="help.algo.beaufort_feature2"></span><br><span data-i18n="help.algo.beaufort_feature3"></span></p>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Особенности</h4>
-                        <p>• Поддерживает русский и английский алфавиты<br>• Ключ может содержать любые символы<br>• Реверсивный: та же операция для шифровки и дешифровки</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p><span data-i18n="help.algo.vigenere_feature1"></span><br><span data-i18n="help.algo.vigenere_feature2"></span><br><span data-i18n="help.algo.vigenere_feature3"></span></p>
                     </div>
                 </div>
 
-                <div class="algorithm-card" data-node-type="simple-substitution">
+                <div class="algorithm-card" data-node-type="secret_word">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ea580c, #dc2626);">
-                            <i class="fas fa-exchange-alt"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f87171, #ef4444);"><i class="fas fa-key"></i></div>
                         <div class="algorithm-info">
-                            <h3>Шифр простой замены</h3>
-                            <p>Классический шифр замены с ключевым словом</p>
+                            <h3 data-i18n="help.algo.secret_word"></h3>
+                            <p data-i18n="help.algo.secret_word_desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Создает алфавит замены, где в начале идут уникальные буквы ключа, за ними — остальные буквы алфавита. Работает с русским и английским алфавитами одновременно, не смешивая их.</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.secret_word_principle"></span></p>
                     <div class="example-box">
-                        <h4>Пример (ключ: "cipher"):</h4>
-                        <div class="example-input">Английский алфавит: abcdefghijklmnopqrstuvwxyz</div>
-                        <div class="example-input">Новый алфавит: cipherabdfgjklmnoqstuvwxyz</div>
-                        <div class="example-output">Шифрование "attack": a→c, t→t, c→p, k→j → "cttcpj"</div>
+                        <h4 data-i18n="help.algo.secret_word_example"></h4>
+                        <div class="example-input" data-i18n="help.algo.secret_word_input"></div>
+                        <div class="example-output" data-i18n="help.algo.secret_word_usage"></div>
+                    </div>
+                </div>
+                
+                <div class="algorithm-card" data-node-type="complex_substitution">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #dc2626, #b91c1c);"><i class="fas fa-key"></i></div>
+                        <div class="algorithm-info">
+                            <h3 data-i18n="help.algo.complex_substitution.title"></h3>
+                            <p data-i18n="help.algo.complex_substitution.desc"></p>
+                        </div>
+                    </div>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.complex_substitution.principle"></span></p>
+                    <div class="example-box">
+                        <h4 data-i18n="help.algo.complex_substitution.example_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.complex_substitution.example_base"></div>
+                        <div class="example-input" data-i18n="help.algo.complex_substitution.example_process"></div>
+                        <div class="example-input" data-i18n="help.algo.complex_substitution.example_new_alphabet"></div>
+                        <div class="example-output" data-i18n="help.algo.complex_substitution.example_encrypt"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Особенности</h4>
-                        <p>• Одновременная работа с двумя алфавитами<br>• Русские буквы заменяются по русскому словарю<br>• Английские — по английскому</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p><span data-i18n="help.algo.complex_substitution.feature1"></span><br><span data-i18n="help.algo.complex_substitution.feature2"></span><br><span data-i18n="help.algo.complex_substitution.feature3"></span></p>
                     </div>
                 </div>
 
-                <div class="algorithm-card" data-node-type="route-transposition">
+                <div class="algorithm-card" data-node-type="simple_substitution">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #7c2d12, #92400e);">
-                            <i class="fas fa-route"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ea580c, #dc2626);"><i class="fas fa-exchange-alt"></i></div>
                         <div class="algorithm-info">
-                            <h3>Шифр маршрутной перестановки</h3>
-                            <p>Перестановка символов через матричную запись текста</p>
+                            <h3 data-i18n="help.algo.simple_substitution.title"></h3>
+                            <p data-i18n="help.algo.simple_substitution.desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Текст записывается в матрицу по строкам, ширина которой равна длине ключа. Порядок считывания столбцов определяется алфавитным порядком букв ключа.</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.simple_substitution.principle"></span></p>
                     <div class="example-box">
-                        <h4>Пример (ключ: "КОД"):</h4>
-                        <div class="example-input">Текст: ПРИВЕТСТВУЮ</div>
-                        <div class="example-input">Порядок столбцов: Д(1), К(2), О(3)</div>
-                        <div class="example-input">Матрица:
-К О Д
-П Р И
-В Е Т
-С Т В
-У Ю  </div>
-                        <div class="example-output">Считывание по столбцам: И+Т+В + П+В+С+У + Р+Е+Т+Ю = "ИТВПВСУРЕТЮ"</div>
-                    </div>
-                </div>
-
-                <div class="help-subtitle">Сжатие данных</div>
-
-                <div class="algorithm-card" data-node-type="rle-compression">
-                    <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #059669, #047857);">
-                            <i class="fas fa-compress-arrows-alt"></i>
-                        </div>
-                        <div class="algorithm-info">
-                            <h3>Сжатие RLE</h3>
-                            <p>Кодирование длин серий (Run Length Encoding)</p>
-                        </div>
-                    </div>
-                    <p><strong>Принцип работы:</strong> Алгоритм сжатия, который заменяет последовательности одинаковых символов на количество повторений и сам символ.</p>
-                    <div class="example-box">
-                        <h4>Пример сжатия:</h4>
-                        <div class="example-input">Текст: ААААААБББВВГГГГГ</div>
-                        <div class="example-output">Результат: 6А3Б2В5Г</div>
-                    </div>
-                    <div class="example-box">
-                        <h4>Пример декомпрессии:</h4>
-                        <div class="example-input">Текст: 6А3Б2В5Г</div>
-                        <div class="example-output">Результат: ААААААБББВВГГГГГ</div>
+                        <h4 data-i18n="help.algo.simple_substitution.example_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.simple_substitution.example_base"></div>
+                        <div class="example-input" data-i18n="help.algo.simple_substitution.example_new_alphabet"></div>
+                        <div class="example-output" data-i18n="help.algo.simple_substitution.example_encrypt"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Особенности</h4>
-                        <p>• Не является шифром — алгоритм сжатия<br>• Эффективен для текстов с повторяющимися символами<br>• Полностью обратимый процесс</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p><span data-i18n="help.algo.simple_substitution.feature1"></span><br><span data-i18n="help.algo.simple_substitution.feature2"></span><br><span data-i18n="help.algo.simple_substitution.feature3"></span></p>
                     </div>
                 </div>
 
-                <div class="help-subtitle">Преобразования</div>
-
-                <div class="algorithm-card" data-node-type="numbers-to-words">
+                <div class="algorithm-card" data-node-type="route_transposition">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #84cc16, #65a30d);">
-                            <i class="fas fa-hashtag"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #7c2d12, #92400e);"><i class="fas fa-route"></i></div>
                         <div class="algorithm-info">
-                            <h3>Числа в слова</h3>
-                            <p>Преобразование цифр в словесное представление</p>
+                            <h3 data-i18n="help.algo.route_transposition.title"></h3>
+                            <p data-i18n="help.algo.route_transposition.desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Заменяет каждую цифру в тексте на её словесное представление на выбранном языке.</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.route_transposition.principle"></span></p>
                     <div class="example-box">
-                        <h4>Пример (русский):</h4>
-                        <div class="example-input">Вход: Мой код: 123</div>
-                        <div class="example-output">Выход: Мой код: одиндватри</div>
+                        <h4 data-i18n="help.algo.route_transposition.example_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.route_transposition.example_text"></div>
+                        <div class="example-input" data-i18n="help.algo.route_transposition.example_order"></div>
+                        <div class="example-input" style="white-space: pre;" data-i18n="help.algo.route_transposition.example_matrix"></div>
+                        <div class="example-output" data-i18n="help.algo.route_transposition.example_result"></div>
+                    </div>
+                </div>
+
+                <div class="help-subtitle" data-i18n="help.algorithms.compression"></div>
+
+                <div class="algorithm-card" data-node-type="rle_compression">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #059669, #047857);"><i class="fas fa-compress-arrows-alt"></i></div>
+                        <div class="algorithm-info">
+                            <h3 data-i18n="help.algo.rle.title"></h3>
+                            <p data-i18n="help.algo.rle.desc"></p>
+                        </div>
+                    </div>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.rle.principle"></span></p>
+                    <div class="example-box">
+                        <h4 data-i18n="help.algo.rle.example_compress_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.rle.example_compress_input"></div>
+                        <div class="example-output" data-i18n="help.algo.rle.example_compress_output"></div>
                     </div>
                     <div class="example-box">
-                        <h4>Пример (английский):</h4>
-                        <div class="example-input">Вход: I have 7 cats</div>
-                        <div class="example-output">Выход: I have seven cats</div>
+                        <h4 data-i18n="help.algo.rle.example_decompress_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.rle.example_decompress_input"></div>
+                        <div class="example-output" data-i18n="help.algo.rle.example_decompress_output"></div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p><span data-i18n="help.algo.rle.feature1"></span><br><span data-i18n="help.algo.rle.feature2"></span><br><span data-i18n="help.algo.rle.feature3"></span></p>
+                    </div>
+                </div>
+
+                <div class="help-subtitle" data-i18n="help.algorithms.transformations"></div>
+
+                <div class="algorithm-card" data-node-type="numbers_to_words">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #84cc16, #65a30d);"><i class="fas fa-hashtag"></i></div>
+                        <div class="algorithm-info">
+                            <h3 data-i18n="help.algo.numbers_to_words.title"></h3>
+                            <p data-i18n="help.algo.numbers_to_words.desc"></p>
+                        </div>
+                    </div>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.numbers_to_words.principle"></span></p>
+                    <div class="example-box">
+                        <h4 data-i18n="help.algo.numbers_to_words.example_ru_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.numbers_to_words.example_ru_input"></div>
+                        <div class="example-output" data-i18n="help.algo.numbers_to_words.example_ru_output"></div>
+                    </div>
+                    <div class="example-box">
+                        <h4 data-i18n="help.algo.numbers_to_words.example_en_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.numbers_to_words.example_en_input"></div>
+                        <div class="example-output" data-i18n="help.algo.numbers_to_words.example_en_output"></div>
                     </div>
                 </div>
 
                 <div class="algorithm-card" data-node-type="math">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #facc15, #eab308);">
-                            <i class="fas fa-calculator"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #facc15, #eab308);"><i class="fas fa-calculator"></i></div>
                         <div class="algorithm-info">
-                            <h3>Математика</h3>
-                            <p>Арифметические операции над числами в тексте</p>
+                            <h3 data-i18n="help.algo.math.title"></h3>
+                            <p data-i18n="help.algo.math.desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Находит числа в тексте и выполняет над ними выбранную математическую операцию.</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.math.principle"></span></p>
                     <div class="example-box">
-                        <h4>Пример (умножение на 2):</h4>
-                        <div class="example-input">Вход: У меня 5 котов и 12 собак</div>
-                        <div class="example-output">Выход: У меня 10 котов и 24 собак</div>
+                        <h4 data-i18n="help.algo.math.example_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.math.example_input"></div>
+                        <div class="example-output" data-i18n="help.algo.math.example_output"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Доступные операции</h4>
-                        <p>• Сложение/вычитание константы<br>• Умножение/деление на константу</p>
+                        <h4 data-i18n="help.algo.math.features_title"></h4>
+                        <p><span data-i18n="help.algo.math.feature1"></span><br><span data-i18n="help.algo.math.feature2"></span></p>
                     </div>
                 </div>
 
-                <div class="algorithm-card" data-node-type="reverse">
+                <div class="algorithm-card" data-node-type="reverse_text">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #fb923c, #f97316);">
-                            <i class="fas fa-undo"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #fb923c, #f97316);"><i class="fas fa-undo"></i></div>
                         <div class="algorithm-info">
-                            <h3>Обратить текст</h3>
-                            <p>Реверс всего текста, отдельных слов или режим "Змейка"</p>
+                            <h3 data-i18n="help.algo.reverse.title"></h3>
+                            <p data-i18n="help.algo.reverse.desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Изменяет порядок символов в тексте в обратном направлении.</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.reverse.principle"></span></p>
                     <div class="example-box">
-                        <h4>Режим "Весь текст":</h4>
-                        <div class="example-input">Вход: ПРИВЕТ МИР</div>
-                        <div class="example-output">Выход: РИМ ТЕВИРП</div>
+                        <h4 data-i18n="help.algo.reverse.mode_full_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.reverse.mode_full_input"></div>
+                        <div class="example-output" data-i18n="help.algo.reverse.mode_full_output"></div>
                     </div>
                     <div class="example-box">
-                        <h4>Режим "По словам":</h4>
-                        <div class="example-input">Вход: ПРИВЕТ МИР</div>
-                        <div class="example-output">Выход: ТЕВИРП РИМ</div>
+                        <h4 data-i18n="help.algo.reverse.mode_words_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.reverse.mode_words_input"></div>
+                        <div class="example-output" data-i18n="help.algo.reverse.mode_words_output"></div>
                     </div>
                     <div class="example-box">
-                        <h4>Режим "Змейка (Бустрофедон)":</h4>
-                        <div class="example-input">Вход: 
-Первая строка
-Вторая строка
-Третья строка</div>
-                        <div class="example-output">Выход:
-Первая строка
-акортс яаротВ
-Третья строка</div>
+                        <h4 data-i18n="help.algo.reverse.mode_snake_title"></h4>
+                        <div class="example-input" style="white-space: pre;" data-i18n="help.algo.reverse.mode_snake_input"></div>
+                        <div class="example-output" style="white-space: pre;" data-i18n="help.algo.reverse.mode_snake_output"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Режим "Змейка"</h4>
-                        <p>• Каждая четная строка (2-я, 4-я, 6-я...) переворачивается<br>• Нечетные строки остаются без изменений<br>• Операция является своей собственной инверсией</p>
+                        <h4 data-i18n="help.algo.reverse.snake_title"></h4>
+                        <p><span data-i18n="help.algo.reverse.snake_feature1"></span><br><span data-i18n="help.algo.reverse.snake_feature2"></span><br><span data-i18n="help.algo.reverse.snake_feature3"></span></p>
                     </div>
                 </div>
 
-                <div class="algorithm-card" data-node-type="case-transform">
+                <div class="algorithm-card" data-node-type="case_transform">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #c084fc, #a855f7);">
-                            <i class="fas fa-text-height"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #c084fc, #a855f7);"><i class="fas fa-text-height"></i></div>
                         <div class="algorithm-info">
-                            <h3>Регистр</h3>
-                            <p>Изменение регистра букв в тексте</p>
+                            <h3 data-i18n="help.algo.case.title"></h3>
+                            <p data-i18n="help.algo.case.desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Преобразует регистр букв согласно выбранному режиму.</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.case.principle"></span></p>
                     <div class="example-box">
-                        <h4>Доступные режимы:</h4>
-                        <div class="example-input">Верхний: привет → ПРИВЕТ</div>
-                        <div class="example-input">Нижний: ПРИВЕТ → привет</div>
-                        <div class="example-input">Заглавные: привет мир → Привет Мир</div>
-                        <div class="example-input">Инвертировать: ПрИвЕт → пРиВеТ</div>
+                        <h4 data-i18n="help.algo.case.modes_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.case.mode_upper"></div>
+                        <div class="example-input" data-i18n="help.algo.case.mode_lower"></div>
+                        <div class="example-input" data-i18n="help.algo.case.mode_title"></div>
+                        <div class="example-input" data-i18n="help.algo.case.mode_toggle"></div>
                     </div>
                 </div>
 
-                <div class="algorithm-card" data-node-type="binary">
+                <div class="algorithm-card" data-node-type="binary_code">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
-                            <i class="fas fa-microchip"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"><i class="fas fa-microchip"></i></div>
                         <div class="algorithm-info">
-                            <h3>Бинарный код</h3>
-                            <p>Представление текста в двоичной системе</p>
+                            <h3 data-i18n="help.algo.binary.title"></h3>
+                            <p data-i18n="help.algo.binary.desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Каждый символ кодируется в его ASCII/UTF-8 представление в двоичной системе.</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.binary.principle"></span></p>
                     <div class="example-box">
-                        <h4>Пример:</h4>
-                        <div class="example-input">Вход: A</div>
-                        <div class="example-output">Выход: 01000001 (ASCII 65)</div>
+                        <h4 data-i18n="help.algo.binary.example_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.binary.example_input"></div>
+                        <div class="example-output" data-i18n="help.algo.binary.example_output"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Особенности</h4>
-                        <p>• Кириллица требует UTF-8 (более длинные коды)<br>• Результат может быть очень длинным</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p><span data-i18n="help.algo.binary.feature1"></span><br><span data-i18n="help.algo.binary.feature2"></span></p>
                     </div>
                 </div>
 
-                <div class="algorithm-card" data-node-type="planet-enchanter">
+                <div class="algorithm-card" data-node-type="planet_enchanter">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #22d3ee, #06b6d4);">
-                            <i class="fas fa-globe"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #22d3ee, #06b6d4);"><i class="fas fa-globe"></i></div>
                         <div class="algorithm-info">
-                            <h3>Зачаровыватель планет</h3>
-                            <p>Уникальный шифр через координаты городов мира</p>
+                            <h3 data-i18n="help.algo.planet_enchanter.title"></h3>
+                            <p data-i18n="help.algo.planet_enchanter.desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Каждая буква заменяется координатами случайного города, название которого начинается на эту букву.</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.planet_enchanter.principle"></span></p>
                     <div class="example-box">
-                        <h4>Пример:</h4>
-                        <div class="example-input">Вход: МИР</div>
-                        <div class="example-output">Выход: 55.7558, 37.6176 (Москва)<br>55.7558, 49.2076 (Иркутск)<br>61.2181, 73.4529 (Рига)</div>
+                        <h4 data-i18n="help.algo.planet_enchanter.example_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.planet_enchanter.example_input"></div>
+                        <div class="example-output" style="white-space: pre;" data-i18n="help.algo.planet_enchanter.example_output"></div>
                     </div>
                 </div>
 
-                <div class="help-subtitle">Продвинутая обработка</div>
+                <div class="help-subtitle" data-i18n="help.algorithms.advanced_processing"></div>
 
-                <div class="algorithm-card" data-node-type="multi-replacer">
+                <div class="algorithm-card" data-node-type="multi_replace">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                            <i class="fas fa-exchange-alt"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fas fa-exchange-alt"></i></div>
                         <div class="algorithm-info">
-                            <h3>Мульти-Замена</h3>
-                            <p>Множественная замена символов или слов по правилам</p>
+                            <h3 data-i18n="help.algo.multi_replace.title"></h3>
+                            <p data-i18n="help.algo.multi_replace.desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Выполняет замену по списку правил "что→на что". Каждое правило записывается в отдельной строке.</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.multi_replace.principle"></span></p>
                     <div class="example-box">
-                        <h4>Пример правил:</h4>
-                        <div class="example-input">а→@<br>е→3<br>о→0<br>кот→cat</div>
-                        <div class="example-input">Вход: "Привет кот"</div>
-                        <div class="example-output">Выход: "При3т cat"</div>
+                        <h4 data-i18n="help.algo.multi_replace.example_rules_title"></h4>
+                        <div class="example-input" style="white-space: pre;" data-i18n="help.algo.multi_replace.example_rules"></div>
+                        <div class="example-input" data-i18n="help.algo.multi_replace.example_input"></div>
+                        <div class="example-output" data-i18n="help.algo.multi_replace.example_output"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Настройки</h4>
-                        <p>Нод имеет две важные опции, которые управляют его поведением:</p>
-                        <p><strong>Учитывать регистр (Case Sensitive):</strong><br>
-                        • Выключено (по умолч.): Замена происходит без учета регистра. Правило кот→cat сработает для слов "кот", "Кот" и "КОТ".<br>
-                        • Включено: Замена происходит только при точном совпадении регистра. Правило кот→cat сработает только для "кот".</p>
-                        <p><strong>Только целые слова (Whole Words):</strong><br>
-                        • Выключено (по умолч.): Замена ищет подстроку в любом месте. Правило кот→cat превратит слово "котлета" в "catлета".<br>
-                        • Включено: Замена происходит, только если искомое слово совпадает с целым словом в тексте. Правило кот→cat не затронет слово "котлета".</p>
-                        <h4>Особенности</h4>
-                        <p>• Замены выполняются последовательно<br>• Если правило пустое или некорректное, оно игнорируется</p>
+                        <h4 data-i18n="help.algo.multi_replace.settings_title"></h4>
+                        <p data-i18n="help.algo.multi_replace.settings_intro"></p>
+                        <p><strong data-i18n="help.algo.multi_replace.case_sensitive_title"></strong><br><span data-i18n="help.algo.multi_replace.case_sensitive_off"></span><br><span data-i18n="help.algo.multi_replace.case_sensitive_on"></span></p>
+                        <p><strong data-i18n="help.algo.multi_replace.whole_words_title"></strong><br><span data-i18n="help.algo.multi_replace.whole_words_off"></span><br><span data-i18n="help.algo.multi_replace.whole_words_on"></span></p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p><span data-i18n="help.algo.multi_replace.feature1"></span><br><span data-i18n="help.algo.multi_replace.feature2"></span></p>
                     </div>
                 </div>
 
-                <div class="help-subtitle">Логические операции</div>
+                <div class="help-subtitle" data-i18n="help.algorithms.logical_operations"></div>
 
-                <div class="algorithm-card" data-node-type="text-router">
+                <div class="algorithm-card" data-node-type="text_router">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
-                            <i class="fas fa-sitemap"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);"><i class="fas fa-sitemap"></i></div>
                         <div class="algorithm-info">
-                            <h3>Маршрутизатор Текста</h3>
-                            <p>Направляет текст по разным путям на основе условий</p>
+                            <h3 data-i18n="help.algo.text_router.title"></h3>
+                            <p data-i18n="help.algo.text_router.desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Анализирует входной текст и направляет его в один из двух выходов в зависимости от заданного условия.</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.text_router.principle"></span></p>
                     <div class="example-box">
-                        <h4>Доступные условия:</h4>
-                        <div class="example-input">• Содержит/не содержит цифры</div>
-                        <div class="example-input">• Содержит/не содержит латиницу</div>
-                        <div class="example-input">• Содержит/не содержит кириллицу</div>
-                        <div class="example-input">• Содержит указанный текст</div>
-                        <div class="example-input">• Соответствует регулярному выражению (Regex)</div>
-                        <div class="example-output">Полезно для создания условных цепочек шифрования</div>
+                        <h4 data-i18n="help.algo.text_router.conditions_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.text_router.condition1"></div>
+                        <div class="example-input" data-i18n="help.algo.text_router.condition2"></div>
+                        <div class="example-input" data-i18n="help.algo.text_router.condition3"></div>
+                        <div class="example-input" data-i18n="help.algo.text_router.condition4"></div>
+                        <div class="example-input" data-i18n="help.algo.text_router.condition5"></div>
+                        <div class="example-output" data-i18n="help.algo.text_router.usage_tip"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Особенности</h4>
-                        <p>• Один вход, два выхода<br>• Данные идут только в один из выходов<br>• Если условие не выполнено, данные идут во второй выход</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p><span data-i18n="help.algo.text_router.feature1"></span><br><span data-i18n="help.algo.text_router.feature2"></span><br><span data-i18n="help.algo.text_router.feature3"></span></p>
                     </div>
                 </div>
 
-                <div class="algorithm-card" data-node-type="stream-merger">
+                <div class="algorithm-card" data-node-type="stream_merger">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
-                            <i class="fas fa-link"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fas fa-link"></i></div>
                         <div class="algorithm-info">
-                            <h3>Слияние Потоков</h3>
-                            <p>Объединяет несколько входных потоков в один выход</p>
+                            <h3 data-i18n="help.algo.stream_merger.title"></h3>
+                            <p data-i18n="help.algo.stream_merger.desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Принимает данные с нескольких входов и объединяет их в один поток согласно выбранному методу слияния.</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.stream_merger.principle"></span></p>
                     <div class="example-box">
-                        <h4>Методы слияния:</h4>
-                        <div class="example-input">• Чередование символов: Два потока текста смешиваются посимвольно.</div>
-                        <div class="example-output">Пример: Вход А: "АВC", Вход Б: "123" → Выход: "А1В2С3"</div>
-                        <div class="example-input">• Чередование слов: Два потока смешиваются по словам.</div>
-                        <div class="example-output">Пример: Вход А: "раз два", Вход Б: "три четыре" → Выход: "раз три два четыре"</div>
-                        <div class="example-input">• Чередование строк: Строки из двух потоков добавляются в результат поочередно.</div>
-                        <div class="example-output">Пример: Вход А: "стр1\\nстр2", Вход Б: "стр3\\nстр4" → Выход: "стр1\\nстр3\\nстр2\\nстр4"</div>
+                        <h4 data-i18n="help.algo.stream_merger.methods_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.stream_merger.method1_title"></div>
+                        <div class="example-output" data-i18n="help.algo.stream_merger.method1_example"></div>
+                        <div class="example-input" data-i18n="help.algo.stream_merger.method2_title"></div>
+                        <div class="example-output" data-i18n="help.algo.stream_merger.method2_example"></div>
+                        <div class="example-input" data-i18n="help.algo.stream_merger.method3_title"></div>
+                        <div class="example-output" data-i18n="help.algo.stream_merger.method3_example"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Особенности</h4>
-                        <p>• Несколько входов, один выход<br>• Если входы пустые, они игнорируются<br>• Порядок входов влияет на результат</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p><span data-i18n="help.algo.stream_merger.feature1"></span><br><span data-i18n="help.algo.stream_merger.feature2"></span><br><span data-i18n="help.algo.stream_merger.feature3"></span></p>
                     </div>
                 </div>
 
-                <div class="algorithm-card" data-node-type="stream-splitter">
+                <div class="algorithm-card" data-node-type="stream_splitter">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #9333ea, #7c3aed);">
-                            <i class="fas fa-cut"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #9333ea, #7c3aed);"><i class="fas fa-cut"></i></div>
                         <div class="algorithm-info">
-                            <h3>Разрез Потоков</h3>
-                            <p>Разделяет один входной поток на два выхода</p>
+                            <h3 data-i18n="help.algo.stream_splitter.title"></h3>
+                            <p data-i18n="help.algo.stream_splitter.desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Принимает данные с одного входа и разделяет их на два потока согласно выбранному методу разделения. Работает обратно нода "Слияние Потоков".</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.stream_splitter.principle"></span></p>
                     <div class="example-box">
-                        <h4>Методы разделения:</h4>
-                        <div class="example-input">• Разделение по символам: Входной поток разделяется посимвольно.</div>
-                        <div class="example-output">Пример: Вход: "А1В2С3" → Поток А: "АВС", Поток Б: "123"</div>
-                        <div class="example-input">• Разделение по словам: Входной поток разделяется по словам.</div>
-                        <div class="example-output">Пример: Вход: "раз три два четыре" → Поток А: "раз два", Поток Б: "три четыре"</div>
-                        <div class="example-input">• Разделение по строкам: Строки разделяются поочередно.</div>
-                        <div class="example-output">Пример: Вход: "стр1\\nстр3\\nстр2\\nстр4" → Поток А: "стр1\\nстр2", Поток Б: "стр3\\nстр4"</div>
+                        <h4 data-i18n="help.algo.stream_splitter.methods_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.stream_splitter.method1_title"></div>
+                        <div class="example-output" data-i18n="help.algo.stream_splitter.method1_example"></div>
+                        <div class="example-input" data-i18n="help.algo.stream_splitter.method2_title"></div>
+                        <div class="example-output" data-i18n="help.algo.stream_splitter.method2_example"></div>
+                        <div class="example-input" data-i18n="help.algo.stream_splitter.method3_title"></div>
+                        <div class="example-output" data-i18n="help.algo.stream_splitter.method3_example"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Особенности</h4>
-                        <p>• Один вход, два выхода<br>• Четные элементы идут в поток А, нечетные в поток Б<br>• При обратном процессе (дешифровке) работает как слияние</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p><span data-i18n="help.algo.stream_splitter.feature1"></span><br><span data-i18n="help.algo.stream_splitter.feature2"></span><br><span data-i18n="help.algo.stream_splitter.feature3"></span></p>
                     </div>
                 </div>
 
-                <div class="help-subtitle">Современные шифры</div>
+                <div class="help-subtitle" data-i18n="help.algorithms.modern_ciphers"></div>
 
-                <div class="algorithm-card" data-node-type="atbash">
+                <div class="algorithm-card" data-node-type="atbash_cipher">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">
-                            <i class="fas fa-retweet"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);"><i class="fas fa-retweet"></i></div>
                         <div class="algorithm-info">
-                            <h3>Шифр Атбаш</h3>
-                            <p>Замена каждой буквы на симметричную в алфавите</p>
+                            <h3 data-i18n="help.algo.atbash.title"></h3>
+                            <p data-i18n="help.algo.atbash.desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Каждая буква заменяется на букву, стоящую на симметричной позиции с конца алфавита (А↔Я, Б↔Ю, В↔Э, и т.д.).</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.atbash.principle"></span></p>
                     <div class="example-box">
-                        <h4>Пример:</h4>
-                        <div class="example-input">Вход: "ПРИВЕТ"</div>
-                        <div class="example-output">Выход: "ТКЛЕЗХ" (П→Т, Р→К, И→Л, В→Е, Е→З, Т→Х)</div>
+                        <h4 data-i18n="help.algo.atbash.example_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.atbash.example_input"></div>
+                        <div class="example-output" data-i18n="help.algo.atbash.example_output"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Особенности</h4>
-                        <p>• Симметричное шифрование (шифрование = дешифрование)<br>• Поддерживает русский и английский алфавиты<br>• Цифры и символы остаются без изменений</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p><span data-i18n="help.algo.atbash.feature1"></span><br><span data-i18n="help.algo.atbash.feature2"></span><br><span data-i18n="help.algo.atbash.feature3"></span></p>
                     </div>
                 </div>
 
                 <div class="algorithm-card" data-node-type="base64">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
-                            <i class="fas fa-file-export"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"><i class="fas fa-file-export"></i></div>
                         <div class="algorithm-info">
-                            <h3>Base64 Кодировщик</h3>
-                            <p>Кодирование/декодирование в формат Base64</p>
+                            <h3 data-i18n="help.algo.base64.title"></h3>
+                            <p data-i18n="help.algo.base64.desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Преобразует текст в Base64 - стандартный способ кодирования двоичных данных в текстовом формате.</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.base64.principle"></span></p>
                     <div class="example-box">
-                        <h4>Пример:</h4>
-                        <div class="example-input">Вход: "Привет"</div>
-                        <div class="example-output">Выход: "0J/RgNC40LLQtdGC" (Base64)</div>
+                        <h4 data-i18n="help.algo.base64.example_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.base64.example_input"></div>
+                        <div class="example-output" data-i18n="help.algo.base64.example_output"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Особенности</h4>
-                        <p>• Полностью обратимое кодирование<br>• Увеличивает размер текста примерно на 33%<br>• Использует символы A-Z, a-z, 0-9, +, /</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p><span data-i18n="help.algo.base64.feature1"></span><br><span data-i18n="help.algo.base64.feature2"></span><br><span data-i18n="help.algo.base64.feature3"></span></p>
                     </div>
                 </div>
 
-                <div class="help-subtitle">Забавные шифры</div>
+                <div class="help-subtitle" data-i18n="help.algorithms.fun_ciphers"></div>
 
-                <div class="algorithm-card" data-node-type="gawr-gura">
+                <div class="algorithm-card" data-node-type="shark_cipher">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
-                            <i class="fas fa-fish"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);"><i class="fas fa-fish"></i></div>
                         <div class="algorithm-info">
-                            <h3>Акулий Шифр</h3>
-                            <p>Превращает текст в акульи звуки "a" разной длины</p>
+                            <h3 data-i18n="help.algo.shark.title"></h3>
+                            <p data-i18n="help.algo.shark.desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Превращает текст в "акульи" звуки, используя сложную трехуровневую систему. Буквы кодируются комбинацией ключевого слова (а, шорк, гура) и повторяющихся юнитов (а). Пробелы превращаются в bloop.</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.shark.principle"></span></p>
                     <div class="example-box">
-                        <h4>Поддержка языков:</h4>
-                        <p>Шифр работает как с русским, так и с английским алфавитом, автоматически определяя язык для каждой буквы.</p>
-                        <div class="example-input">Русский язык: Ключевые слова а, шорк, гура.</div>
-                        <div class="example-input">Английский язык: Ключевые слова a, shork, gura.</div>
-                        <h4>Пример (русский):</h4>
-                        <div class="example-input">Вход: а (индекс 0) → а</div>
-                        <div class="example-input">Вход: м (индекс 12, начало второго уровня) → шорк</div>
-                        <div class="example-input">Вход: н (индекс 13) → шорк а</div>
-                        <div class="example-output">Результат: "привет мир" → "шорк а а а а · шорк а а · а · шорк а а а а а а а · шорк а а а а а а bloop шорк · шорк а а · шорк а а а"</div>
-                        <h4>Пример (английский):</h4>
-                        <div class="example-input">Вход: cat</div>
-                        <div class="example-output">c (индекс 2): a a a<br>a (индекс 0): a<br>t (индекс 19, второй уровень): shork a a a a a a a<br>Выход: "a a a a shork a a a a a a a"</div>
+                        <h4 data-i18n="help.algo.shark.lang_support_title"></h4>
+                        <p data-i18n="help.algo.shark.lang_support_desc"></p>
+                        <div class="example-input" data-i18n="help.algo.shark.lang_ru"></div>
+                        <div class="example-input" data-i18n="help.algo.shark.lang_en"></div>
+                        <h4 data-i18n="help.algo.shark.example_ru_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.shark.example_ru_1"></div>
+                        <div class="example-input" data-i18n="help.algo.shark.example_ru_2"></div>
+                        <div class="example-input" data-i18n="help.algo.shark.example_ru_3"></div>
+                        <div class="example-output" data-i18n="help.algo.shark.example_ru_result"></div>
+                        <h4 data-i18n="help.algo.shark.example_en_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.shark.example_en_input"></div>
+                        <div class="example-output" style="white-space: pre-wrap;" data-i18n="help.algo.shark.example_en_result"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Особенности</h4>
-                        <p>• Результат может быть очень длинным<br>• Пробелы разделяют закодированные буквы<br>• Поддерживает только буквы (цифры и символы игнорируются)</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p><span data-i18n="help.algo.shark.feature1"></span><br><span data-i18n="help.algo.shark.feature2"></span><br><span data-i18n="help.algo.shark.feature3"></span></p>
                     </div>
                 </div>
 
-                <div class="algorithm-card" data-node-type="uwu-ifier">
+                <div class="algorithm-card" data-node-type="uwu_cipher">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f472b6, #ec4899);">
-                            <i class="fas fa-grin-stars"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f472b6, #ec4899);"><i class="fas fa-grin-stars"></i></div>
                         <div class="algorithm-info">
-                            <h3>UwU-фикатор (Шифр Няшек)</h3>
-                            <p>Превращает обычный текст в милый "uwu-speak"</p>
+                            <h3 data-i18n="help.algo.uwu.title"></h3>
+                            <p data-i18n="help.algo.uwu.desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Применяет правила "uwu-speak": заменяет некоторые согласные, добавляет "заикание" и милые смайлики.</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.uwu.principle"></span></p>
                     <div class="example-box">
-                        <h4>Правила преобразования:</h4>
-                        <div class="example-input">• Русские "р" и "л" заменяются на "в".</div>
-                        <div class="example-input">• В начале слов с некоторой вероятностью добавляется заикание: Привет → П-привет.</div>
-                        <div class="example-input">• В конце слов случайным образом могут добавляться смайлики: UwU, OwO, :3 и т.д.</div>
-                        <h4>Пример:</h4>
-                        <div class="example-input">Вход: Привет мир</div>
-                        <div class="example-output">Выход (может отличаться из-за случайности): П-привет мив >w<</div>
+                        <h4 data-i18n="help.algo.uwu.rules_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.uwu.rule1"></div>
+                        <div class="example-input" data-i18n="help.algo.uwu.rule2"></div>
+                        <div class="example-input" data-i18n="help.algo.uwu.rule3"></div>
+                        <h4 data-i18n="help.algo.uwu.example_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.uwu.example_input"></div>
+                        <div class="example-output" data-i18n="help.algo.uwu.example_output"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Потеря данных</h4>
-                        <p>Замены "р/л→в" необратимы. При дешифровке невозможно восстановить исходные символы "р" и "л".</p>
+                        <h4 data-i18n="help.algo.uwu.data_loss_title"></h4>
+                        <p data-i18n="help.algo.uwu.data_loss_desc"></p>
                     </div>
                 </div>
                 
-                <div class="help-subtitle">Утилиты</div>
+                <div class="help-subtitle" data-i18n="help.algorithms.utilities"></div>
 
-                                <div class="algorithm-card" data-node-type="monitor">
+                <div class="algorithm-card" data-node-type="monitor">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #64748b, #475569);">
-                            <i class="fas fa-desktop"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #64748b, #475569);"><i class="fas fa-desktop"></i></div>
                         <div class="algorithm-info">
-                            <h3>Монитор</h3>
-                            <p>Промежуточный просмотр данных в цепочке</p>
+                            <h3 data-i18n="help.algo.monitor.title"></h3>
+                            <p data-i18n="help.algo.monitor.desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Отображает проходящие через него данные без изменения, позволяя отслеживать промежуточные результаты.</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.monitor.principle"></span></p>
                     <div class="example-box">
-                        <h4>Использование:</h4>
-                        <div class="example-input">Установите между алгоритмами для отладки</div>
-                        <div class="example-output">Данные проходят без изменений</div>
+                        <h4 data-i18n="help.algo.monitor.usage_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.monitor.usage_desc"></div>
+                        <div class="example-output" data-i18n="help.algo.monitor.result"></div>
                     </div>
                 </div>
 
                 <div class="algorithm-card" data-node-type="comment">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #9ca3af, #6b7280);">
-                            <i class="fas fa-comment-alt"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #9ca3af, #6b7280);"><i class="fas fa-comment-alt"></i></div>
                         <div class="algorithm-info">
-                            <h3>Комментарий</h3>
-                            <p>Добавляйте заметки и пояснения прямо в схему</p>
+                            <h3 data-i18n="help.algo.comment.title"></h3>
+                            <p data-i18n="help.algo.comment.desc"></p>
                         </div>
                     </div>
-                    <p><strong>Принцип работы:</strong> Этот нод не имеет входов и выходов и не участвует в цепочке шифрования. Он предназначен исключительно для документирования вашей схемы, чтобы вы или другие пользователи могли легко понять логику ее работы.</p>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.comment.principle"></span></p>
                     <div class="example-box">
-                        <h4>Использование:</h4>
-                        <div class="example-input">1. Перетащите нод на рабочую область</div>
-                        <div class="example-input">2. Напишите любой поясняющий текст в текстовом поле</div>
-                        <div class="example-input">3. Измените размер нода, потянув за правый нижний угол текстового поля</div>
+                        <h4 data-i18n="help.algo.comment.usage_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.comment.usage_step1"></div>
+                        <div class="example-input" data-i18n="help.algo.comment.usage_step2"></div>
+                        <div class="example-input" data-i18n="help.algo.comment.usage_step3"></div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Особенности</h4>
-                        <p>• Не имеет входов и выходов, не соединяется с другими нодами<br>• Не влияет на результат шифрования<br>• Сохраняется и загружается вместе со всей схемой</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p><span data-i18n="help.algo.comment.feature1"></span><br><span data-i18n="help.algo.comment.feature2"></span><br><span data-i18n="help.algo.comment.feature3"></span></p>
                     </div>
                 </div>
             </div>
         `;
     }
 
-    getDataLossSection() {
+     getDataLossSection() {
         return `
             <div id="help-data-loss" class="help-section">
                 <div class="help-title">
                     <i class="fas fa-exclamation-triangle"></i>
-                    Потеря информации при шифровании
+                    <span data-i18n="help.dataloss.title"></span>
                 </div>
 
-                <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;">
-                    <strong>Важно!</strong> Некоторые алгоритмы шифрования необратимо теряют часть информации. 
-                    Это нужно учитывать при создании сложных цепочек шифрования.
-                </p>
+                <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;" data-i18n="help.dataloss.intro"></p>
 
                 <div class="data-loss-warning">
-                    <h4>Общая потеря: Регистр букв</h4>
-                    <p>Большинство алгоритмов не различают заглавные и строчные буквы. "Привет" и "ПРИВЕТ" будут зашифрованы одинаково.</p>
+                    <h4 data-i18n="help.dataloss.general_loss_title"></h4>
+                    <p data-i18n="help.dataloss.general_loss_desc"></p>
                 </div>
 
-                <div class="help-subtitle">Потери по алгоритмам</div>
+                <div class="help-subtitle" data-i18n="help.dataloss.by_algo_subtitle"></div>
 
                 <div class="algorithm-card">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
-                            <i class="fas fa-broadcast-tower"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"><i class="fas fa-broadcast-tower"></i></div>
                         <div class="algorithm-info">
-                            <h3>Код Морзе</h3>
-                            <p>Потеря различий между Е и Ё</p>
+                            <h3 data-i18n="help.algo.morse_code"></h3>
+                            <p data-i18n="help.dataloss.morse.issue"></p>
                         </div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Потеря информации</h4>
-                        <p>По умолчанию Ё кодируется как Е. При дешифровке невозможно определить, какая буква была изначально.</p>
-                        <p><strong>Решение:</strong> Включите переключатель "Поддержка Ё" для отдельного кода.</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p data-i18n="help.dataloss.morse.desc"></p>
+                        <p data-i18n="help.dataloss.morse.solution"></p>
                     </div>
                     <div class="example-box">
-                        <h4>Проблемный пример:</h4>
-                        <div class="example-input">Вход: "ЕЛЬ" и "ЁЛЬ"</div>
-                        <div class="example-output">Выход: "· ·−·· ·−··−" (одинаковый результат)</div>
-                    </div>
-                </div>
-
-                <div class="algorithm-card">
-                    <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                            <i class="fas fa-sort-numeric-up"></i>
-                        </div>
-                        <div class="algorithm-info">
-                            <h3>A1Z26</h3>
-                            <p>Потеря чисел и проблемы с многоязычностью</p>
-                        </div>
-                    </div>
-                    <div class="data-loss-warning">
-                        <h4>Потеря информации</h4>
-                        <p>1. Числа меньше длины алфавита (1-33) невозможно отличить от букв при дешифровке.</p>
-                        <p>2. При смешивании русского и английского текста дешифровка может стать невозможной.</p>
-                    </div>
-                    <div class="example-box">
-                        <h4>Проблемные примеры:</h4>
-                        <div class="example-input">Вход: "А1Б" → "1-1-2" (неоднозначность с числом 1)</div>
-                        <div class="example-input">Вход: "CAT КОТ" → смешанный результат, сложный для разделения</div>
+                        <h4 data-i18n="help.dataloss.morse.example_title"></h4>
+                        <div class="example-input" data-i18n="help.dataloss.morse.example_input"></div>
+                        <div class="example-output" data-i18n="help.dataloss.morse.example_output"></div>
                     </div>
                 </div>
 
                 <div class="algorithm-card">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #84cc16, #65a30d);">
-                            <i class="fas fa-hashtag"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fas fa-sort-numeric-up"></i></div>
                         <div class="algorithm-info">
-                            <h3>Числа в слова</h3>
-                            <p>Потеря чисел-слов</p>
+                            <h3 data-i18n="help.algo.a1z26"></h3>
+                            <p data-i18n="help.dataloss.a1z26.issue"></p>
                         </div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Потеря информации</h4>
-                        <p>Числа от 0 до 9 заменяются словами. Если в тексте уже есть эти слова, при дешифровке невозможно определить, что было изначально - число или слово.</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p data-i18n="help.dataloss.a1z26.desc1"></p>
+                        <p data-i18n="help.dataloss.a1z26.desc2"></p>
                     </div>
                     <div class="example-box">
-                        <h4>Проблемный пример:</h4>
-                        <div class="example-input">Вход: "У меня 5 или пять яблок"</div>
-                        <div class="example-output">Выход: "У меня пять или пять яблок"</div>
-                        <div style="color: var(--error); margin-top: 0.5rem;">При дешифровке неясно, где было число, а где слово</div>
+                        <h4 data-i18n="help.dataloss.a1z26.example_title"></h4>
+                        <div class="example-input" data-i18n="help.dataloss.a1z26.example1"></div>
+                        <div class="example-input" data-i18n="help.dataloss.a1z26.example2"></div>
                     </div>
                 </div>
 
                 <div class="algorithm-card">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #facc15, #eab308);">
-                            <i class="fas fa-calculator"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #84cc16, #65a30d);"><i class="fas fa-hashtag"></i></div>
                         <div class="algorithm-info">
-                            <h3>Математические операции</h3>
-                            <p>Потеря точности при делении</p>
+                            <h3 data-i18n="help.algo.numbers_to_words.title"></h3>
+                            <p data-i18n="help.dataloss.numbers.issue"></p>
                         </div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Потеря информации</h4>
-                        <p>При делении чисел возможна потеря точности из-за дробных результатов, которые округляются.</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p data-i18n="help.dataloss.numbers.desc"></p>
                     </div>
                     <div class="example-box">
-                        <h4>Проблемный пример:</h4>
-                        <div class="example-input">Операция: деление на 3</div>
-                        <div class="example-input">Вход: "10" → "3.333..." → "3" (потеря точности)</div>
+                        <h4 data-i18n="help.dataloss.numbers.example_title"></h4>
+                        <div class="example-input" data-i18n="help.dataloss.numbers.example_input"></div>
+                        <div class="example-output" data-i18n="help.dataloss.numbers.example_output"></div>
+                        <div style="color: var(--error); margin-top: 0.5rem;" data-i18n="help.dataloss.numbers.example_conclusion"></div>
                     </div>
                 </div>
 
                 <div class="algorithm-card">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f472b6, #ec4899);">
-                            <i class="fas fa-grin-stars"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #facc15, #eab308);"><i class="fas fa-calculator"></i></div>
                         <div class="algorithm-info">
-                            <h3>UwU-фикатор (Шифр Няшек)</h3>
-                            <p>Необратимые замены символов</p>
+                            <h3 data-i18n="help.algo.math.title"></h3>
+                            <p data-i18n="help.dataloss.math.issue"></p>
                         </div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Потеря информации</h4>
-                        <p>Замены "р/л→в" необратимы. При дешифровке невозможно различить исходные символы "р" и "л".</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p data-i18n="help.dataloss.math.desc"></p>
                     </div>
                     <div class="example-box">
-                        <h4>Проблемные примеры:</h4>
-                        <div class="example-input">Вход: "лось" и "рось" → оба становятся "вось"</div>
-                        <div class="example-input">При дешифровке невозможно определить, какая буква была изначально</div>
+                        <h4 data-i18n="help.dataloss.math.example_title"></h4>
+                        <div class="example-input" data-i18n="help.dataloss.math.example_op"></div>
+                        <div class="example-input" data-i18n="help.dataloss.math.example_result"></div>
                     </div>
                 </div>
 
                 <div class="algorithm-card">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
-                            <i class="fas fa-fish"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f472b6, #ec4899);"><i class="fas fa-grin-stars"></i></div>
                         <div class="algorithm-info">
-                            <h3>Акулий шифр</h3>
-                            <p>Потеря различий между буквами одинаковой длины</p>
+                            <h3 data-i18n="help.algo.uwu.title"></h3>
+                            <p data-i18n="help.dataloss.uwu.issue"></p>
                         </div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Потеря информации</h4>
-                        <p>Цифры, символы пунктуации и специальные символы полностью игнорируются и теряются.</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p data-i18n="help.dataloss.uwu.desc"></p>
                     </div>
                     <div class="example-box">
-                        <h4>Проблемный пример:</h4>
-                        <div class="example-input">Вход: "КОТ-123!" → теряются "-", "1", "2", "3", "!"</div>
-                        <div class="example-output">Выход: только "КОТ" в виде "a" последовательностей</div>
+                        <h4 data-i18n="help.dataloss.uwu.example_title"></h4>
+                        <div class="example-input" data-i18n="help.dataloss.uwu.example_input"></div>
+                        <div class="example-input" data-i18n="help.dataloss.uwu.example_output"></div>
                     </div>
                 </div>
 
                 <div class="algorithm-card">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                            <i class="fas fa-link"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);"><i class="fas fa-fish"></i></div>
                         <div class="algorithm-info">
-                            <h3>Слияние Потоков</h3>
-                            <p>Потеря исходной структуры при неравных потоках</p>
+                            <h3 data-i18n="help.algo.shark.title"></h3>
+                            <p data-i18n="help.dataloss.shark.issue"></p>
                         </div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Потеря информации</h4>
-                        <p>При дешифровке объединенный поток делится строго поочередно. Если исходные потоки имели разную длину (количество символов, слов или строк), восстановить их в первоначальном виде невозможно.</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p data-i18n="help.dataloss.shark.desc"></p>
                     </div>
                     <div class="example-box">
-                        <h4>Проблемный пример (чередование символов):</h4>
-                        <div class="example-input">Вход А: "АБ"</div>
-                        <div class="example-input">Вход Б: "123"</div>
-                        <div class="example-output">Результат шифрования: "А1Б23"</div>
-                        <div style="color: var(--error); margin-top: 0.5rem;">При дешифровке "А1Б23" будет разделено так:
-                        <br>• Выход А (четные позиции 0, 2, 4): "АБ3"
-                        <br>• Выход Б (нечетные позиции 1, 3): "12"
-                        <br><strong>Исходная структура потоков потеряна.</strong>
-                        </div>
+                        <h4 data-i18n="help.dataloss.shark.example_title"></h4>
+                        <div class="example-input" data-i18n="help.dataloss.shark.example_input"></div>
+                        <div class="example-output" data-i18n="help.dataloss.shark.example_output"></div>
                     </div>
                 </div>
 
                 <div class="algorithm-card">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                            <i class="fas fa-exchange-alt"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fas fa-link"></i></div>
                         <div class="algorithm-info">
-                            <h3>Мульти-замена</h3>
-                            <p>Последовательные замены могут создавать неоднозначность</p>
+                            <h3 data-i18n="help.algo.stream_merger.title"></h3>
+                            <p data-i18n="help.dataloss.merger.issue"></p>
                         </div>
                     </div>
                     <div class="data-loss-warning">
-                        <h4>Потеря информации</h4>
-                        <p>Если правила замены пересекаются или применяются в неправильном порядке, может произойти потеря данных.</p>
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p data-i18n="help.dataloss.merger.desc"></p>
                     </div>
                     <div class="example-box">
-                        <h4>Проблемный пример:</h4>
-                        <div class="example-input">Правила: "а→@" и "ар→#"</div>
-                        <div class="example-input">Слово "кар": если сначала а→@, то "к@р", потом нет "ар" для замены</div>
-                        <div class="example-output">Порядок правил критически важен!</div>
+                        <h4 data-i18n="help.dataloss.merger.example_title"></h4>
+                        <div class="example-input" data-i18n="help.dataloss.merger.example_input_a"></div>
+                        <div class="example-input" data-i18n="help.dataloss.merger.example_input_b"></div>
+                        <div class="example-output" data-i18n="help.dataloss.merger.example_output"></div>
                     </div>
                 </div>
 
-                <div class="help-subtitle">Рекомендации</div>
-                <div style="background: var(--accent-primary-10); border: 1px solid var(--accent-primary-30); border-radius: 8px; padding: 1.5rem; margin: 1rem 0;">
-                    <h4 style="color: var(--accent-primary); margin: 0 0 1rem 0;">💡 Советы по избежанию потерь:</h4>
-                    <ul style="margin: 0; color: var(--text-secondary);">
-                        <li>Включайте переключатель "Поддержка Ё" в нодах Морзе</li>
-                        <li>Избегайте смешивания языков в A1Z26</li>
-                        <li>Осторожно используйте "Числа в слова" с текстами, содержащими числительные</li>
-                        <li>В Мульти-замене тщательно продумывайте порядок правил</li>
-                        <li>Помните, что UwU-фикатор и Акулий шифр частично необратимы</li>
-                        <li>Тестируйте цепочки в режиме дешифрования</li>
-                        <li>Используйте нод "Монитор" для отслеживания изменений на каждом этапе</li>
-                    </ul>
+                <div class="algorithm-card">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fas fa-exchange-alt"></i></div>
+                        <div class="algorithm-info">
+                            <h3 data-i18n="help.algo.multi_replace.title"></h3>
+                            <p data-i18n="help.dataloss.replace.issue"></p>
+                        </div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p data-i18n="help.dataloss.replace.desc"></p>
+                    </div>
+                    <div class="example-box">
+                        <h4 data-i18n="help.dataloss.replace.example_title"></h4>
+                        <div class="example-input" data-i18n="help.dataloss.replace.example_rules"></div>
+                        <div class="example-input" data-i18n="help.dataloss.replace.example_input"></div>
+                        <div class="example-output" data-i18n="help.dataloss.replace.example_conclusion"></div>
+                    </div>
                 </div>
+
             </div>
         `;
     }
@@ -1563,137 +1447,125 @@ class HelpSystem {
             <div id="help-examples" class="help-section">
                 <div class="help-title">
                     <i class="fas fa-lightbulb"></i>
-                    Примеры использования
+                    <span data-i18n="help.examples.usage_title"></span>
                 </div>
 
-                <div class="help-subtitle">Простые схемы</div>
+                <div class="help-subtitle" data-i18n="help.examples.simple_schemes"></div>
 
                 <div class="algorithm-card">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
-                            <i class="fas fa-play"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fas fa-play"></i></div>
                         <div class="algorithm-info">
-                            <h3>Базовое шифрование</h3>
-                            <p>Ввод → Шифр Цезаря → Вывод</p>
+                            <h3 data-i18n="help.examples.basic_encryption.title"></h3>
+                            <p data-i18n="help.examples.basic_encryption.desc"></p>
                         </div>
                     </div>
-                    <p>Самая простая схема для начинающих. Один алгоритм шифрования.</p>
+                    <p data-i18n="help.examples.basic_encryption.principle"></p>
                     <div class="example-box">
-                        <h4>Схема:</h4>
-                        <div class="example-input">[Ввод текста] → [Шифр Цезаря, сдвиг +3] → [Вывод текста]</div>
-                        <div class="example-output">Результат: "ПРИВЕТ" → "ТУЛЖЗЧ"</div>
+                        <h4 data-i18n="help.examples.basic_encryption.scheme_title"></h4>
+                        <div class="example-input" data-i18n="help.examples.basic_encryption.scheme_desc"></div>
+                        <div class="example-output" data-i18n="help.examples.basic_encryption.scheme_result"></div>
                         <button class="example-load-btn" onclick="window.helpSystem.loadExample('simple-caesar')">
-                            <i class="fas fa-download"></i> Загрузить пример
+                            <i class="fas fa-download"></i> <span data-i18n="help.examples.load_button"></span>
                         </button>
                     </div>
                 </div>
 
-                <div class="help-subtitle">Сложные схемы</div>
+                <div class="help-subtitle" data-i18n="help.examples.complex_schemes"></div>
 
                 <div class="algorithm-card">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
-                            <i class="fas fa-link"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);"><i class="fas fa-link"></i></div>
                         <div class="algorithm-info">
-                            <h3>Многоуровневое шифрование</h3>
-                            <p>Цепочка из нескольких алгоритмов</p>
+                            <h3 data-i18n="help.examples.multilevel.title"></h3>
+                            <p data-i18n="help.examples.multilevel.desc"></p>
                         </div>
                     </div>
                     <div class="example-box">
-                        <h4>Схема:</h4>
-                        <div class="example-input">[Ввод] → [Регистр: верхний] → [A1Z26] → [Морзе] → [Кошачий морзе] → [Вывод]</div>
-                        <div class="example-output">Результат: многослойная защита с преобразованием в кошачьи звуки</div>
+                        <h4 data-i18n="help.examples.multilevel.scheme_title"></h4>
+                        <div class="example-input" data-i18n="help.examples.multilevel.scheme_desc"></div>
+                        <div class="example-output" data-i18n="help.examples.multilevel.scheme_result"></div>
                         <button class="example-load-btn" onclick="window.helpSystem.loadExample('multilevel-encryption')">
-                            <i class="fas fa-download"></i> Загрузить пример
+                            <i class="fas fa-download"></i> <span data-i18n="help.examples.load_button"></span>
                         </button>
                     </div>
                 </div>
 
                 <div class="algorithm-card">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">
-                            <i class="fas fa-key"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);"><i class="fas fa-key"></i></div>
                         <div class="algorithm-info">
-                            <h3>Шифрование с ключом (Виженер)</h3>
-                            <p>Использование секретного слова</p>
+                            <h3 data-i18n="help.examples.vigenere.title"></h3>
+                            <p data-i18n="help.examples.vigenere.desc"></p>
                         </div>
                     </div>
                     <div class="example-box">
-                        <h4>Схема:</h4>
-                        <div class="example-input">[Ввод текста] → [Текст] ↘<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Шифр Виженера] → [Вывод]<br>[Секретное слово] → [Ключ] ↗</div>
-                        <div class="example-output">Результат: полиалфавитное шифрование с вашим секретным словом</div>
+                        <h4 data-i18n="help.examples.vigenere.scheme_title"></h4>
+                        <div class="example-input" data-i18n="help.examples.vigenere.scheme_desc"></div>
+                        <div class="example-output" data-i18n="help.examples.vigenere.scheme_result"></div>
                         <button class="example-load-btn" onclick="window.helpSystem.loadExample('vigenere-with-secret')">
-                            <i class="fas fa-download"></i> Загрузить пример
+                            <i class="fas fa-download"></i> <span data-i18n="help.examples.load_button"></span>
                         </button>
                     </div>
                 </div>
 
-                <div class="help-subtitle">Творческие применения</div>
+                <div class="help-subtitle" data-i18n="help.examples.creative_uses"></div>
 
                 <div class="algorithm-card">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #22d3ee, #06b6d4);">
-                            <i class="fas fa-globe"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #22d3ee, #06b6d4);"><i class="fas fa-globe"></i></div>
                         <div class="algorithm-info">
-                            <h3>Географическое шифрование</h3>
-                            <p>Превращение текста в координаты</p>
+                            <h3 data-i18n="help.examples.geo.title"></h3>
+                            <p data-i18n="help.examples.geo.desc"></p>
                         </div>
                     </div>
                     <div class="example-box">
-                        <h4>Схема:</h4>
-                        <div class="example-input">[Ввод] → [Зачаровыватель планет] → [Вывод]</div>
-                        <div class="example-output">Результат: секретное сообщение в виде GPS-координат городов</div>
+                        <h4 data-i18n="help.examples.geo.scheme_title"></h4>
+                        <div class="example-input" data-i18n="help.examples.geo.scheme_desc"></div>
+                        <div class="example-output" data-i18n="help.examples.geo.scheme_result"></div>
                         <button class="example-load-btn" onclick="window.helpSystem.loadExample('planet-enchanter')">
-                            <i class="fas fa-download"></i> Загрузить пример
+                            <i class="fas fa-download"></i> <span data-i18n="help.examples.load_button"></span>
                         </button>
                     </div>
-                    <p>💡 Можно использовать для создания квестов или головоломок!</p>
+                    <p data-i18n="help.examples.geo.tip"></p>
                 </div>
 
                 <div class="algorithm-card">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f472b6, #ec4899);">
-                            <i class="fas fa-cat"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f472b6, #ec4899);"><i class="fas fa-cat"></i></div>
                         <div class="algorithm-info">
-                            <h3>Забавное шифрование</h3>
-                            <p>Для развлечения и обучения детей</p>
+                            <h3 data-i18n="help.examples.fun.title"></h3>
+                            <p data-i18n="help.examples.fun.desc"></p>
                         </div>
                     </div>
                     <div class="example-box">
-                        <h4>Схема:</h4>
-                        <div class="example-input">[Ввод] → [Морзе (Кошачий)] → [Вывод]</div>
-                        <div class="example-output">Результат: "КОТ" → "мрряyмяy мрряyмрряyмрряy мрряy"</div>
+                        <h4 data-i18n="help.examples.fun.scheme_title"></h4>
+                        <div class="example-input" data-i18n="help.examples.fun.scheme_desc"></div>
+                        <div class="example-output" data-i18n="help.examples.fun.scheme_result"></div>
                         <button class="example-load-btn" onclick="window.helpSystem.loadExample('cat-morse')">
-                            <i class="fas fa-download"></i> Загрузить пример
+                            <i class="fas fa-download"></i> <span data-i18n="help.examples.load_button"></span>
                         </button>
                     </div>
-                    <p>🐱 Отлично подходит для обучения основам криптографии в игровой форме!</p>
+                    <p data-i18n="help.examples.fun.tip"></p>
                 </div>
 
                 <div class="algorithm-card">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #64748b, #475569);">
-                            <i class="fas fa-desktop"></i>
-                        </div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #64748b, #475569);"><i class="fas fa-desktop"></i></div>
                         <div class="algorithm-info">
-                            <h3>Отладка с мониторами</h3>
-                            <p>Отслеживание промежуточных результатов</p>
+                            <h3 data-i18n="help.examples.debug.title"></h3>
+                            <p data-i18n="help.examples.debug.desc"></p>
                         </div>
                     </div>
                     <div class="example-box">
-                        <h4>Схема:</h4>
-                        <div class="example-input">[Ввод] → [Числа в слова] → [Монитор] + [Цезарь] → [Монитор] + [Реверс] → [Вывод]</div>
-                        <div class="example-output">Результат: возможность видеть результат на каждом этапе обработки</div>
+                        <h4 data-i18n="help.examples.debug.scheme_title"></h4>
+                        <div class="example-input" data-i18n="help.examples.debug.scheme_desc"></div>
+                        <div class="example-output" data-i18n="help.examples.debug.scheme_result"></div>
                         <button class="example-load-btn" onclick="window.helpSystem.loadExample('monitoring-chain')">
-                            <i class="fas fa-download"></i> Загрузить пример
+                            <i class="fas fa-download"></i> <span data-i18n="help.examples.load_button"></span>
                         </button>
                     </div>
-                    <p>🔍 Полезно для понимания того, как работают сложные цепочки алгоритмов!</p>
+                    <p data-i18n="help.examples.debug.tip"></p>
                 </div>
             </div>
         `;
@@ -1704,268 +1576,195 @@ class HelpSystem {
             <div id="help-hotkeys" class="help-section">
                 <div class="help-title">
                     <i class="fas fa-keyboard"></i>
-                    Горячие клавиши
+                    <span data-i18n="help.hotkeys.title"></span>
                 </div>
 
-                <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;">
-                    Быстрое управление приложением с помощью клавиатуры. Поддерживается русская раскладка!
-                </p>
+                <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;" data-i18n="help.hotkeys.intro"></p>
 
-                <div class="help-subtitle">Управление файлами</div>
+                <div class="help-subtitle" data-i18n="help.hotkeys.file_management"></div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
-                                <i class="fas fa-save"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fas fa-save"></i></div>
                             <div class="algorithm-info">
-                                <h3>Ctrl + S (Ctrl + Ы)</h3>
-                                <p>Сохранить схему</p>
+                                <h3 data-i18n="hotkey.save"></h3>
+                                <p data-i18n="help.hotkeys.save_desc"></p>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                                <i class="fas fa-folder-open"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fas fa-folder-open"></i></div>
                             <div class="algorithm-info">
-                                <h3>Ctrl + O (Ctrl + Щ)</h3>
-                                <p>Загрузить схему</p>
+                                <h3 data-i18n="hotkey.load"></h3>
+                                <p data-i18n="help.hotkeys.load_desc"></p>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">
-                                <i class="fas fa-file"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #6366f1, #4f46e5);"><i class="fas fa-file"></i></div>
                             <div class="algorithm-info">
-                                <h3>Ctrl + N (Ctrl + Т)</h3>
-                                <p>Новая схема</p>
+                                <h3 data-i18n="hotkey.new"></h3>
+                                <p data-i18n="help.hotkeys.new_desc"></p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="help-subtitle">Управление нодами</div>
+                <div class="help-subtitle" data-i18n="help.hotkeys.node_management"></div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">
-                                <i class="fas fa-copy"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);"><i class="fas fa-copy"></i></div>
                             <div class="algorithm-info">
-                                <h3>Ctrl + C (Ctrl + С)</h3>
-                                <p>Копировать выделенные ноды</p>
+                                <h3 data-i18n="hotkey.copy"></h3>
+                                <p data-i18n="help.hotkeys.copy_desc"></p>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
-                                <i class="fas fa-paste"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);"><i class="fas fa-paste"></i></div>
                             <div class="algorithm-info">
-                                <h3>Ctrl + V (Ctrl + М)</h3>
-                                <p>Вставить ноды</p>
+                                <h3 data-i18n="hotkey.paste"></h3>
+                                <p data-i18n="help.hotkeys.paste_desc"></p>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #14b8a6, #0d9488);">
-                                <i class="fas fa-check-square"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #14b8a6, #0d9488);"><i class="fas fa-check-square"></i></div>
                             <div class="algorithm-info">
-                                <h3>Ctrl + A (Ctrl + Ф)</h3>
-                                <p>Выделить все ноды</p>
+                                <h3 data-i18n="hotkey.select_all"></h3>
+                                <p data-i18n="help.hotkeys.select_all_desc"></p>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
-                                <i class="fas fa-trash"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"><i class="fas fa-trash"></i></div>
                             <div class="algorithm-info">
-                                <h3>Delete</h3>
-                                <p>Удалить выделенные ноды</p>
+                                <h3 data-i18n="hotkey.delete"></h3>
+                                <p data-i18n="help.hotkeys.delete_desc"></p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="help-subtitle">История изменений</div>
+                <div class="help-subtitle" data-i18n="help.hotkeys.history"></div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #84cc16, #65a30d);">
-                                <i class="fas fa-undo"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #84cc16, #65a30d);"><i class="fas fa-undo"></i></div>
                             <div class="algorithm-info">
-                                <h3>Ctrl + Z</h3>
-                                <p>Отменить действие</p>
+                                <h3 data-i18n="hotkey.undo"></h3>
+                                <p data-i18n="help.hotkeys.undo_desc"></p>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #fb923c, #f97316);">
-                                <i class="fas fa-redo"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #fb923c, #f97316);"><i class="fas fa-redo"></i></div>
                             <div class="algorithm-info">
-                                <h3>Ctrl + Y / Ctrl + Shift + Z</h3>
-                                <p>Повторить действие</p>
+                                <h3 data-i18n="hotkey.redo"></h3>
+                                <p data-i18n="help.hotkeys.redo_desc"></p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="help-subtitle">Управление канвасом</div>
+                <div class="help-subtitle" data-i18n="help.hotkeys.canvas_management"></div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #22d3ee, #06b6d4);">
-                                <i class="fas fa-search-plus"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #22d3ee, #06b6d4);"><i class="fas fa-search-plus"></i></div>
                             <div class="algorithm-info">
-                                <h3>+ / = (Ъ)</h3>
-                                <p>Увеличить масштаб</p>
+                                <h3 data-i18n="hotkey.zoom_in"></h3>
+                                <p data-i18n="help.hotkeys.zoom_in_desc"></p>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #a855f7, #9333ea);">
-                                <i class="fas fa-search-minus"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #a855f7, #9333ea);"><i class="fas fa-search-minus"></i></div>
                             <div class="algorithm-info">
-                                <h3>-</h3>
-                                <p>Уменьшить масштаб</p>
+                                <h3 data-i18n="hotkey.zoom_out"></h3>
+                                <p data-i18n="help.hotkeys.zoom_out_desc"></p>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #f87171, #ef4444);">
-                                <i class="fas fa-expand-arrows-alt"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #f87171, #ef4444);"><i class="fas fa-expand-arrows-alt"></i></div>
                             <div class="algorithm-info">
-                                <h3>Ctrl + 0</h3>
-                                <p>Сбросить масштаб</p>
+                                <h3 data-i18n="hotkey.zoom_reset"></h3>
+                                <p data-i18n="help.hotkeys.zoom_reset_desc"></p>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #64748b, #475569);">
-                                <i class="fas fa-cut"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #64748b, #475569);"><i class="fas fa-cut"></i></div>
                             <div class="algorithm-info">
-                                <h3>X (Ч)</h3>
-                                <p>Режим резки соединений</p>
+                                <h3 data-i18n="hotkey.cut_mode"></h3>
+                                <p data-i18n="help.hotkeys.cut_mode_desc"></p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="help-subtitle">Общие команды</div>
+                <div class="help-subtitle" data-i18n="help.hotkeys.general_commands"></div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #facc15, #eab308);">
-                                <i class="fas fa-question"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #facc15, #eab308);"><i class="fas fa-question"></i></div>
                             <div class="algorithm-info">
-                                <h3>F1</h3>
-                                <p>Показать эту справку</p>
+                                <h3 data-i18n="hotkey.help"></h3>
+                                <p data-i18n="help.hotkeys.help_desc"></p>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #9ca3af, #6b7280);">
-                                <i class="fas fa-times"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #9ca3af, #6b7280);"><i class="fas fa-times"></i></div>
                             <div class="algorithm-info">
-                                <h3>Escape</h3>
-                                <p>Отменить / Снять выделение</p>
+                                <h3 data-i18n="hotkey.escape"></h3>
+                                <p data-i18n="help.hotkeys.escape_desc"></p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="help-subtitle">Дополнительные возможности</div>
+                <div class="help-subtitle" data-i18n="help.hotkeys.additional"></div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #22d3ee, #06b6d4);">
-                                <i class="fas fa-mouse-pointer"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #22d3ee, #06b6d4);"><i class="fas fa-mouse-pointer"></i></div>
                             <div class="algorithm-info">
-                                <h3>Shift + ПКМ</h3>
-                                <p>Быстрый разрыв соединения на точке</p>
+                                <h3 data-i18n="help.hotkeys.break_connection_title">Shift + ПКМ</h3>
+                                <p data-i18n="help.hotkeys.break_connection"></p>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #f472b6, #ec4899);">
-                                <i class="fas fa-arrows-alt"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #f472b6, #ec4899);"><i class="fas fa-arrows-alt"></i></div>
                             <div class="algorithm-info">
-                                <h3>Колесо мыши</h3>
-                                <p>Масштабирование канваса</p>
+                                <h3 data-i18n="help.hotkeys.zoom_wheel_title">Колесо мыши</h3>
+                                <p data-i18n="help.hotkeys.zoom_wheel"></p>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="algorithm-card">
                         <div class="algorithm-header">
-                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #84cc16, #65a30d);">
-                                <i class="fas fa-hand-paper"></i>
-                            </div>
+                            <div class="algorithm-icon" style="background: linear-gradient(135deg, #84cc16, #65a30d);"><i class="fas fa-hand-paper"></i></div>
                             <div class="algorithm-info">
-                                <h3>Средняя кнопка / ПКМ</h3>
-                                <p>Панорамирование канваса</p>
+                                <h3 data-i18n="help.hotkeys.pan_title">Средняя кнопка / ПКМ</h3>
+                                <p data-i18n="help.hotkeys.pan"></p>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div style="background: var(--accent-primary-10); border: 1px solid var(--accent-primary-30); border-radius: 8px; padding: 1.5rem; margin: 2rem 0;">
-                    <h4 style="color: var(--accent-primary); margin: 0 0 1rem 0;">🌐 Поддержка русской раскладки</h4>
-                    <p style="margin: 0; color: var(--text-secondary);">
-                        Все горячие клавиши работают с русской раскладкой клавиатуры! В скобках указаны соответствующие русские буквы на тех же клавишах.
-                    </p>
-                </div>
-
-                <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin: 1rem 0;">
-                    <h4 style="color: var(--text-primary); margin: 0 0 1rem 0;">🎵 Звуковые эффекты</h4>
-                    <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary);">
-                        При включенных звуковых эффектах в настройках вы услышите различные звуки:
-                    </p>
-                    <ul style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
-                        <li><strong>Соединение нодов:</strong> восходящий звук</li>
-                        <li><strong>Разрыв соединений:</strong> нисходящий звук</li>
-                        <li><strong>Создание нода:</strong> мажорный аккорд</li>
-                        <li><strong>Удаление нода:</strong> минорный аккорд</li>
-                        <li><strong>Переключение режимов:</strong> мелодичный переход</li>
-                        <li><strong>Сохранение/загрузка:</strong> подтверждающие звуки</li>
-                        <li><strong>Обработка шифра:</strong> быстрая трель</li>
-                    </ul>
                 </div>
             </div>
         `;
