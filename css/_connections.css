@@ -1,0 +1,101 @@
+/* === Соединительные точки === */
+.connection-point {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: var(--accent-primary);
+    border: 3px solid var(--bg-secondary);
+    border-radius: 50%;
+    cursor: crosshair;
+    transition: var(--transition);
+    z-index: 20;
+}
+
+.connection-point:hover {
+    background: var(--accent-secondary);
+    transform: scale(1.2);
+}
+
+.connection-point.input {
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.connection-point.input.multiple {
+    position: absolute;
+    left: -8px;
+    transform: none;
+}
+
+.connection-point.output.multiple {
+    position: absolute;
+    right: -8px; 
+    transform: none; 
+}
+
+.connection-point.output {
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.connection-point.connecting {
+    background: var(--success);
+    animation: pulse 1s infinite;
+}
+
+/* === Соединительные линии === */
+.connection-line {
+    stroke: var(--accent-primary);
+    stroke-width: 3;
+    fill: none;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transition: var(--transition);
+}
+
+.connection-line:hover {
+    stroke: var(--accent-secondary);
+    stroke-width: 4;
+}
+
+.connection-line.reverse {
+    stroke: var(--success);
+}
+
+.connection-line.temporary {
+    stroke: var(--text-muted);
+    stroke-dasharray: 8, 4;
+    animation: dash 1s linear infinite;
+}
+
+/* === Стили для соединений === */
+.connection-line {
+    transition: stroke-width 0.2s ease;
+}
+
+.connection-line:hover {
+    stroke-width: 3 !important;
+    cursor: pointer;
+}
+
+.connection-tooltip {
+    position: fixed;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    border: 1px solid var(--border-color);
+}
+
+/* === Подсветка соединений при наведении в режиме резки === */
+.connection-line.cut-highlight {
+    stroke: #ef4444 !important;
+    stroke-width: 4 !important;
+    filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.8)) !important;
+    animation: pulse-red 1s ease-in-out infinite alternate;
+}
