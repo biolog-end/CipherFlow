@@ -1,5 +1,3 @@
-// === Улучшенная система справки с анимациями и подробными объяснениями ===
-
 class HelpSystem {
     constructor() {
         this.isOpen = false;
@@ -652,7 +650,7 @@ class HelpSystem {
 
                 <div class="algorithm-card" data-node-type="text_output">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"><i class="fas fa-sign-out-alt"></i></div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fas fa-sign-out-alt"></i></div>
                         <div class="algorithm-info">
                             <h3 data-i18n="help.algo.text_output"></h3>
                             <p data-i18n="help.algo.text_output_desc"></p>
@@ -811,7 +809,7 @@ class HelpSystem {
                 
                 <div class="algorithm-card" data-node-type="complex_substitution">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #dc2626, #b91c1c);"><i class="fas fa-key"></i></div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #dc2626, #b91c1c);"><i class="fas fa-mask"></i></div>
                         <div class="algorithm-info">
                             <h3 data-i18n="help.algo.complex_substitution.title"></h3>
                             <p data-i18n="help.algo.complex_substitution.desc"></p>
@@ -833,8 +831,7 @@ class HelpSystem {
 
                 <div class="algorithm-card" data-node-type="simple_substitution">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ea580c, #dc2626);"><i class="fas fa-exchange-alt"></i></div>
-                        <div class="algorithm-info">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ea580c, #dc2626);"><i class="fas fa-random"></i></div>                        <div class="algorithm-info">
                             <h3 data-i18n="help.algo.simple_substitution.title"></h3>
                             <p data-i18n="help.algo.simple_substitution.desc"></p>
                         </div>
@@ -1028,7 +1025,7 @@ class HelpSystem {
 
                 <div class="algorithm-card" data-node-type="multi_replace">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fas fa-exchange-alt"></i></div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #d946ef, #c026d3);"><i class="fas fa-exchange-alt"></i></div>
                         <div class="algorithm-info">
                             <h3 data-i18n="help.algo.multi_replace.title"></h3>
                             <p data-i18n="help.algo.multi_replace.desc"></p>
@@ -1055,7 +1052,7 @@ class HelpSystem {
 
                 <div class="algorithm-card" data-node-type="text_router">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);"><i class="fas fa-sitemap"></i></div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #0ea5e9, #0284c7);"><i class="fas fa-sitemap"></i></div>
                         <div class="algorithm-info">
                             <h3 data-i18n="help.algo.text_router.title"></h3>
                             <p data-i18n="help.algo.text_router.desc"></p>
@@ -1079,7 +1076,7 @@ class HelpSystem {
 
                 <div class="algorithm-card" data-node-type="stream_merger">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fas fa-link"></i></div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f97316, #ea580c);"><i class="fas fa-link"></i></div>
                         <div class="algorithm-info">
                             <h3 data-i18n="help.algo.stream_merger.title"></h3>
                             <p data-i18n="help.algo.stream_merger.desc"></p>
@@ -1129,7 +1126,7 @@ class HelpSystem {
 
                 <div class="algorithm-card" data-node-type="atbash_cipher">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);"><i class="fas fa-retweet"></i></div>
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #4ade80, #22c55e);"><i class="fas fa-retweet"></i></div>
                         <div class="algorithm-info">
                             <h3 data-i18n="help.algo.atbash.title"></h3>
                             <p data-i18n="help.algo.atbash.desc"></p>
@@ -1149,8 +1146,7 @@ class HelpSystem {
 
                 <div class="algorithm-card" data-node-type="base64">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"><i class="fas fa-file-export"></i></div>
-                        <div class="algorithm-info">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);"><i class="fas fa-file-export"></i></div>                        <div class="algorithm-info">
                             <h3 data-i18n="help.algo.base64.title"></h3>
                             <p data-i18n="help.algo.base64.desc"></p>
                         </div>
@@ -1200,8 +1196,7 @@ class HelpSystem {
 
                 <div class="algorithm-card" data-node-type="uwu_cipher">
                     <div class="algorithm-header">
-                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #f472b6, #ec4899);"><i class="fas fa-grin-stars"></i></div>
-                        <div class="algorithm-info">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #fb7185, #f43f5e);"><i class="fas fa-grin-stars"></i></div>                        <div class="algorithm-info">
                             <h3 data-i18n="help.algo.uwu.title"></h3>
                             <p data-i18n="help.algo.uwu.desc"></p>
                         </div>

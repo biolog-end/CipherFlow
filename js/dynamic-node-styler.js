@@ -1,7 +1,5 @@
 class DynamicNodeStyler {
     constructor() {
-        // === ЕДИНСТВЕННОЕ МЕСТО ДЛЯ РЕДАКТИРОВАНИЯ ЦВЕТОВ ===
-        // Просто добавьте сюда новый тип нода и его HEX-цвет.
         this.NODE_COLORS = {
             'input': '#10b981',
             'output': '#f59e0b',
@@ -45,33 +43,25 @@ class DynamicNodeStyler {
         if (!/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
             return null;
         }
-
         let c = hex.substring(1).split('');
         if (c.length === 3) {
             c = [c[0], c[0], c[1], c[1], c[2], c[2]];
         }
         c = '0x' + c.join('');
-
         const r = (c >> 16) & 255;
         const g = (c >> 8) & 255;
         const b = c & 255;
-
         return `${r}, ${g}, ${b}`;
     }
 
-    /**
-     * Генерирует CSS-правила на основе списка цветов и вставляет их в <head> документа.
-     */
     generateAndInjectStyles() {
-        let cssString = '/* === Стили нодов, сгенерированные JS === */\n\n';
-
+        let cssString = '\n\n';
         for (const [nodeType, hexColor] of Object.entries(this.NODE_COLORS)) {
             const rgbColor = this.hexToRgb(hexColor);
             if (!rgbColor) {
                 console.warn(`Неверный формат HEX-цвета для нода "${nodeType}": ${hexColor}`);
                 continue;
             }
-
             cssString += `
 .canvas-node[data-node-type="${nodeType}"] {
     --current-node-color: ${hexColor};
@@ -79,16 +69,13 @@ class DynamicNodeStyler {
 }
 \n`;
         }
-
         const styleElement = document.createElement('style');
         styleElement.id = 'dynamic-node-styles';
         styleElement.textContent = cssString;
-
         const oldStyle = document.getElementById('dynamic-node-styles');
         if (oldStyle) {
             oldStyle.remove();
         }
-
         document.head.appendChild(styleElement);
         console.log('Динамические стили применены.');
     }
