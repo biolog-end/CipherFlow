@@ -252,14 +252,16 @@ class NodeManager {
                 icon: 'fas fa-sign-in-alt',
                 fields: [],
                 hasInput: false,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'output': {
                 title: t('node.text_output'),
                 icon: 'fas fa-sign-out-alt',
                 fields: [],
                 hasInput: true,
-                hasOutput: false
+                hasOutput: false,
+                isTitleCustomized: false
             },
             'caesar': {
                 title: t('node.caesar_cipher'),
@@ -275,7 +277,8 @@ class NodeManager {
                     }
                 ],
                 hasInput: true,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'morse': {
                 title: t('node.morse_code'),
@@ -300,7 +303,8 @@ class NodeManager {
                     }
                 ],
                 hasInput: true,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'numbers-to-words': {
                 title: t('node.numbers_to_words'),
@@ -329,7 +333,8 @@ class NodeManager {
                     }
                 ],
                 hasInput: true,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'math': {
                 title: t('node.math'),
@@ -355,7 +360,8 @@ class NodeManager {
                     }
                 ],
                 hasInput: true,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'reverse': {
                 title: t('node.reverse_text'),
@@ -374,7 +380,8 @@ class NodeManager {
                     }
                 ],
                 hasInput: true,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'case-transform': {
                 title: t('node.case_transform'),
@@ -394,7 +401,8 @@ class NodeManager {
                     }
                 ],
                 hasInput: true,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'secret-word': {
                 title: t('node.secret_word'),
@@ -408,7 +416,8 @@ class NodeManager {
                     }
                 ],
                 hasInput: false,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'vigenere': {
                 title: t('node.vigenere_cipher'),
@@ -430,7 +439,8 @@ class NodeManager {
                 multipleInputs: [
                     { name: 'text', label: t('option.text_input'), color: '#3b82f6' },
                     { name: 'key', label: t('option.key_input'), color: '#f59e0b' }
-                ]
+                ],
+                isTitleCustomized: false
             },
             'a1z26': {
                 title: t('node.a1z26_cipher'),
@@ -458,7 +468,8 @@ class NodeManager {
                     }
                 ],
                 hasInput: true,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'binary': {
                 title: t('node.binary_code'),
@@ -476,7 +487,8 @@ class NodeManager {
                     }
                 ],
                 hasInput: true,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'braille-cat': {
                 title: t('node.morse_cat'),
@@ -501,7 +513,8 @@ class NodeManager {
                     }
                 ],
                 hasInput: true,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'planet-enchanter': {
                 title: t('node.planet_enchanter'),
@@ -530,7 +543,8 @@ class NodeManager {
                     }
                 ],
                 hasInput: true,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'monitor': {
                 title: t('node.monitor'),
@@ -553,7 +567,8 @@ class NodeManager {
                     }
                 ],
                 hasInput: false, 
-                hasOutput: false 
+                hasOutput: false,
+                isTitleCustomized: false
             },
             'multi-replacer': {
                 title: t('node.multi_replace'),
@@ -579,7 +594,8 @@ class NodeManager {
                     }
                 ],
                 hasInput: true,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'text-router': {
                 title: t('node.text_router'),
@@ -614,7 +630,8 @@ class NodeManager {
                 multipleOutputs: [
                     { name: 'true', label: t('output.if_true'), color: '#22c55e' },
                     { name: 'false', label: t('output.if_false'), color: '#ef4444' }
-                ]
+                ],
+                isTitleCustomized: false
             },
             'stream-merger': {
                 title: t('node.stream_merger'),
@@ -637,7 +654,8 @@ class NodeManager {
                 multipleInputs: [
                     { name: 'streamA', label: t('input.stream_a'), color: '#3b82f6' },
                     { name: 'streamB', label: t('input.stream_b'), color: '#f59e0b' }
-                ]
+                ],
+                isTitleCustomized: false
             },
             'stream-splitter': {
                 title: t('node.stream_splitter'),
@@ -660,14 +678,16 @@ class NodeManager {
                 multipleOutputs: [
                     { name: 'streamA', label: t('input.stream_a'), color: '#3b82f6' },
                     { name: 'streamB', label: t('input.stream_b'), color: '#f59e0b' }
-                ]
+                ],
+                isTitleCustomized: false
             },
             'atbash': {
                 title: t('node.atbash_cipher'),
                 icon: 'fas fa-retweet',
                 fields: [],
                 hasInput: true,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'base64': {
                 title: t('node.base64'),
@@ -685,21 +705,24 @@ class NodeManager {
                     }
                 ],
                 hasInput: true,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'gawr-gura': {
                 title: t('node.shark_cipher'),
                 icon: 'fas fa-fish',
                 fields: [],
                 hasInput: true,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'uwu-ifier': {
                 title: t('node.uwu_cipher'),
                 icon: 'fas fa-grin-stars',
                 fields: [],
                 hasInput: true,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'complex-substitution': {
                 title: t('node.complex_substitution'),
@@ -727,7 +750,8 @@ class NodeManager {
                 multipleInputs: [
                     { name: 'text', label: t('option.text_input'), color: '#3b82f6' },
                     { name: 'key', label: t('option.key_input'), color: '#f59e0b' }
-                ]
+                ],
+                isTitleCustomized: false
             },
             'simple-substitution': {
                 title: t('node.simple_substitution'),
@@ -745,7 +769,8 @@ class NodeManager {
                 multipleInputs: [
                     { name: 'text', label: t('option.text_input'), color: '#3b82f6' },
                     { name: 'key', label: t('option.key_input'), color: '#f59e0b' }
-                ]
+                ],
+                isTitleCustomized: false
             },
             'rle-compression': {
                 title: t('node.rle_compression'),
@@ -759,7 +784,8 @@ class NodeManager {
                     }
                 ],
                 hasInput: true,
-                hasOutput: true
+                hasOutput: true,
+                isTitleCustomized: false
             },
             'route-transposition': {
                 title: t('node.route_transposition'), 
@@ -777,11 +803,12 @@ class NodeManager {
                 multipleInputs: [
                     { name: 'text', label: t('option.text_input'), color: '#3b82f6' },
                     { name: 'key', label: t('option.key_input'), color: '#f59e0b' }
-                ]
+                ],
+                isTitleCustomized: false
             }
         };
         
-        return templates[type] || templates['input'];
+        return templates[type] || { ...templates['input'], isTitleCustomized: false };
     }
 
     
@@ -815,14 +842,16 @@ class NodeManager {
         `;
 
         const titleSpan = header.querySelector('.node-title');
-        titleSpan.addEventListener('blur', (e) => { // 'blur' срабатывает, когда элемент теряет фокус
+        titleSpan.addEventListener('blur', (e) => {
             const newTitle = e.target.textContent.trim();
             const node = this.nodes.get(nodeId);
             if (node && newTitle) {
-                node.data.title = newTitle;
-                // Можно добавить в историю, если нужно
-            } else {
-                e.target.textContent = node.data.title; // Возвращаем старый, если ввели пустоту
+                if (node.data.title = newTitle != newTitle){
+                    node.data.title = newTitle;
+                    node.data.isTitleCustomized = true; 
+                }
+            } else if (node) {
+                e.target.textContent = node.data.title;
             }
         });
         
@@ -1449,23 +1478,121 @@ class NodeManager {
      * Обновляет тексты всех нодов при смене языка
      */
     updateNodeTexts() {
+        if (!window.i18n) return;
+        const t = window.i18n.t.bind(window.i18n);
+
         this.nodes.forEach(node => {
-            const template = this.getNodeTemplate(node.type);
+            const newTemplate = this.getNodeTemplate(node.type);
             const titleElement = node.element.querySelector('.node-title');
-            if (titleElement) {
-                titleElement.textContent = template.title;
+
+            if (titleElement && !node.data.isTitleCustomized) {
+                // ИСПРАВЛЕНИЕ: Берем уже переведенный заголовок напрямую из шаблона
+                const newTitle = newTemplate.title;
+                node.data.title = newTitle;
+                titleElement.textContent = newTitle;
             }
-            
-            // Обновляем лейблы полей
-            template.fields.forEach(field => {
-                const fieldElement = node.element.querySelector(`[name="${field.name}"]`);
-                if (fieldElement) {
-                    const label = fieldElement.closest('.field-group')?.querySelector('label');
-                    if (label) {
-                        label.textContent = field.label;
+
+            newTemplate.fields.forEach((templateField, index) => {
+                const currentField = node.data.fields[index];
+                if (!currentField || currentField.name !== templateField.name) return;
+
+                currentField.label = templateField.label;
+                const labelElement = node.element.querySelector(`label[for="${node.id}_${currentField.name}"]`);
+                if (labelElement) {
+                    labelElement.textContent = templateField.label;
+                }
+
+                if (templateField.tooltip) {
+                     const inputElement = node.element.querySelector(`[name="${currentField.name}"]`);
+                     if (inputElement) {
+                         inputElement.title = templateField.tooltip;
+                     }
+                }
+                
+                if (currentField.type === 'select' && Array.isArray(templateField.options)) {
+                    currentField.options = JSON.parse(JSON.stringify(templateField.options));
+                    const selectElement = node.element.querySelector(`select[name="${currentField.name}"]`);
+                    if (selectElement) {
+                        const selectedValue = selectElement.value;
+                        selectElement.innerHTML = '';
+                        templateField.options.forEach(option => {
+                            const optionElement = document.createElement('option');
+                            optionElement.value = option.value;
+                            optionElement.textContent = option.label;
+                            selectElement.appendChild(optionElement);
+                        });
+                        selectElement.value = selectedValue;
                     }
                 }
             });
+
+            const updateMultiPoints = (pointType, templateDataKey, pointNameAttr) => {
+                if (node.data[templateDataKey] && newTemplate[templateDataKey]) {
+                    newTemplate[templateDataKey].forEach((templatePoint, index) => {
+                        const currentPointData = node.data[templateDataKey][index];
+                        if (currentPointData && currentPointData.name === templatePoint.name) {
+                            currentPointData.label = templatePoint.label;
+                            const pointElement = node.element.querySelector(`.connection-point.${pointType}[${pointNameAttr}="${currentPointData.name}"]`);
+                            if (pointElement) {
+                                const labelAttr = pointType === 'input' ? 'data-input-label' : 'data-output-label';
+                                pointElement.setAttribute(labelAttr, templatePoint.label);
+                            }
+                        }
+                    });
+                }
+            };
+            updateMultiPoints('input', 'multipleInputs', 'data-input-name');
+            updateMultiPoints('output', 'multipleOutputs', 'data-output-name');
+
+            if (node.type === 'monitor') {
+                const display = node.element.querySelector('.monitor-display');
+                if (display) {
+                    const oldLang = window.i18n.getCurrentLanguage() === 'ru' ? 'en' : 'ru';
+                    const oldWaiting = i18n.translations[oldLang]['monitor.waiting_for_data'];
+                    const oldEmpty = i18n.translations[oldLang]['monitor.empty_input'];
+                    const oldEncryptDir = i18n.translations[oldLang]['monitor.direction_encrypt'];
+                    const oldDecryptDir = i18n.translations[oldLang]['monitor.direction_decrypt'];
+
+                    const smallTag = display.querySelector('small');
+                    if (smallTag) {
+                        if (smallTag.textContent === oldEncryptDir) {
+                            smallTag.textContent = t('monitor.direction_encrypt');
+                        } else if (smallTag.textContent === oldDecryptDir) {
+                            smallTag.textContent = t('monitor.direction_decrypt');
+                        }
+                        
+                        const textNode = display.childNodes[display.childNodes.length - 1];
+                        if (textNode && textNode.nodeType === Node.TEXT_NODE && textNode.textContent.trim() === oldEmpty) {
+                            textNode.textContent = ' ' + t('monitor.empty_input');
+                        }
+                    } else if (display.textContent.trim() === oldWaiting) {
+                        display.textContent = t('monitor.waiting_for_data');
+                    }
+
+                    const copyBtn = node.element.querySelector('.monitor-copy-btn');
+                    if (copyBtn) {
+                        copyBtn.title = t('monitor.copy_content');
+                    }
+                }
+            }
+
+            if (node.type === 'multi-replacer') {
+                const rulesHeader = node.element.querySelector('.multi-rules-header span');
+                if (rulesHeader) {
+                    rulesHeader.textContent = t('param.rules');
+                }
+                const addBtn = node.element.querySelector('.add-rule-btn');
+                if (addBtn) {
+                    addBtn.innerHTML = `<i class="fas fa-plus"></i> ${t('button.add')}`;
+                }
+                const ruleItems = node.element.querySelectorAll('.rule-item');
+                ruleItems.forEach(item => {
+                    const findInput = item.querySelector('input:first-of-type');
+                    const replaceInput = item.querySelector('input:nth-of-type(2)');
+                    if (findInput) findInput.placeholder = t('placeholder.find');
+                    if (replaceInput) replaceInput.placeholder = t('placeholder.replace');
+                });
+            }
         });
     }
 }
