@@ -1,0 +1,53 @@
+// === Input/Output Panel Component ===
+.input-output-panel {
+    display: flex;
+    background: $bg-secondary;
+    border-top: 1px solid $border-color;
+    height: 200px;
+    flex-shrink: 0;
+
+    label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: $text-secondary;
+        margin-bottom: 0.75rem;
+        transition: $transition;
+    }
+
+    textarea {
+        flex: 1;
+        background: $bg-primary;
+        border: 1px solid $border-color;
+        border-radius: $radius;
+        padding: 1rem;
+        color: $text-primary;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        resize: none;
+        transition: $transition;
+
+        &:focus {
+            outline: none;
+            border-color: $accent-primary;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+        }
+
+        &[readonly] {
+            background: $bg-tertiary;
+            color: $text-secondary;
+        }
+    }
+}
+
+.input-section,
+.output-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    transition: $transition;
+}
+
+.input-section {
+    border-right: 1px solid $border-color;
+}

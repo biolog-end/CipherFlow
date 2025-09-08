@@ -1,0 +1,45 @@
+// === Responsive Styles ===
+@include media(tablet) {
+    .nodes-panel {
+        width: 240px;
+    }
+    
+    .controls {
+        gap: 1rem;
+    }
+    
+    .file-controls {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+@include media(mobile) {
+    .header-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .nodes-panel {
+        position: absolute;
+        left: -280px;
+        top: 0;
+        height: 100%;
+        z-index: 100;
+        transition: $transition;
+
+        &.open {
+            left: 0;
+        }
+    }
+    
+    .input-output-panel {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .input-section {
+        border-right: none;
+        border-bottom: 1px solid $border-color;
+    }
+}

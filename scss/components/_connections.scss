@@ -1,0 +1,88 @@
+// === Connection Components ===
+.connection-point {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: $accent-primary;
+    border: 3px solid $bg-secondary;
+    border-radius: 50%;
+    cursor: crosshair;
+    transition: $transition;
+    z-index: 20;
+
+    &:hover {
+        background: $accent-secondary;
+        transform: scale(1.2);
+    }
+
+    &.input {
+        left: -8px;
+        top: 50%;
+        transform: translateY(-50%);
+
+        &.multiple {
+            position: absolute;
+            left: -8px;
+            transform: none;
+        }
+    }
+
+    &.output {
+        right: -8px;
+        top: 50%;
+        transform: translateY(-50%);
+
+        &.multiple {
+            position: absolute;
+            right: -8px;
+            transform: none;
+        }
+    }
+
+    &.connecting {
+        background: $success;
+        animation: pulse 1s infinite;
+    }
+}
+
+// Labels for multiple inputs
+.input-label {
+    font-size: 0.75rem;
+    color: $text-muted;
+    user-select: none;
+    pointer-events: none;
+}
+
+// Connection lines
+.connection-line {
+    stroke: $accent-primary;
+    stroke-width: 3;
+    fill: none;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transition: $transition;
+
+    &:hover {
+        stroke: $accent-secondary;
+        stroke-width: 4;
+    }
+
+    &.reverse {
+        stroke: $success;
+    }
+
+    &.temporary {
+        stroke: $text-muted;
+        stroke-dasharray: 8, 4;
+        animation: dash 1s linear infinite;
+    }
+}
+
+// Animations
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
+
+@keyframes dash {
+    to { stroke-dashoffset: -12; }
+}

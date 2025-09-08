@@ -1,0 +1,13 @@
+{
+  "name": "cipherflow-scss",
+  "version": "1.0.0",
+  "description": "SCSS build system for CipherFlow application",
+  "scripts": {
+    "build:css": "sass scss/main.scss css/style.css --style=compressed --source-map",
+    "watch:css": "sass scss/main.scss css/style.css --watch --style=expanded --source-map",
+    "dev": "sass scss/main.scss css/style.css --watch --style=expanded --source-map"
+  },
+  "devDependencies": {
+    "sass": "^1.69.0"
+  }
+}

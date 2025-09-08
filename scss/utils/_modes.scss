@@ -1,0 +1,65 @@
+// === Mode-specific utilities ===
+// Decrypt mode styles
+.input-section.decrypt-result {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: $radius;
+    margin: 0.5rem;
+    padding: 1rem;
+
+    label {
+        color: $success;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+
+        &:before {
+            content: "🔓 ";
+            margin-right: 0.5rem;
+        }
+    }
+
+    textarea {
+        background: rgba(16, 185, 129, 0.05);
+        border: 2px solid rgba(16, 185, 129, 0.3);
+        color: $success;
+        font-weight: 500;
+
+        &:focus {
+            border-color: $success;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+    }
+}
+
+.output-section.decrypt-input {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: $radius;
+    margin: 0.5rem;
+    padding: 1rem;
+
+    label {
+        color: $error;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+
+        &:before {
+            content: "🔒 ";
+            margin-right: 0.5rem;
+        }
+    }
+
+    textarea {
+        background: rgba(239, 68, 68, 0.05);
+        border: 2px solid rgba(239, 68, 68, 0.3);
+        color: $text-primary;
+        font-weight: 500;
+
+        &:focus {
+            border-color: $error;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+        }
+    }
+}

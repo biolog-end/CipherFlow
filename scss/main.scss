@@ -1,0 +1,69 @@
+// ===================================================================
+// CipherFlow - SCSS Main Entry Point
+// ===================================================================
+// Компилированная версия заменяет css/style.css
+// Запуск: npm run build:css или npm run watch:css
+// ===================================================================
+
+// === Base Styles (Порядок важен!) ===
+@import 'base/variables';        // CSS custom properties и SCSS переменные
+@import 'base/reset';           // Глобальный сброс и базовые стили
+
+// === Utils & Mixins (Должны быть доступны всем компонентам) ===  
+@import 'utils/mixins';         // Миксины для медиа-запросов
+@import 'utils/animations';     // Анимации и утилиты
+
+// === Layout Components ===
+@import 'layout/app';           // Основная структура приложения (.app)
+@import 'layout/main';          // Главный контент (.main-content)  
+@import 'layout/workspace';     // Рабочая область и канвас
+
+// === UI Components ===
+@import 'components/header';        // Шапка приложения
+@import 'components/toggle';        // Переключатель режимов
+@import 'components/buttons';       // Кнопки
+@import 'components/panel';         // Боковая панель нодов
+@import 'components/node';          // Ноды на канвасе
+@import 'components/connections';   // Соединения между нодами
+@import 'components/input-output';  // Панель ввода/вывода
+@import 'components/canvas-controls'; // Управление канвасом
+@import 'components/tooltips';      // Всплывающие подсказки
+
+// === Utilities & Special Cases ===
+@import 'utils/modes';          // Стили для разных режимов (шифровка/дешифровка)
+@import 'utils/special-effects'; // Специальные эффекты и анимации
+
+// === Base Responsive & Scrollbars (В конце) ===
+@import 'base/scrollbars';      // Кастомные скроллбары
+@import 'base/responsive';      // Адаптивные стили
+
+// ===================================================================
+// Структура каталогов:
+//
+// scss/
+// ├── main.scss                 # Этот файл - точка входа
+// ├── base/                     # Базовые стили
+// │   ├── _variables.scss       # CSS переменные + SCSS переменные
+// │   ├── _reset.scss          # Глобальный сброс стилей 
+// │   ├── _responsive.scss     # Адаптивные стили
+// │   └── _scrollbars.scss     # Кастомные скроллбары
+// ├── layout/                   # Структурные компоненты
+// │   ├── _app.scss            # Основная структура приложения
+// │   ├── _main.scss           # Главный контент
+// │   └── _workspace.scss      # Рабочая область
+// ├── components/               # UI компоненты
+// │   ├── _header.scss         # Заголовок
+// │   ├── _toggle.scss         # Переключатель режимов
+// │   ├── _buttons.scss        # Кнопки
+// │   ├── _panel.scss          # Панель нодов
+// │   ├── _node.scss           # Ноды
+// │   ├── _connections.scss    # Соединения
+// │   ├── _input-output.scss   # Панель ввода/вывода
+// │   ├── _canvas-controls.scss # Управление канвасом
+// │   └── _tooltips.scss       # Подсказки
+// └── utils/                    # Утилиты и помощники
+//     ├── _mixins.scss         # Миксины 
+//     ├── _animations.scss     # Анимации
+//     ├── _modes.scss          # Режимы работы
+//     └── _special-effects.scss # Специальные эффекты
+// ===================================================================
