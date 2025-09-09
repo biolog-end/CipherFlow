@@ -1,57 +1,143 @@
-// === Система пасхалок (Easter Eggs) для CipherFlow ===
-
 class EasterEggsSystem {
     constructor() {
         this.isActive = false;
         this.currentEasterEgg = null;
-        this.videoWindow = null;
+        this.videoWindow = null; 
         
-        // Определяем типы нодов, которые активируют пасхалки
-        this.cuteModeNodes = ['uwu-ifier'];
+        this.easterEggs = new Map([
+            ['cute_mode', {
+                activation: (chains) => {
+                    for (const chain of chains) {
+                        const cuteNodesCount = chain.filter(node => node.type === 'uwu-ifier').length;
+                        if (cuteNodesCount >= 3) {
+                            return true; 
+                        }
+                    }
+                    return false;
+                },
+                // Все данные для уведомления и эффектов
+                payload: {
+                    title: 'easter_eggs.cute_mode.title', 
+                    subtitle: 'easter_eggs.cute_mode.subtitle',
+                    image: 'src/easter_eggs/images/cute.gif', 
+                    sound: 'src/easter_eggs/sounds/default_notification.mp3', 
+                    className: 'cute-mode-notification', 
+                },
+                // Функции, которые вызываются при активации/деактивации
+                onActivate: () => {
+                    document.body.classList.add('cute-mode');
+                    this.showCuteModeVideo(); 
+                    console.log('🌸✨ Няшный режим активирован! ✨🌸');
+                },
+                onDeactivate: () => {
+                    document.body.classList.remove('cute-mode');
+                    this.hideCuteModeVideo();
+                    console.log('💔 Няшный режим деактивирован');
+                }
+            }],
+        ]);
         
         this.init();
     }
     
     init() {
         console.log('🐣 Инициализация системы пасхалок...');
-        
-        // Слушаем изменения в цепочке нодов
-        document.addEventListener('nodes-updated', (event) => {
-            this.checkForEasterEggs();
-        });
-        
-        // Слушаем изменения соединений
-        document.addEventListener('connections-updated', (event) => {
-            this.checkForEasterEggs();
-        });
-    
+        document.addEventListener('nodes-updated', () => this.checkForEasterEggs());
+        document.addEventListener('connections-updated', () => this.checkForEasterEggs());
     }
     
-    // Проверяем активацию пасхалок
     checkForEasterEggs() {
         try {
             const activeChains = this.getActiveChains();
-            let cuteModeShouldBeActive = false;
+            let eggToActivate = null;
 
-            for (const chain of activeChains) {
-                const cuteNodesCount = chain.filter(node => this.cuteModeNodes.includes(node.type)).length;
-                if (cuteNodesCount >= 3) {
-                    cuteModeShouldBeActive = true;
-                    break; 
+            for (const [id, egg] of this.easterEggs.entries()) {
+                if (egg.activation(activeChains)) {
+                    eggToActivate = id;
+                    break;
                 }
             }
             
-            if (cuteModeShouldBeActive && !this.isActive) {
-                console.log('🌸 Активация пасхалки: Няшный режим!');
-                this.activateCuteMode();
-            } else if (!cuteModeShouldBeActive && this.isActive) {
-                console.log('💔 Деактивация няшного режима');
-                this.deactivateCuteMode();
+            if (eggToActivate && this.currentEasterEgg !== eggToActivate) {
+                this.deactivateCurrentEasterEgg(); 
+                this.activateEasterEgg(eggToActivate);
+            } 
+            else if (!eggToActivate && this.isActive) {
+                this.deactivateCurrentEasterEgg();
             }
 
         } catch (error) {
             console.error('❌ Ошибка проверки пасхалок:', error);
         }
+    }
+    
+    activateEasterEgg(eggId) {
+        const egg = this.easterEggs.get(eggId);
+        if (!egg) return;
+
+        this.isActive = true;
+        this.currentEasterEgg = eggId;
+        
+        this.showNotification(egg.payload); 
+        
+        if (egg.onActivate) {
+            egg.onActivate();
+        }
+        
+        document.dispatchEvent(new CustomEvent('easter-egg-activated', {
+            detail: { type: eggId }
+        }));
+    }
+
+    deactivateCurrentEasterEgg() {
+        if (!this.currentEasterEgg) return;
+
+        const egg = this.easterEggs.get(this.currentEasterEgg);
+        
+        if (egg && egg.onDeactivate) {
+            egg.onDeactivate();
+        }
+        
+        document.dispatchEvent(new CustomEvent('easter-egg-deactivated', {
+            detail: { type: this.currentEasterEgg }
+        }));
+        
+        this.isActive = false;
+        this.currentEasterEgg = null;
+    }
+
+    showNotification({ title, subtitle, image, sound, className }) {
+        const t = window.i18n ? window.i18n.t.bind(window.i18n) : (key) => key.split('.').pop();
+        
+        const notification = document.createElement('div');
+        notification.className = `easter-egg-notification ${className || ''}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <div class="notification-image-container">
+                    <img src="${image}" alt="Easter Egg" class="notification-image"/>
+                </div>
+                <div class="notification-text">
+                    <div class="notification-title">${t(title)}</div>
+                    <div class="notification-subtitle">${t(subtitle)}</div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        if (sound) {
+            const audio = new Audio(sound);
+            audio.play().catch(e => console.error("Ошибка воспроизведения звука:", e));
+        }
+        
+        setTimeout(() => notification.classList.add('show'), 100);
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notification.remove();
+            }, 500); 
+        }, 5000);
     }
 
     getActiveChains() {
@@ -73,7 +159,7 @@ class EasterEggsSystem {
             const chainNodeIds = this.getChainFromNode(startNode.id, window.connectionManager.connections);
             const chainNodes = chainNodeIds
                 .map(nodeId => allNodes.get(nodeId))
-                .filter(Boolean); // Отфильтровываем возможные null/undefined
+                .filter(Boolean);
             
             if (chainNodes.length > 0) {
                 chains.push(chainNodes);
@@ -84,7 +170,6 @@ class EasterEggsSystem {
     }
 
     getChainFromNode(startNodeId, connections) {
-        // Эта функция остается без изменений, она работает корректно.
         const chain = [startNodeId];
         const visited = new Set([startNodeId]);
 
@@ -102,84 +187,6 @@ class EasterEggsSystem {
         return chain;
     }
     
-    // Проверяем режим няшек
-    checkCuteMode(activeNodes) {
-        const cuteNodesCount = activeNodes.filter(node => 
-            this.cuteModeNodes.includes(node.type)
-        ).length;
-        
-        const t = window.i18n ? window.i18n.t.bind(window.i18n) : (key) => key;
-        
-        if (cuteNodesCount >= 3 && !this.isActive) {
-            console.log('🌸 Активация пасхалки: Няшный режим!');
-            this.activateCuteMode();
-        } else if (cuteNodesCount < 3 && this.isActive) {
-            console.log('💔 Деактивация няшного режима');
-            this.deactivateCuteMode();
-        }
-    }
-    
-    // Активация няшного режима
-    activateCuteMode() {
-        this.isActive = true;
-        this.currentEasterEgg = 'cute_mode';
-        const t = window.i18n ? window.i18n.t.bind(window.i18n) : (key) => key;
-        document.body.classList.add('cute-mode');
-        this.showCuteModeNotification();
-        this.showCuteModeVideo();
-        
-        document.dispatchEvent(new CustomEvent('easter-egg-activated', {
-            detail: { type: 'cute_mode' }
-        }));
-        
-        console.log('🌸✨ Няшный режим активирован! ✨🌸');
-    }
-    
-    // Деактивация няшного режима
-    deactivateCuteMode() {
-        this.isActive = false;
-        this.currentEasterEgg = null;
-        document.body.classList.remove('cute-mode');
-        this.hideCuteModeVideo();
-        
-        document.dispatchEvent(new CustomEvent('easter-egg-deactivated', {
-            detail: { type: 'cute_mode' }
-        }));
-        
-        console.log('💔 Няшный режим деактивирован');
-    }
-    
-    // Показываем уведомление о няшном режиме
-    showCuteModeNotification() {
-        const t = window.i18n ? window.i18n.t.bind(window.i18n) : (key) => key;
-        
-        const notification = document.createElement('div');
-        notification.className = 'easter-egg-notification cute-mode-notification';
-        notification.innerHTML = `
-            <div class="cute-notification-content">
-                <div class="cute-emoji">🌸✨💖</div>
-                <div class="cute-title">${t('easter_eggs.cute_mode.title', 'Няшный режим активирован!')}</div>
-                <div class="cute-subtitle">${t('easter_eggs.cute_mode.subtitle', 'UwU! Добро пожаловать в мир няшек! ✨')}</div>
-            </div>
-        `;
-        
-        document.body.appendChild(notification);
-        
-        // Анимация появления
-        setTimeout(() => notification.classList.add('show'), 100);
-        
-        // Убираем уведомление через 4 секунды
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
-        }, 4000);
-    }
-    
-    // Показываем видео няшного режима
     showCuteModeVideo() {
         if (this.videoWindow) {
             this.videoWindow.style.display = 'block';
@@ -188,7 +195,6 @@ class EasterEggsSystem {
         
         const t = window.i18n ? window.i18n.t.bind(window.i18n) : (key) => key;
         
-        // Создаем окно с видео
         this.videoWindow = document.createElement('div');
         this.videoWindow.className = 'cute-video-window';
         this.videoWindow.innerHTML = `
@@ -215,10 +221,8 @@ class EasterEggsSystem {
         
         document.body.appendChild(this.videoWindow);
         
-        // Делаем окно перетаскиваемым
         this.makeDraggable(this.videoWindow);
         
-        // Обработчики кнопок
         const closeBtn = this.videoWindow.querySelector('.cute-close-btn');
         const minimizeBtn = this.videoWindow.querySelector('.cute-minimize-btn');
         
@@ -230,11 +234,9 @@ class EasterEggsSystem {
             this.minimizeVideo();
         });
         
-        // Анимация появления
         setTimeout(() => this.videoWindow.classList.add('show'), 100);
     }
     
-    // Скрываем видео
     hideCuteModeVideo() {
         if (this.videoWindow) {
             this.videoWindow.classList.remove('show');
@@ -247,36 +249,29 @@ class EasterEggsSystem {
         }
     }
     
-    // Сворачиваем/разворачиваем видео
     minimizeVideo() {
         if (this.videoWindow) {
             this.videoWindow.classList.toggle('minimized');
         }
     }
     
-    // Делаем элемент перетаскиваемым
     makeDraggable(element) {
         const header = element.querySelector('.cute-video-header');
         let isDragging = false;
-        let currentX = 0;
-        let currentY = 0;
         let initialX = 0;
         let initialY = 0;
         let xOffset = 0;
         let yOffset = 0;
         
-        // Устанавливаем начальную позицию элемента
         element.style.position = 'fixed';
         element.style.left = '0px';
         element.style.top = '0px';
         
-        // Получаем начальную позицию из CSS (right: 50px, top: 50px)
         const initialRight = 50;
         const initialTop = 50;
         xOffset = window.innerWidth - element.offsetWidth - initialRight;
         yOffset = initialTop;
         
-        // Применяем начальную позицию через transform
         element.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
         
         header.addEventListener('mousedown', (e) => {
@@ -284,17 +279,14 @@ class EasterEggsSystem {
             
             isDragging = true;
             
-            // Сохраняем начальную позицию курсора
             initialX = e.clientX - xOffset;
             initialY = e.clientY - yOffset;
             
             header.style.cursor = 'grabbing';
             element.style.zIndex = '10001';
             
-            // Отключаем transition на время перетаскивания для плавности
             element.style.transition = 'none';
             
-            // Предотвращаем выделение текста
             e.preventDefault();
             e.stopPropagation();
         });
@@ -304,20 +296,16 @@ class EasterEggsSystem {
             
             e.preventDefault();
             
-            // Вычисляем новую позицию
             xOffset = e.clientX - initialX;
             yOffset = e.clientY - initialY;
             
-            // Ограничиваем перемещение границами окна
             const rect = element.getBoundingClientRect();
             const maxX = window.innerWidth - rect.width;
             const maxY = window.innerHeight - rect.height;
             
             xOffset = Math.max(0, Math.min(xOffset, maxX));
             yOffset = Math.max(0, Math.min(yOffset, maxY));
-            
-            // Применяем transform для плавного перемещения
-            // Используем translate3d для аппаратного ускорения
+
             element.style.transform = `translate3d(${xOffset}px, ${yOffset}px, 0)`;
         };
         
@@ -327,16 +315,13 @@ class EasterEggsSystem {
                 header.style.cursor = 'grab';
                 element.style.zIndex = '10000';
                 
-                // Возвращаем transition обратно
                 element.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
             }
         };
         
-        // Используем document для событий мыши, чтобы отслеживать движение за пределами элемента
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
         
-        // Обработка touch-событий для мобильных устройств
         let touchItem = null;
         
         header.addEventListener('touchstart', (e) => {
@@ -362,7 +347,6 @@ class EasterEggsSystem {
             xOffset = touchItem.clientX - initialX;
             yOffset = touchItem.clientY - initialY;
             
-            // Ограничиваем перемещение границами окна
             const rect = element.getBoundingClientRect();
             const maxX = window.innerWidth - rect.width;
             const maxY = window.innerHeight - rect.height;
@@ -385,13 +369,10 @@ class EasterEggsSystem {
             }
         });
         
-        // Устанавливаем курсор
         header.style.cursor = 'grab';
         
-        // Предотвращаем конфликты с другими обработчиками
         header.addEventListener('dragstart', (e) => e.preventDefault());
         
-        // Очистка обработчиков при удалении элемента
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 mutation.removedNodes.forEach((node) => {
@@ -407,63 +388,12 @@ class EasterEggsSystem {
         observer.observe(element.parentNode || document.body, { childList: true });
     }
     
-    // Метод для получения статуса системы пасхалок
-    getStatus() {
-        return {
-            isActive: this.isActive,
-            currentEasterEgg: this.currentEasterEgg,
-            hasVideoWindow: !!this.videoWindow
-        };
-    }
-    
-    // Метод для принудительной активации (для отладки)
-    forceActivateCuteMode() {
-        console.log('🧪 Принудительная активация няшного режима (debug)');
-        this.activateCuteMode();
-    }
-    
-    // Метод для принудительной деактивации (для отладки)
-    forceDeactivateCuteMode() {
-        console.log('🧪 Принудительная деактивация няшного режима (debug)');
-        this.deactivateCuteMode();
-    }
 }
 
-// Инициализация системы пасхалок при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
     window.easterEggs = new EasterEggsSystem();
     console.log('🐣 Система пасхалок инициализирована');
 });
 
-// Экспортируем для использования в других модулях
 window.EasterEggsSystem = EasterEggsSystem;
 
-// Добавляем глобальные функции для быстрого тестирования
-window.activateCuteMode = () => {
-    if (window.easterEggs) {
-        window.easterEggs.forceActivateCuteMode();
-        console.log('🌸 Няшный режим принудительно активирован!');
-    } else {
-        console.error('❌ Система пасхалок не найдена');
-    }
-};
-
-window.deactivateCuteMode = () => {
-    if (window.easterEggs) {
-        window.easterEggs.forceDeactivateCuteMode();
-        console.log('💔 Няшный режим деактивирован');
-    } else {
-        console.error('❌ Система пасхалок не найдена');
-    }
-};
-
-window.checkEasterEggStatus = () => {
-    if (window.easterEggs) {
-        const status = window.easterEggs.getStatus();
-        console.log('📊 Статус системы пасхалок:', status);
-        return status;
-    } else {
-        console.error('❌ Система пасхалок не найдена');
-        return null;
-    }
-};
