@@ -88,108 +88,8 @@ class FileManager {
             </div>
         `;
         
-        dialog.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s ease-out;
-        `;
-        
-        const dialogStyles = `
-            .save-dialog {
-                background: var(--bg-secondary);
-                border-radius: var(--radius-lg);
-                padding: 0;
-                width: 500px;
-                max-width: 90vw;
-                box-shadow: var(--shadow-lg);
-                border: 1px solid var(--border-color);
-                overflow: hidden;
-            }
-            .save-dialog-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 1.5rem;
-                background: var(--bg-primary);
-                border-bottom: 1px solid var(--border-color);
-            }
-            .save-dialog-header h3 {
-                margin: 0;
-                color: var(--text-primary);
-            }
-            .dialog-close {
-                background: none;
-                border: none;
-                color: var(--text-muted);
-                cursor: pointer;
-                padding: 0.5rem;
-                border-radius: var(--radius);
-                transition: var(--transition);
-            }
-            .dialog-close:hover {
-                color: var(--text-primary);
-                background: rgba(255, 255, 255, 0.1);
-            }
-            .save-dialog-content {
-                padding: 1.5rem;
-            }
-            .form-group {
-                margin-bottom: 1.5rem;
-            }
-            .form-group:last-child {
-                margin-bottom: 0;
-            }
-            .form-group label {
-                display: block;
-                margin-bottom: 0.5rem;
-                color: var(--text-primary);
-                font-weight: 500;
-            }
-            .form-group input,
-            .form-group textarea {
-                width: 100%;
-                padding: 0.75rem;
-                border: 1px solid var(--border-color);
-                border-radius: var(--radius);
-                background: var(--bg-primary);
-                color: var(--text-primary);
-                font-family: inherit;
-                transition: var(--transition);
-            }
-            .form-group input:focus,
-            .form-group textarea:focus {
-                outline: none;
-                border-color: var(--accent-primary);
-                box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
-            }
-            .save-dialog-footer {
-                display: flex;
-                gap: 1rem;
-                justify-content: flex-end;
-                padding: 1.5rem;
-                background: var(--bg-primary);
-                border-top: 1px solid var(--border-color);
-            }
-        `;
-        
-        if (!document.querySelector('#save-dialog-styles')) {
-            const style = document.createElement('style');
-            style.id = 'save-dialog-styles';
-            style.textContent = dialogStyles;
-            document.head.appendChild(style);
-        }
-        
         document.body.appendChild(dialog);
         
-        // Автофокус на поле ввода имени
         setTimeout(() => {
             const nameInput = document.getElementById('schemeName');
             if (nameInput) {
@@ -448,76 +348,29 @@ class FileManager {
     }
     
     showNotification(message, type = 'info') {
-        // Создаем элемент уведомления
         const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
+        // Используем классы вместо inline-стилей
+        notification.className = `notification notification-${type} slide-in`;
         notification.textContent = message;
-        
-        // Добавляем стили для уведомления
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--error)' : 'var(--accent-primary)'};
-            color: white;
-            padding: 12px 20px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-            z-index: 10000;
-            animation: slideInNotification 0.3s ease-out;
-            max-width: 300px;
-            word-wrap: break-word;
-        `;
-        
-        // Добавляем CSS анимацию если её нет
-        if (!document.querySelector('#notification-styles')) {
-            const style = document.createElement('style');
-            style.id = 'notification-styles';
-            style.textContent = `
-                @keyframes slideInNotification {
-                    from { 
-                        opacity: 0; 
-                        transform: translateX(100%); 
-                    }
-                    to { 
-                        opacity: 1; 
-                        transform: translateX(0); 
-                    }
-                }
-                @keyframes slideOutNotification {
-                    from { 
-                        opacity: 1; 
-                        transform: translateX(0); 
-                    }
-                    to { 
-                        opacity: 0; 
-                        transform: translateX(100%); 
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-        }
         
         document.body.appendChild(notification);
         
-        // Удаляем уведомление через 4 секунды
-        setTimeout(() => {
-            notification.style.animation = 'slideOutNotification 0.3s ease-in';
+        // Логика удаления через классы
+        const removeNotification = () => {
+            notification.classList.remove('slide-in');
+            notification.classList.add('slide-out');
             setTimeout(() => {
                 if (notification.parentNode) {
                     notification.parentNode.removeChild(notification);
                 }
             }, 300);
-        }, 4000);
+        };
+
+        const timer = setTimeout(removeNotification, 4000);
         
-        // Удаляем при клике
         notification.addEventListener('click', () => {
-            notification.style.animation = 'slideOutNotification 0.3s ease-in';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
+            clearTimeout(timer);
+            removeNotification();
         });
     }
     

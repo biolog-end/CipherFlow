@@ -272,6 +272,13 @@ class ConnectionManager {
             window.settingsSystem.playSound('connection');
         }
         
+        // Уведомляем систему пасхалок о создании соединения
+        setTimeout(() => {
+            document.dispatchEvent(new CustomEvent('connections-updated', {
+                detail: { action: 'connection-added', connectionId }
+            }));
+        }, 100);
+        
         return connectionId;
     }
     
@@ -379,6 +386,13 @@ class ConnectionManager {
         if (window.settingsSystem?.settings.soundEffects) {
             window.settingsSystem.playSound('disconnect');
         }
+        
+        // Уведомляем систему пасхалок об удалении соединения
+        setTimeout(() => {
+            document.dispatchEvent(new CustomEvent('connections-updated', {
+                detail: { action: 'connection-removed', connectionId }
+            }));
+        }, 100);
         
         // Запускаем обновление выполнения
         if (window.nodeManager) {

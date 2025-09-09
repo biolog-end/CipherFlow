@@ -240,6 +240,13 @@ class NodeManager {
             });
         }
 
+        // Уведомляем систему пасхалок о добавлении нода
+        setTimeout(() => {
+            document.dispatchEvent(new CustomEvent('nodes-updated', {
+                detail: { action: 'node-added', nodeId, nodeType: type }
+            }));
+        }, 100);
+
         return nodeId;
     }
     
@@ -1223,6 +1230,13 @@ class NodeManager {
         if (window.selectionManager) {
             window.selectionManager.removeFromSelection(nodeId);
         }
+        
+        // Уведомляем систему пасхалок об удалении нода
+        setTimeout(() => {
+            document.dispatchEvent(new CustomEvent('nodes-updated', {
+                detail: { action: 'node-removed', nodeId, nodeType: node.type }
+            }));
+        }, 100);
         
         this.triggerExecution();
     }

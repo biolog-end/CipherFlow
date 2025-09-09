@@ -179,6 +179,7 @@ class I18n {
                 'settings.grid': 'Показать сетку',
                 'settings.reset': 'Сброс настроек',
                 'settings.close': 'Закрыть',
+                'settings.theme_locked': ' Активна пасхалка ௹ꙮ ', 
                 'settings.theme_desc': 'Выберите цветовую схему приложения',
                 'settings.animations_desc': 'Включить плавные анимации и переходы',
                 'settings.compact_mode': 'Компактный режим',
@@ -875,7 +876,15 @@ class I18n {
                 'option.split_words': 'Разделение по словам (A B...→A,B)',
                 'option.split_lines': 'Разделение по строкам (A\\nB...→A,B)',
                 'option.ru_alphabet_33': 'Русский (33 буквы)',
-                'option.en_alphabet_26': 'Английский (26 букв)'
+                'option.en_alphabet_26': 'Английский (26 букв)',
+                
+                // Пасхалки (Easter Eggs)
+                'easter_eggs.cute_mode.title': 'Няшный режим активирован! 🌸',
+                'easter_eggs.cute_mode.subtitle': 'UwU! Добро пожаловать в мир няшек! ✨',
+                'easter_eggs.cute_mode.video_title': 'Няшные мелодии',
+                'easter_eggs.cute_mode.minimize': 'Свернуть',
+                'easter_eggs.cute_mode.close': 'Закрыть',
+                'easter_eggs.cute_mode.notification.description': 'Обнаружено 3+ нодов UwU-шифра в активной цепочке!'
             },
             
             'en': {
@@ -1032,6 +1041,7 @@ class I18n {
                 'settings.grid': 'Show Grid',
                 'settings.reset': 'Reset Settings',
                 'settings.close': 'Close',
+                'settings.theme_locked': ' Easter egg is active ௹ꙮ', 
                 'settings.theme_desc': 'Choose the color scheme of the application',
                 'settings.animations_desc': 'Enable smooth animations and transitions',
                 'settings.compact_mode': 'Compact Mode',
@@ -1728,6 +1738,14 @@ class I18n {
                 'option.split_lines': 'Split by Lines (A\\nB...→A,B)',
                 'option.ru_alphabet_33': 'Russian (33 letters)',
                 'option.en_alphabet_26': 'English (26 letters)',
+                
+                // Easter Eggs
+                'easter_eggs.cute_mode.title': 'Cute Mode Activated! 🌸',
+                'easter_eggs.cute_mode.subtitle': 'UwU! Welcome to the world of cuteness! ✨',
+                'easter_eggs.cute_mode.video_title': 'Cute Melodies',
+                'easter_eggs.cute_mode.minimize': 'Minimize',
+                'easter_eggs.cute_mode.close': 'Close',
+                'easter_eggs.cute_mode.notification.description': 'Detected 3+ UwU cipher nodes in active chain!'
             }
         };
     }

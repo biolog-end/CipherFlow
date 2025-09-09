@@ -31,6 +31,13 @@
 /* === Анимации и переходы === */
 @import './_animations.css';
 
+/* === Новые стили для UI-компонентов === */
+@import './_settings.css';
+@import './_help.css';
+@import './_dialogs.css';
+@import './_tutorial.css';
+@import './_notifications.css';
+
 /*
 Структура проекта CSS:
 ├── style.css (главный файл с импортами)

@@ -1,18 +1,17 @@
-// === Система настроек приложения ===
-
 class SettingsSystem {
     constructor() {
         this.isOpen = false;
         this.settings = this.loadSettings();
-        this.initializeStyles();
-        this.applySettings();
         
-        // Синхронизируем язык с системой i18n при инициализации
+        this.themeLockedByEasterEgg = false;
+        this.savedThemeBeforeLock = null;
+
+        this.applySettings();
         if (window.i18n && this.settings.language !== window.i18n.getCurrentLanguage()) {
             window.i18n.setLanguage(this.settings.language);
         }
+        this.bindEasterEggEvents();
     }
-
     loadSettings() {
         const saved = localStorage.getItem('cipherflow-settings');
         const defaultSettings = {
@@ -24,320 +23,58 @@ class SettingsSystem {
             showGrid: false,
             language: window.i18n ? window.i18n.getCurrentLanguage() : 'ru'
         };
-        
         if (saved) {
             const parsedSettings = JSON.parse(saved);
-            // Синхронизируем с i18n, если система уже инициализирована
             if (window.i18n) {
                 parsedSettings.language = window.i18n.getCurrentLanguage();
             }
             return {...defaultSettings, ...parsedSettings};
         }
-        
         return defaultSettings;
     }
 
     saveSettings() {
-        localStorage.setItem('cipherflow-settings', JSON.stringify(this.settings));
+        const settingsToSave = { ...this.settings };
+
+        if (this.themeLockedByEasterEgg) {
+            settingsToSave.theme = this.savedThemeBeforeLock;
+        }
+
+        localStorage.setItem('cipherflow-settings', JSON.stringify(settingsToSave));
         this.applySettings();
     }
 
-    initializeStyles() {
-        const style = document.createElement('style');
-        style.textContent = `
-            .settings-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.8);
-                backdrop-filter: blur(10px);
-                z-index: 10000;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                opacity: 0;
-                visibility: hidden;
-                transition: all 0.3s ease;
-            }
+    bindEasterEggEvents() {
+        document.addEventListener('easter-egg-activated', () => {
+            if (this.themeLockedByEasterEgg) return; 
 
-            .settings-overlay.show {
-                opacity: 1;
-                visibility: visible;
-            }
+            this.themeLockedByEasterEgg = true;
+            this.savedThemeBeforeLock = this.settings.theme;
+            this.settings.theme = 'dark';
+            
+            this.applySettings();
+            this.updateThemeControlLock();
+        });
 
-            .settings-modal {
-                background: var(--bg-primary);
-                border-radius: 20px;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-                width: 90%;
-                max-width: 800px;
-                max-height: 90vh;
-                overflow-y: auto;
-                transform: scale(0.8) translateY(50px);
-                transition: all 0.3s ease;
-            }
+        document.addEventListener('easter-egg-deactivated', () => {
+            if (!this.themeLockedByEasterEgg) return;
 
-            .settings-overlay.show .settings-modal {
-                transform: scale(1) translateY(0);
+            this.themeLockedByEasterEgg = false;
+            if (this.savedThemeBeforeLock) {
+                this.settings.theme = this.savedThemeBeforeLock;
             }
-
-            .settings-header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 2rem;
-                border-bottom: 1px solid var(--border-color);
-            }
-
-            .settings-title {
-                font-size: 2rem;
-                font-weight: 700;
-                color: var(--text-primary);
-                display: flex;
-                align-items: center;
-                gap: 1rem;
-            }
-
-            .settings-close {
-                background: none;
-                border: none;
-                color: var(--text-muted);
-                cursor: pointer;
-                padding: 0.5rem;
-                border-radius: 50%;
-                transition: all 0.2s ease;
-                font-size: 1.5rem;
-            }
-
-            .settings-close:hover {
-                color: var(--error);
-                background: rgba(239, 68, 68, 0.1);
-            }
-
-            .settings-content {
-                padding: 2rem;
-            }
-
-            .settings-section {
-                margin-bottom: 2rem;
-            }
-
-            .settings-section h3 {
-                color: var(--accent-primary);
-                margin-bottom: 1rem;
-                font-size: 1.3rem;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-            }
-
-            .setting-item {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 1rem;
-                background: var(--bg-secondary);
-                border-radius: 12px;
-                margin-bottom: 0.75rem;
-                transition: all 0.2s ease;
-            }
-
-            .setting-item:hover {
-                background: var(--bg-tertiary);
-                transform: translateX(5px);
-            }
-
-            .setting-info {
-                flex: 1;
-            }
-
-            .setting-info h4 {
-                margin: 0 0 0.25rem 0;
-                color: var(--text-primary);
-                font-size: 1.1rem;
-            }
-
-            .setting-info p {
-                margin: 0;
-                color: var(--text-secondary);
-                font-size: 0.9rem;
-            }
-
-            .setting-control {
-                margin-left: 1rem;
-            }
-
-            /* Стили для переключателей */
-            .toggle-switch {
-                position: relative;
-                width: 60px;
-                height: 30px;
-                background: var(--text-muted);
-                border-radius: 15px;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                border: none;
-            }
-
-            .toggle-switch.active {
-                background: var(--accent-primary);
-            }
-
-            .toggle-switch::after {
-                content: '';
-                position: absolute;
-                top: 3px;
-                left: 3px;
-                width: 24px;
-                height: 24px;
-                background: white;
-                border-radius: 50%;
-                transition: all 0.3s ease;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            }
-
-            .toggle-switch.active::after {
-                transform: translateX(30px);
-            }
-
-            /* Стили для селектов */
-            .setting-select {
-                background: var(--bg-primary);
-                border: 1px solid var(--border-color);
-                border-radius: 8px;
-                padding: 0.5rem 1rem;
-                color: var(--text-primary);
-                font-size: 1rem;
-                cursor: pointer;
-                min-width: 120px;
-            }
-
-            .setting-select:focus {
-                outline: none;
-                border-color: var(--accent-primary);
-                box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
-            }
-
-            /* Стили для кнопок */
-            .settings-button {
-                background: var(--accent-primary);
-                color: white;
-                border: none;
-                padding: 0.75rem 1.5rem;
-                border-radius: 8px;
-                cursor: pointer;
-                font-size: 1rem;
-                transition: all 0.2s ease;
-                margin: 0 0.5rem 0 0;
-            }
-
-            .settings-button:hover {
-                background: var(--accent-secondary);
-                transform: translateY(-2px);
-            }
-
-            .settings-button.secondary {
-                background: var(--bg-tertiary);
-                color: var(--text-primary);
-            }
-
-            .settings-button.secondary:hover {
-                background: var(--bg-secondary);
-            }
-
-            .settings-actions {
-                padding: 1.5rem 2rem;
-                border-top: 1px solid var(--border-color);
-                display: flex;
-                justify-content: flex-end;
-                gap: 1rem;
-            }
-
-            /* Темы */
-            .theme-light {
-                --bg-primary: #ffffff;
-                --bg-secondary: #f8fafc;
-                --bg-tertiary: #e2e8f0;
-                --text-primary: #1e293b;
-                --text-secondary: #64748b;
-                --text-muted: #94a3b8;
-                --border-color: #e2e8f0;
-            }
-
-            .theme-colorful {
-                --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                --bg-secondary: rgba(255, 255, 255, 0.1);
-                --bg-tertiary: rgba(255, 255, 255, 0.2);
-                --text-primary: #ffffff;
-                --text-secondary: rgba(255, 255, 255, 0.8);
-                --border-color: rgba(255, 255, 255, 0.2);
-            }
-
-            /* Анимации */
-            .no-animations * {
-                animation-duration: 0s !important;
-                animation-delay: 0s !important;
-                transition-duration: 0s !important;
-            }
-
-            /* Компактный режим */
-            .compact-mode .canvas-node {
-                transform: scale(0.85);
-            }
-
-            .compact-mode .nodes-panel {
-                width: 200px;
-            }
-
-            .compact-mode .node-item {
-                padding: 0.5rem;
-                font-size: 0.9rem;
-            }
-
-            /* Звуковые индикаторы */
-            .sound-indicator {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.5rem;
-                color: var(--accent-primary);
-                font-size: 0.9rem;
-                margin-top: 0.5rem;
-            }
-
-            .volume-control {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                margin-top: 0.5rem;
-            }
-
-            .volume-slider {
-                width: 100px;
-                height: 4px;
-                background: var(--border-color);
-                border-radius: 2px;
-                outline: none;
-                cursor: pointer;
-            }
-
-            .volume-slider::-webkit-slider-thumb {
-                appearance: none;
-                width: 16px;
-                height: 16px;
-                background: var(--accent-primary);
-                border-radius: 50%;
-                cursor: pointer;
-            }
-        `;
-        document.head.appendChild(style);
+            this.savedThemeBeforeLock = null;
+            
+            this.applySettings();
+            this.updateThemeControlLock();
+        });
     }
 
     show() {
         if (this.isOpen) return;
         this.isOpen = true;
         this.createSettingsModal();
+        this.updateThemeControlLock(); 
     }
 
     hide() {
@@ -348,12 +85,12 @@ class SettingsSystem {
             overlay.classList.remove('show');
             setTimeout(() => overlay.remove(), 300);
         }
+        document.removeEventListener('keydown', this.handleKeyPress);
     }
 
     createSettingsModal() {
         const overlay = document.createElement('div');
         overlay.className = 'settings-overlay';
-        
         const t = window.i18n ? window.i18n.t.bind(window.i18n) : (key) => key;
         overlay.innerHTML = `
             <div class="settings-modal">
@@ -381,31 +118,21 @@ class SettingsSystem {
                 </div>
             </div>
         `;
-
         document.body.appendChild(overlay);
-        
-        // Показываем с анимацией
         requestAnimationFrame(() => {
             overlay.classList.add('show');
         });
-
-        // Обработчики событий
         overlay.querySelector('.settings-close').onclick = () => this.hide();
         overlay.onclick = (e) => {
             if (e.target === overlay) this.hide();
         };
-
-        // Инициализируем контролы
         this.initializeControls();
-
-        // Закрытие по ESC
         document.addEventListener('keydown', this.handleKeyPress);
     }
 
     handleKeyPress = (e) => {
         if (e.key === 'Escape' && this.isOpen) {
             this.hide();
-            document.removeEventListener('keydown', this.handleKeyPress);
         }
     }
 
@@ -415,7 +142,7 @@ class SettingsSystem {
             <div class="settings-section">
                 <h3><i class="fas fa-palette"></i> ${t('settings.theme')}</h3>
                 
-                <div class="setting-item">
+                <div class="setting-item setting-item-theme"> 
                     <div class="setting-info">
                         <h4>${t('settings.theme')}</h4>
                         <p>${t('settings.theme_desc')}</p>
@@ -534,55 +261,86 @@ class SettingsSystem {
     }
 
     initializeControls() {
-        // Обработчики переключателей
         document.querySelectorAll('.toggle-switch').forEach(toggle => {
             toggle.onclick = () => {
                 const setting = toggle.dataset.setting;
                 this.settings[setting] = !this.settings[setting];
                 toggle.classList.toggle('active');
                 this.saveSettings();
-                
-                // Воспроизводим звук если включены звуковые эффекты
                 if (this.settings.soundEffects && setting !== 'soundEffects') {
                     this.playSound('toggle');
                 }
-
-                // Обновляем индикаторы
                 this.updateIndicators();
             };
         });
-
-        // Обработчики селектов
         document.querySelectorAll('.setting-select').forEach(select => {
             select.onchange = () => {
                 const setting = select.dataset.setting;
                 this.settings[setting] = select.value;
-                
-                // Особая обработка для языка
                 if (setting === 'language' && window.i18n) {
                     window.i18n.setLanguage(select.value);
-                    // Перегенерируем содержимое настроек с новым языком
                     setTimeout(() => {
                         const content = document.querySelector('.settings-content');
                         if (content) {
                             content.innerHTML = this.generateSettingsContent();
                             this.initializeControls();
+                            this.updateThemeControlLock();
                         }
-                        // Обновляем заголовки
                         const title = document.querySelector('.settings-title');
                         if (title) {
                             title.innerHTML = `<i class="fas fa-cog"></i> ${window.i18n.t('settings.title')}`;
                         }
                     }, 100);
                 }
-                
                 this.saveSettings();
-                
                 if (this.settings.soundEffects) {
                     this.playSound('select');
                 }
             };
         });
+    }
+
+    updateThemeControlLock() {
+        if (!this.isOpen) return;
+
+        const t = window.i18n ? window.i18n.t.bind(window.i18n) : (key) => key;
+        const themeControlContainer = document.querySelector('.setting-item-theme .setting-control');
+        if (!themeControlContainer) return;
+
+        const themeSelect = themeControlContainer.querySelector('[data-setting="theme"]');
+        let lockMessage = themeControlContainer.querySelector('.setting-lock-message');
+        
+        if (this.themeLockedByEasterEgg) {
+            if (themeSelect) themeSelect.style.display = 'none';
+
+            if (!lockMessage) {
+                lockMessage = document.createElement('div');
+                lockMessage.className = 'setting-lock-message';
+                themeControlContainer.appendChild(lockMessage);
+            }
+            lockMessage.style.cssText = `
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 0.5rem;
+                padding: 0.5rem 0.75rem;
+                border-radius: 8px;
+                background: var(--bg-tertiary);
+                border: 1px dashed var(--accent-primary);
+                color: var(--accent-primary);
+                font-size: 0.9em;
+                font-weight: 500;
+            `;
+            lockMessage.innerHTML = `<i class="fas fa-lock"></i> ${t('settings.theme_locked')}`;
+            lockMessage.style.display = 'flex';
+
+        } else {
+            if (themeSelect) themeSelect.style.display = '';
+
+            if (lockMessage) {
+                lockMessage.style.display = 'none';
+            }
+        }
     }
 
     updateIndicators() {
@@ -603,27 +361,23 @@ class SettingsSystem {
     applySettings() {
         const body = document.body;
         
-        // Применяем тему
         body.className = body.className.replace(/theme-\w+/g, '');
-        body.classList.add(`theme-${this.settings.theme}`);
         
-        // Применяем настройки анимаций
+        if (this.settings.theme) {
+             body.classList.add(`theme-${this.settings.theme}`);
+        }
+
         if (!this.settings.animations) {
             body.classList.add('no-animations');
         } else {
             body.classList.remove('no-animations');
         }
-        
-        // Применяем компактный режим
         if (this.settings.compactMode) {
             body.classList.add('compact-mode');
         } else {
             body.classList.remove('compact-mode');
         }
-
-        // Применяем автосохранение
         if (this.settings.autoSave && window.fileManager) {
-            // Включаем автосохранение
             this.enableAutoSave();
         }
     }

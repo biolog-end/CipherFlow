@@ -342,29 +342,13 @@ class CanvasManager {
         const t = window.i18n.t.bind(window.i18n);
 
         const hint = document.createElement('div');
-        hint.className = 'cutting-hint-tooltip'; // Используем другое имя, чтобы не конфликтовать со стилями иконки
+        // Используем класс вместо inline-стилей
+        hint.className = 'cutting-hint-tooltip'; 
         hint.innerHTML = `
             <div class="cutting-hint">
                 <i class="fas fa-cut"></i>
                 <span>${t('canvas.cut_mode_hint')}</span> 
             </div>
-        `;
-        hint.style.cssText = `
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            z-index: 10000;
-            pointer-events: none;
-            animation: slideDown 0.3s ease-out forwards;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border-color);
         `;
         document.body.appendChild(hint);
     }

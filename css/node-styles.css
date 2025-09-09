@@ -152,14 +152,14 @@
 .canvas-node.selected {
     outline: 3px solid var(--accent-secondary);
     outline-offset: 3px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* Можно оставить статическую тень для красоты */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
 }
 
 /* Стиль для кнопки помощи */
 .node-help-button {
     position: absolute;
     top: 8px;
-    right: 36px; /* Обновлено согласно предыдущей рекомендации */
+    right: 36px; 
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
@@ -192,28 +192,6 @@
 .canvas-node.group-selected {
     outline: 2px solid var(--accent-primary);
     outline-offset: 2px;
-}
-
-/* Стили для Undo/Redo индикатора */
-.undo-redo-indicator {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 14px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    z-index: 10000;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-.undo-redo-indicator.show {
-    opacity: 1;
 }
 
 /* Стили для копирования/вставки */

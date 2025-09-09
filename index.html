@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./src/favicon.ico" type="image/x-icon">
     <title data-i18n="app.title">CipherFlow - Нодовый Шифратор</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/node-styles.css">
+    <link rel="stylesheet" href="css/easter-egg-styles.css"> 
 </head>
 <body>
     <div class="app">
@@ -89,11 +91,11 @@
                             <i class="fas fa-shield-alt"></i>
                             <span data-i18n="node.vigenere_cipher">Шифр Виженера</span>
                         </div>
-                        <div class="node-item" data-type="complex_substitution" draggable="true">
+                        <div class="node-item" data-type="complex-substitution" draggable="true">
                             <i class="fas fa-mask"></i>
                             <span data-i18n="node.complex_substitution">Сложная замена</span>
                         </div>
-                        <div class="node-item" data-type="simple_substitution" draggable="true">
+                        <div class="node-item" data-type="simple-substitution" draggable="true">
                             <i class="fas fa-random"></i>
                             <span data-i18n="node.simple_substitution">Простая замена</span>
                         </div>
@@ -238,10 +240,8 @@
     <!-- Скрытый input для загрузки файлов -->
     <input type="file" id="fileInput" accept=".json" style="display: none;">
     
-<<<<<<< HEAD
     <script src="js/i18n.js"></script>
-=======
->>>>>>> 6dd094457996f70e4ec44d29c19e6ff5ab08dca1
+    <script src="js/easter-eggs.js"></script>
     <script src="js/dynamic-node-styler.js"></script> 
     <script src="js/help-system.js"></script>
     <script src="js/settings-system.js"></script>

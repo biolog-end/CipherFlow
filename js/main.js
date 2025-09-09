@@ -297,6 +297,7 @@ class CipherFlowApp {
     showTutorial() {
         const t = window.i18n.t.bind(window.i18n); 
         const tutorial = document.createElement('div');
+        // Используем классы вместо inline-стилей
         tutorial.className = 'tutorial-overlay';
         tutorial.innerHTML = `
             <div class="tutorial-modal">
@@ -346,103 +347,6 @@ class CipherFlowApp {
                 </div>
             </div>
         `;
-        
-        // Добавляем стили для туториала
-        tutorial.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s ease-out;
-        `;
-        
-        const modalStyles = `
-            .tutorial-modal {
-                background: var(--bg-secondary);
-                border-radius: var(--radius-lg);
-                padding: 2rem;
-                max-width: 600px;
-                width: 90%;
-                max-height: 80vh;
-                overflow-y: auto;
-                box-shadow: var(--shadow-lg);
-                border: 1px solid var(--border-color);
-            }
-            .tutorial-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 2rem;
-                padding-bottom: 1rem;
-                border-bottom: 1px solid var(--border-color);
-            }
-            .tutorial-header h2 {
-                color: var(--accent-primary);
-                margin: 0;
-            }
-            .tutorial-close {
-                background: none;
-                border: none;
-                color: var(--text-muted);
-                cursor: pointer;
-                padding: 0.5rem;
-                border-radius: var(--radius);
-                transition: var(--transition);
-            }
-            .tutorial-close:hover {
-                color: var(--text-primary);
-                background: rgba(255, 255, 255, 0.1);
-            }
-            .tutorial-step {
-                display: flex;
-                align-items: flex-start;
-                gap: 1rem;
-                margin-bottom: 1.5rem;
-            }
-            .step-icon {
-                width: 32px;
-                height: 32px;
-                background: var(--accent-primary);
-                color: white;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: 600;
-                flex-shrink: 0;
-            }
-            .step-text h3 {
-                margin: 0 0 0.5rem 0;
-                color: var(--text-primary);
-            }
-            .step-text p {
-                margin: 0;
-                color: var(--text-secondary);
-                line-height: 1.5;
-            }
-            .tutorial-footer {
-                display: flex;
-                gap: 1rem;
-                justify-content: center;
-                margin-top: 2rem;
-                padding-top: 1rem;
-                border-top: 1px solid var(--border-color);
-            }
-        `;
-        
-        // Добавляем стили, если их нет
-        if (!document.querySelector('#tutorial-styles')) {
-            const style = document.createElement('style');
-            style.id = 'tutorial-styles';
-            style.textContent = modalStyles;
-            document.head.appendChild(style);
-        }
         
         document.body.appendChild(tutorial);
     }
