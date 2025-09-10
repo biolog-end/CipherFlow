@@ -601,7 +601,7 @@ class EasterEggsSystem {
             movementDistance: mutate(parentData.movementDistance), 
             size: Math.max(0.1, mutate(parentData.size)), 
             jitterSpeed: Math.max(0.01, mutate(parentData.jitterSpeed)), 
-            duplicationChance: Math.max(0, mutate(parentData.duplicationChance)),
+            duplicationChance: Math.min(0.35, Math.max(0, mutate(parentData.duplicationChance))),
             animationTimeout: null
         };
 
