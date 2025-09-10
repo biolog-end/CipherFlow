@@ -40,10 +40,11 @@ class EasterEggsSystem {
             }],
             ['wired_presence', {
                 activation: (chains) => {
-                    const hasLongChain = chains.some(chain => chain.length >= 10);
+                    // Упрощаем условия активации для более легкого срабатывания
+                    const hasLongChain = chains.some(chain => chain.length >= 5);
                     if (!hasLongChain) return false;
                     
-                    const specialNodes = ['navi-terminal', 'knights-cipher', 'protocol-7', 'schumann-resonance'];
+                    const specialNodes = ['navi-terminal', 'knights-cipher', 'protocol-7', 'schumann-resonance', 'complex-substitution', 'binary', 'base64'];
                     const hasSpecialNode = chains.some(chain => 
                         chain.some(node => specialNodes.includes(node.type))
                     );
@@ -57,15 +58,19 @@ class EasterEggsSystem {
                     title: 'easter_eggs.wired_presence.title',
                     subtitle: 'easter_eggs.wired_presence.subtitle',
                     image: 'src/easter_eggs/images/lain.gif', 
-                    sound: 'src/easter_eggs/sounds/default_notification.mp3', 
+                    sound: 'src/easter_eggs/sounds/lain.mp3', 
                     className: 'wired-presence-notification',
                 },
                 onActivate: () => {
-                    console.log('🌐 Присутствие в Сети активировано!');
+                    console.log('🌐🔺 ПРИСУТСТВИЕ В СЕТИ АКТИВИРОВАНО 🔺🌐');
+                    console.log('└─ Инициализация протокола Layer 07...');
+                    console.log('└─ Подключение к Wired...');
+                    console.log('└─ Present Day, Present Time... Ahahahaha!');
                     this.activateWiredPresence();
                 },
                 onDeactivate: () => {
-                    console.log('📡 Присутствие в Сети деактивировано');
+                    console.log('📡 Отключение от Сети...');
+                    console.log('└─ Возврат в реальный мир');
                     this.deactivateWiredPresence();
                 }
             }],
@@ -473,16 +478,26 @@ class EasterEggsSystem {
     
     // Методы для пасхалки "Присутствие в Сети"
     checkForLainKeyword() {
+        const lainKeywords = [
+            'lain', 'wired', 'layer', 'protocol', 'navi', 'present day', 
+            'present time', 'identity', 'ego', 'reality', 'connected',
+            'лейн', 'сеть', 'протокол', 'реальность', 'связан', 'эго'
+        ];
+        
         // Проверяем основное поле ввода
         const mainInput = document.getElementById('inputText');
-        if (mainInput && mainInput.value.toLowerCase().includes('lain')) {
-            return true;
+        if (mainInput) {
+            const inputText = mainInput.value.toLowerCase();
+            if (lainKeywords.some(keyword => inputText.includes(keyword))) {
+                return true;
+            }
         }
         
         // Проверяем все textarea в нодах
         const textareas = document.querySelectorAll('.canvas-node textarea');
         for (const textarea of textareas) {
-            if (textarea.value.toLowerCase().includes('lain')) {
+            const textareaText = textarea.value.toLowerCase();
+            if (lainKeywords.some(keyword => textareaText.includes(keyword))) {
                 return true;
             }
         }
@@ -490,7 +505,8 @@ class EasterEggsSystem {
         // Проверяем все input в нодах
         const inputs = document.querySelectorAll('.canvas-node input[type="text"]');
         for (const input of inputs) {
-            if (input.value.toLowerCase().includes('lain')) {
+            const inputText = input.value.toLowerCase();
+            if (lainKeywords.some(keyword => inputText.includes(keyword))) {
                 return true;
             }
         }
@@ -501,30 +517,58 @@ class EasterEggsSystem {
     activateWiredPresence() {
         this.lainGhostNodes = new Map();
         
+        // Запускаем все основные эффекты
         this.createLainGhostNode(); 
-        
         this.startWiredAudio();
+        this.createMatrixRain();
+        this.startGlitchEffects();
+        this.createDataStreamOverlay();
+        this.injectWiredTerminal();
+        
+        // Применяем основную тему
         document.body.classList.add('wired-active');
+        document.body.classList.add('lain-theme');
+        
+        // Дрожание экрана при активации
+        this.screenShake();
+        
+        // Случайные системные сообщения
+        this.startSystemMessages();
+        
+        console.log('└─ Все системы онлайн. Добро пожаловать в Wired.');
     }
     
     deactivateWiredPresence() {
+        // Очищаем призрачные ноды
         if (this.lainGhostNodes) {
             for (const ghost of this.lainGhostNodes.values()) {
-                // Предотвращаем запуск новых таймаутов анимации
                 clearTimeout(ghost.animationTimeout); 
                 ghost.element.remove();
             }
             this.lainGhostNodes.clear();
         }
         
+        // Останавливаем аудио
         if (this.wiredAudio) {
             this.wiredAudio.pause();
             this.wiredAudio.remove();
             this.wiredAudio = null;
         }
         
-        // Убираем глобальные эффекты
+        // Очищаем все дополнительные эффекты
+        this.clearMatrixRain();
+        this.stopGlitchEffects();
+        this.clearDataStreamOverlay();
+        this.removeWiredTerminal();
+        this.stopSystemMessages();
+        
+        // Убираем все классы темы
         document.body.classList.remove('wired-active');
+        document.body.classList.remove('lain-theme');
+        
+        // Очищаем все динамически созданные элементы
+        const wiredElements = document.querySelectorAll('.wired-effect, .matrix-rain, .data-stream, .wired-terminal, .system-message');
+        wiredElements.forEach(el => el.remove());
     }
     
     // === ИЗМЕНЕНИЕ: Функция теперь создает "нулевого пациента" с базовыми "генами" ===
@@ -560,15 +604,37 @@ class EasterEggsSystem {
         
         ghostNode.style.animation = 'lain-drift 20s linear infinite alternate';
 
+        const ghostTexts = [
+            'Present Day<br>Present Time',
+            'Layer 07<br>Protocol',
+            'Identity<br>Verified',
+            'Ego Border<br>Dissolved',
+            'Reality.exe<br>Not Found',
+            'You Are<br>Connected',
+            'Close the World<br>Open the Next',
+            'I Am Not<br>Lain',
+            'Everyone Is<br>Connected',
+            'The Wired<br>Is Real'
+        ];
+        
+        const selectedText = ghostTexts[Math.floor(Math.random() * ghostTexts.length)];
+        
         ghostNode.innerHTML = `
             <div class="lain-ghost-inner">
-                <div class="node-header" style="background: rgba(0,0,0,0.8); border: none;">
-                    <span class="node-title" style="color: transparent; text-shadow: 0 0 8px #fff;">░▒▓█▓▒░</span>
+                <div class="node-header" style="background: rgba(0,0,0,0.9); border: 1px solid rgba(0,255,0,0.3);">
+                    <span class="node-title" style="color: #00ff41; text-shadow: 0 0 8px #00ff41; font-family: 'Courier New', monospace;">
+                        ░▒▓ LAIN ▓▒░
+                    </span>
+                    <button class="node-close-btn" style="background: rgba(255,0,0,0.5); border: none; color: #fff; width: 20px; height: 20px; border-radius: 50%; font-size: 12px;">×</button>
                 </div>
-                <div class="node-body" style="background: rgba(0,0,0,0.5); min-height: 50px;">
-                    <div class="glitch-text" style="color: #00ff00; font-family: monospace; text-align: center; padding: 10px;">
-                        <span style="opacity: 0.5;">Present Day</span><br>
-                        <span style="opacity: 0.7;">Present Time</span>
+                <div class="node-body" style="background: rgba(0,0,0,0.8); min-height: 60px; border: 1px solid rgba(0,255,0,0.2);">
+                    <div class="glitch-text" style="color: #00ff00; font-family: 'Courier New', monospace; text-align: center; padding: 15px; font-size: 11px;">
+                        ${selectedText}
+                    </div>
+                    <div style="text-align: center; margin-top: 10px;">
+                        <div style="width: 30px; height: 2px; background: #00ff41; margin: 2px auto; animation: lain-loading 2s infinite;"></div>
+                        <div style="width: 20px; height: 2px; background: #ff0000; margin: 2px auto; animation: lain-loading 2s infinite 0.5s;"></div>
+                        <div style="width: 25px; height: 2px; background: #0080ff; margin: 2px auto; animation: lain-loading 2s infinite 1s;"></div>
                     </div>
                 </div>
             </div>
@@ -580,6 +646,21 @@ class EasterEggsSystem {
         canvas.appendChild(ghostNode);
         ghostData.element = ghostNode;
         this.lainGhostNodes.set(ghostData.id, ghostData);
+        
+        // Добавляем обработчик для кнопки закрытия
+        const closeBtn = ghostNode.querySelector('.node-close-btn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.removeGhostNode(ghostData.id);
+            });
+        }
+        
+        // Добавляем обработчик двойного клика для генерации сообщения
+        ghostNode.addEventListener('dblclick', () => {
+            this.showSystemMessage('Ghost node activated: Reality breach detected');
+        });
+        
         this.makeLainGhostDraggable(ghostNode);
         this.animateLainGhost(ghostData);
     }
@@ -659,7 +740,6 @@ class EasterEggsSystem {
     }
 
     /**
-     * === НОВАЯ ФУНКЦИЯ (заменяет performGlitchyMove): Выполняет один резкий рывок к цели ===
      * @param {HTMLElement} element - Перемещаемый элемент.
      * @param {number} finalX - Конечная координата X.
      * @param {number} finalY - Конечная координата Y.
@@ -726,11 +806,363 @@ class EasterEggsSystem {
         this.wiredAudio = document.createElement('audio');
         this.wiredAudio.src = 'src/easter_eggs/sounds/lain.mp3';
         this.wiredAudio.loop = true;
-        this.wiredAudio.volume = 0.1;
+        this.wiredAudio.volume = 0.15; // Увеличиваем громкость
+        
+        // Добавляем эффект постепенного появления
+        this.wiredAudio.addEventListener('loadstart', () => {
+            this.wiredAudio.volume = 0;
+        });
+        
+        this.wiredAudio.addEventListener('canplaythrough', () => {
+            let volume = 0;
+            const fadeIn = setInterval(() => {
+                if (volume < 0.15) {
+                    volume += 0.01;
+                    this.wiredAudio.volume = Math.min(volume, 0.15);
+                } else {
+                    clearInterval(fadeIn);
+                }
+            }, 50);
+        });
         
         this.wiredAudio.play().catch(err => {
             console.log('Не удалось запустить аудио:', err);
+            // Fallback: создаем синтетические звуки
+            this.createSyntheticAudio();
         });
+    }
+    
+    createSyntheticAudio() {
+        if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.audioContext = new AudioContext();
+            
+            // Создаем атмосферные звуки
+            this.playAmbientSound();
+        }
+    }
+    
+    playAmbientSound() {
+        if (!this.audioContext) return;
+        
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        
+        oscillator.type = 'sawtooth';
+        oscillator.frequency.setValueAtTime(55, this.audioContext.currentTime); // Низкая частота
+        
+        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.05, this.audioContext.currentTime + 2);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 10);
+        
+        oscillator.start();
+        oscillator.stop(this.audioContext.currentTime + 10);
+        
+        // Периодически воспроизводим звук
+        setTimeout(() => {
+            if (this.audioContext) {
+                this.playAmbientSound();
+            }
+        }, 8000 + Math.random() * 4000);
+    }
+    
+    createMatrixRain() {
+        const matrixContainer = document.createElement('div');
+        matrixContainer.className = 'matrix-rain wired-effect';
+        matrixContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        `;
+        
+        for (let i = 0; i < 50; i++) {
+            const column = document.createElement('div');
+            column.className = 'matrix-column';
+            column.style.cssText = `
+                position: absolute;
+                top: -100px;
+                left: ${Math.random() * 100}%;
+                font-family: 'Courier New', monospace;
+                font-size: ${12 + Math.random() * 8}px;
+                color: #00ff41;
+                text-shadow: 0 0 5px #00ff41;
+                animation: matrix-fall ${3 + Math.random() * 7}s linear infinite;
+                animation-delay: ${Math.random() * 2}s;
+            `;
+            
+            const symbols = ['0', '1', 'Ѐ', 'Ё', '௹', 'Ђ', 'Ѓ', 'Є', 'Ѕ', 'І', 'Ї', 'Ј', 'Љ', 'Њ', 'Ћ', 'Ќ', 'Ѝ', 'Ў', 'Џ'];
+            let columnText = '';
+            for (let j = 0; j < 20; j++) {
+                columnText += symbols[Math.floor(Math.random() * symbols.length)] + '<br>';
+            }
+            column.innerHTML = columnText;
+            
+            matrixContainer.appendChild(column);
+        }
+        
+        document.body.appendChild(matrixContainer);
+        this.matrixRainElement = matrixContainer;
+    }
+    
+    clearMatrixRain() {
+        if (this.matrixRainElement) {
+            this.matrixRainElement.remove();
+            this.matrixRainElement = null;
+        }
+    }
+    
+    startGlitchEffects() {
+        this.glitchInterval = setInterval(() => {
+            // Случайные глитчи на всем экране
+            const glitch = document.createElement('div');
+            glitch.className = 'screen-glitch wired-effect';
+            glitch.style.cssText = `
+                position: fixed;
+                top: ${Math.random() * 100}%;
+                left: 0;
+                width: 100%;
+                height: ${2 + Math.random() * 5}px;
+                background: linear-gradient(90deg, 
+                    transparent, 
+                    rgba(255, 0, 0, 0.3), 
+                    rgba(0, 255, 0, 0.3), 
+                    rgba(0, 0, 255, 0.3), 
+                    transparent);
+                pointer-events: none;
+                z-index: 10001;
+                animation: glitch-bar 0.1s ease-out forwards;
+            `;
+            
+            document.body.appendChild(glitch);
+            setTimeout(() => glitch.remove(), 100);
+        }, 200 + Math.random() * 800);
+    }
+    
+    stopGlitchEffects() {
+        if (this.glitchInterval) {
+            clearInterval(this.glitchInterval);
+            this.glitchInterval = null;
+        }
+    }
+    
+    createDataStreamOverlay() {
+        const overlay = document.createElement('div');
+        overlay.className = 'data-stream wired-effect';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9997;
+            background: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent 0px,
+                    rgba(0, 255, 65, 0.01) 1px,
+                    transparent 2px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent 0px,
+                    rgba(255, 0, 0, 0.01) 1px,
+                    transparent 2px
+                );
+            animation: data-stream-flow 20s linear infinite;
+        `;
+        
+        document.body.appendChild(overlay);
+        this.dataStreamElement = overlay;
+    }
+    
+    clearDataStreamOverlay() {
+        if (this.dataStreamElement) {
+            this.dataStreamElement.remove();
+            this.dataStreamElement = null;
+        }
+    }
+    
+    injectWiredTerminal() {
+        const terminal = document.createElement('div');
+        terminal.className = 'wired-terminal wired-effect';
+        terminal.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 400px;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff41;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            color: #00ff41;
+            padding: 10px;
+            font-size: 12px;
+            overflow-y: auto;
+            z-index: 10000;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        `;
+        
+        const messages = [
+            'Initializing Layer 07 Protocol...',
+            'Connecting to Wired infrastructure...',
+            'Identity verification: LAIN',
+            'Ego border dissolution: 47%',
+            'Reality.exe has stopped working',
+            'You are not alone.',
+            'Present day... Present time...',
+            'Everyone is connected.',
+            'Close the world, open the next.',
+            'No matter where you go, everyone\'s connected.',
+            'The Wired is not merely a communication network.',
+            'I am not Lain. Lain is...',
+        ];
+        
+        let messageIndex = 0;
+        terminal.innerHTML = `<div style="color: #ff0000;">SYSTEM BREACH DETECTED</div><br>`;
+        
+        this.terminalInterval = setInterval(() => {
+            if (messageIndex < messages.length) {
+                terminal.innerHTML += `> ${messages[messageIndex]}<br>`;
+                messageIndex++;
+                terminal.scrollTop = terminal.scrollHeight;
+            } else {
+                // Циклический вывод
+                messageIndex = 0;
+                terminal.innerHTML = `<div style="color: #ff0000;">SYSTEM BREACH DETECTED</div><br>`;
+            }
+        }, 2000);
+        
+        document.body.appendChild(terminal);
+        this.wiredTerminalElement = terminal;
+    }
+    
+    removeWiredTerminal() {
+        if (this.terminalInterval) {
+            clearInterval(this.terminalInterval);
+            this.terminalInterval = null;
+        }
+        if (this.wiredTerminalElement) {
+            this.wiredTerminalElement.remove();
+            this.wiredTerminalElement = null;
+        }
+    }
+    
+    screenShake() {
+        document.body.style.animation = 'screen-shake 0.5s ease-in-out';
+        setTimeout(() => {
+            document.body.style.animation = '';
+        }, 500);
+    }
+    
+    startSystemMessages() {
+        const messages = [
+            'Reality buffer overflow detected',
+            'Ego.sys corrupted',
+            'Boundary between real and virtual compromised',
+            'Identity verification failed',
+            'Multiple consciousness instances detected',
+            'Layer 07 protocol active',
+            'Neural link established',
+            'Memory fragmentation in progress...'
+        ];
+        
+        this.systemMessageInterval = setInterval(() => {
+            const message = messages[Math.floor(Math.random() * messages.length)];
+            this.showSystemMessage(message);
+        }, 10000 + Math.random() * 20000); // Каждые 10-30 секунд
+    }
+    
+    stopSystemMessages() {
+        if (this.systemMessageInterval) {
+            clearInterval(this.systemMessageInterval);
+            this.systemMessageInterval = null;
+        }
+    }
+    
+    showSystemMessage(text) {
+        const message = document.createElement('div');
+        message.className = 'system-message wired-effect';
+        message.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            color: #ff0000;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            padding: 20px 40px;
+            border: 2px solid #ff0000;
+            border-radius: 5px;
+            z-index: 10002;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+            animation: system-message-appear 0.5s ease-out;
+        `;
+        
+        message.textContent = `ERROR: ${text}`;
+        document.body.appendChild(message);
+        
+        // Воспроизводим звуковой эффект для системного сообщения
+        this.playSystemSound();
+        
+        setTimeout(() => {
+            message.style.animation = 'system-message-disappear 0.5s ease-out forwards';
+            setTimeout(() => message.remove(), 500);
+        }, 3000);
+    }
+    
+    playSystemSound() {
+        if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const audioContext = new AudioContext();
+            
+            // Создаем резкий звук ошибки
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = 'square';
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.2);
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }
+    }
+    
+    removeGhostNode(ghostId) {
+        const ghostData = this.lainGhostNodes.get(ghostId);
+        if (ghostData) {
+            // Добавляем эффект исчезновения
+            ghostData.element.style.animation = 'lain-ghost-disappear 0.5s ease-out forwards';
+            
+            setTimeout(() => {
+                clearTimeout(ghostData.animationTimeout);
+                if (ghostData.element.parentNode) {
+                    ghostData.element.remove();
+                }
+                this.lainGhostNodes.delete(ghostId);
+            }, 500);
+            
+            // Показываем сообщение об удалении
+            this.showSystemMessage('Ghost node deleted: Connection severed');
+        }
     }
     
 }

@@ -447,3 +447,399 @@
     color: rgba(0, 255, 65, 0.7);
     font-family: 'Courier New', monospace;
 }
+
+/* === РАСШИРЕННЫЕ СТИЛИ ДЛЯ УЛУЧШЕННОЙ LAIN ТЕМЫ === */
+
+/* Основная тема Лейн */
+.lain-theme {
+    --bg-primary: #000000;
+    --bg-secondary: #0a0a0a;
+    --bg-tertiary: #111111;
+    --accent-primary: #00ff41;
+    --accent-secondary: #ff0000;
+    --accent-tertiary: #0080ff;
+    --text-primary: #00ff41;
+    --text-secondary: #ffffff;
+    --text-muted: #888888;
+    --border-color: #00ff41;
+    --border-hover: #ff0000;
+    --success: #00ff41;
+    --warning: #ffff00;
+    --error: #ff0000;
+    
+    background: #000000;
+    color: #00ff41;
+    font-family: 'Courier New', monospace;
+}
+
+/* Усиленные эффекты для wired-active состояния */
+.wired-active.lain-theme::before {
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 255, 0, 0.05) 2px,
+            rgba(0, 255, 0, 0.05) 4px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 100px,
+            rgba(255, 0, 0, 0.02) 100px,
+            rgba(255, 0, 0, 0.02) 101px
+        );
+    animation: wired-scanlines 0.3s linear infinite;
+}
+
+/* Анимации для матричного дождя */
+@keyframes matrix-fall {
+    0% { 
+        transform: translateY(-100vh); 
+        opacity: 1; 
+    }
+    90% { 
+        opacity: 1; 
+    }
+    100% { 
+        transform: translateY(100vh); 
+        opacity: 0; 
+    }
+}
+
+/* Анимации для глитч-полос */
+@keyframes glitch-bar {
+    0% { 
+        transform: translateX(-100%); 
+        opacity: 0;
+    }
+    50% { 
+        opacity: 1; 
+    }
+    100% { 
+        transform: translateX(100%); 
+        opacity: 0;
+    }
+}
+
+/* Анимация для потока данных */
+@keyframes data-stream-flow {
+    0% { 
+        background-position: 0 0, 0 0; 
+    }
+    100% { 
+        background-position: 100px 100px, -100px -100px; 
+    }
+}
+
+/* Анимация дрожания экрана */
+@keyframes screen-shake {
+    0%, 100% { transform: translateX(0); }
+    10% { transform: translateX(-2px) rotateZ(-0.1deg); }
+    20% { transform: translateX(2px) rotateZ(0.1deg); }
+    30% { transform: translateX(-1px) rotateZ(-0.05deg); }
+    40% { transform: translateX(1px) rotateZ(0.05deg); }
+    50% { transform: translateX(-2px) rotateZ(-0.1deg); }
+    60% { transform: translateX(2px) rotateZ(0.1deg); }
+    70% { transform: translateX(-1px) rotateZ(-0.05deg); }
+    80% { transform: translateX(1px) rotateZ(0.05deg); }
+    90% { transform: translateX(-2px) rotateZ(-0.1deg); }
+}
+
+/* Системные сообщения */
+@keyframes system-message-appear {
+    0% { 
+        opacity: 0; 
+        transform: translate(-50%, -50%) scale(0.8); 
+    }
+    100% { 
+        opacity: 1; 
+        transform: translate(-50%, -50%) scale(1); 
+    }
+}
+
+@keyframes system-message-disappear {
+    0% { 
+        opacity: 1; 
+        transform: translate(-50%, -50%) scale(1); 
+    }
+    100% { 
+        opacity: 0; 
+        transform: translate(-50%, -50%) scale(0.8); 
+    }
+}
+
+/* Улучшенные стили для призраков Лейн */
+.lain-theme .lain-ghost {
+    box-shadow: 
+        0 0 20px rgba(0, 255, 0, 0.4),
+        0 0 40px rgba(0, 255, 0, 0.2),
+        inset 0 0 20px rgba(255, 0, 0, 0.1);
+    border: 2px solid rgba(0, 255, 0, 0.5);
+    background: linear-gradient(135deg, 
+        rgba(0, 0, 0, 0.9) 0%, 
+        rgba(20, 20, 20, 0.9) 50%, 
+        rgba(0, 0, 0, 0.9) 100%) !important;
+}
+
+.lain-theme .lain-ghost::before {
+    background: linear-gradient(45deg, 
+        rgba(255, 0, 0, 0.1), 
+        rgba(0, 255, 0, 0.1));
+    animation: lain-chromatic-aberration 2s infinite;
+}
+
+.lain-theme .lain-ghost::after {
+    background: linear-gradient(-45deg, 
+        rgba(0, 0, 255, 0.1), 
+        rgba(255, 255, 0, 0.1));
+    animation: lain-chromatic-aberration 2s infinite reverse;
+}
+
+@keyframes lain-chromatic-aberration {
+    0%, 100% { transform: translate(0, 0); opacity: 0.3; }
+    25% { transform: translate(2px, -1px); opacity: 0.5; }
+    50% { transform: translate(-1px, 2px); opacity: 0.4; }
+    75% { transform: translate(-2px, -1px); opacity: 0.5; }
+}
+
+/* Стили для нодов в lain-theme */
+.lain-theme .canvas-node {
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    color: #00ff41;
+}
+
+.lain-theme .canvas-node:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+    border-color: rgba(0, 255, 0, 0.6);
+}
+
+.lain-theme .node-header {
+    background: linear-gradient(135deg, 
+        rgba(0, 0, 0, 0.95) 0%, 
+        rgba(30, 30, 30, 0.95) 100%);
+    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+    color: #00ff41;
+}
+
+.lain-theme .node-title {
+    text-shadow: 0 0 5px #00ff41;
+}
+
+/* Соединения в lain-theme */
+.lain-theme .connection-line {
+    stroke: #00ff41;
+    filter: drop-shadow(0 0 5px #00ff41);
+    animation: lain-connection-pulse 3s ease-in-out infinite;
+}
+
+@keyframes lain-connection-pulse {
+    0%, 100% { 
+        opacity: 0.6; 
+        stroke-width: 2;
+    }
+    50% { 
+        opacity: 1; 
+        stroke-width: 3;
+        filter: drop-shadow(0 0 10px #00ff41);
+    }
+}
+
+/* Панели интерфейса в lain-theme */
+.lain-theme .header {
+    background: rgba(0, 0, 0, 0.95);
+    border-bottom: 2px solid #00ff41;
+    box-shadow: 0 2px 20px rgba(0, 255, 0, 0.3);
+}
+
+.lain-theme .nodes-panel {
+    background: rgba(0, 0, 0, 0.95);
+    border-right: 2px solid #00ff41;
+    box-shadow: 2px 0 20px rgba(0, 255, 0, 0.2);
+    color: #00ff41;
+}
+
+.lain-theme .input-output-panel {
+    background: rgba(0, 0, 0, 0.95);
+    border-top: 2px solid #00ff41;
+    box-shadow: 0 -2px 20px rgba(0, 255, 0, 0.3);
+}
+
+.lain-theme .input-output-panel textarea {
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(0, 255, 0, 0.5);
+    color: #00ff41;
+    font-family: 'Courier New', monospace;
+}
+
+.lain-theme .input-output-panel textarea:focus {
+    border-color: #00ff41;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+/* Кнопки в lain-theme */
+.lain-theme .btn {
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid #00ff41;
+    color: #00ff41;
+    text-shadow: 0 0 3px #00ff41;
+}
+
+.lain-theme .btn:hover {
+    background: rgba(0, 255, 0, 0.1);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+/* Категории нодов в lain-theme */
+.lain-theme .node-item {
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    color: #00ff41;
+}
+
+.lain-theme .node-item:hover {
+    background: rgba(0, 255, 0, 0.1);
+    border-color: #00ff41;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+/* Рабочая область в lain-theme */
+.lain-theme .canvas {
+    background: 
+        radial-gradient(circle at 25% 25%, rgba(0, 255, 0, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(255, 0, 0, 0.02) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(0, 0, 255, 0.01) 0%, transparent 50%),
+        #000000;
+}
+
+/* Дополнительные эффекты искажения */
+.lain-theme .canvas-node.processing {
+    animation: node-processing-glitch 0.5s infinite;
+}
+
+@keyframes node-processing-glitch {
+    0%, 100% { transform: translateX(0); filter: hue-rotate(0deg); }
+    20% { transform: translateX(-1px); filter: hue-rotate(90deg); }
+    40% { transform: translateX(1px); filter: hue-rotate(180deg); }
+    60% { transform: translateX(-1px); filter: hue-rotate(270deg); }
+    80% { transform: translateX(1px); filter: hue-rotate(360deg); }
+}
+
+/* Эффект цифрового шума для всей темы */
+.lain-theme::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    background: 
+        repeating-conic-gradient(from 0deg at 50% 50%, 
+            transparent 0deg, 
+            rgba(0, 255, 0, 0.01) 0.1deg, 
+            transparent 0.2deg);
+    animation: digital-noise 20s linear infinite;
+}
+
+@keyframes digital-noise {
+    0% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(90deg) scale(1.01); }
+    50% { transform: rotate(180deg) scale(1); }
+    75% { transform: rotate(270deg) scale(1.01); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+/* Анимация загрузочных полос в призраках */
+@keyframes lain-loading {
+    0%, 100% { 
+        opacity: 0.3; 
+        transform: scaleX(0.5);
+    }
+    50% { 
+        opacity: 1; 
+        transform: scaleX(1);
+    }
+}
+
+/* Дополнительные эффекты для системных сообщений */
+.system-message {
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.system-message::before {
+    content: '⚠ ';
+    color: #ff0000;
+    animation: warning-blink 0.5s infinite;
+}
+
+@keyframes warning-blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* Улучшенные эффекты для wired-terminal */
+.wired-terminal {
+    text-shadow: 0 0 5px #00ff41;
+    backdrop-filter: blur(5px);
+}
+
+.wired-terminal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            transparent 0px,
+            rgba(0, 255, 0, 0.03) 1px,
+            transparent 2px
+        );
+    animation: terminal-scanlines 2s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes terminal-scanlines {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(4px); }
+}
+
+/* Пульсация для активных нодов в lain-theme */
+.lain-theme .canvas-node.active {
+    animation: lain-node-active 2s ease-in-out infinite;
+}
+
+@keyframes lain-node-active {
+    0%, 100% { 
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+    }
+    50% { 
+        box-shadow: 0 0 25px rgba(0, 255, 0, 0.6), 0 0 50px rgba(0, 255, 0, 0.3);
+    }
+}
+
+/* Анимация исчезновения призраков */
+@keyframes lain-ghost-disappear {
+    0% { 
+        opacity: 1; 
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.5; 
+        transform: scale(1.1);
+        filter: brightness(2) hue-rotate(90deg);
+    }
+    100% { 
+        opacity: 0; 
+        transform: scale(0);
+        filter: brightness(0) hue-rotate(180deg);
+    }
+}

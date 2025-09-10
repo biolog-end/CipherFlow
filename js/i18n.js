@@ -918,8 +918,8 @@ class I18n {
                 
                 // Пасхалки (Easter Eggs)
                 'easter_eggs.cute_mode.title': 'Няшный режим активирован! 🌸',
-                'easter_eggs.wired_presence.title': 'Присутствие в Сети обнаружено',
-                'easter_eggs.wired_presence.subtitle': 'Lain is watching...',
+                'easter_eggs.wired_presence.title': '🔺 ПРИСУТСТВИЕ В СЕТИ АКТИВИРОВАНО 🔺',
+                'easter_eggs.wired_presence.subtitle': 'Present Day, Present Time... Lain подключается к реальности',
                 'easter_eggs.cute_mode.subtitle': 'UwU! Добро пожаловать в мир няшек! ✨',
                 'easter_eggs.cute_mode.video_title': 'Няшные мелодии',
                 'easter_eggs.cute_mode.minimize': 'Свернуть',
@@ -1819,8 +1819,8 @@ class I18n {
                 
                 // Easter Eggs
                 'easter_eggs.cute_mode.title': 'Cute Mode Activated! 🌸',
-                'easter_eggs.wired_presence.title': 'Wired Presence Detected',
-                'easter_eggs.wired_presence.subtitle': 'Lain is watching...',
+                'easter_eggs.wired_presence.title': '🔺 WIRED PRESENCE ACTIVATED 🔺',
+                'easter_eggs.wired_presence.subtitle': 'Present Day, Present Time... Lain is connecting to reality',
                 'easter_eggs.cute_mode.subtitle': 'UwU! Welcome to the world of cuteness! ✨',
                 'easter_eggs.cute_mode.video_title': 'Cute Melodies',
                 'easter_eggs.cute_mode.minimize': 'Minimize',
