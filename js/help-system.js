@@ -664,6 +664,47 @@ class HelpSystem {
 
                 <div class="help-subtitle" data-i18n="help.algorithms.advanced_processing"></div>
 
+                <div class="algorithm-card" data-node-type="navi_terminal">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #0891b2, #0e7490);"><i class="fas fa-terminal"></i></div>
+                        <div class="algorithm-info">
+                            <h3 data-i18n="help.algo.navi_terminal.title"></h3>
+                            <p data-i18n="help.algo.navi_terminal.desc"></p>
+                        </div>
+                    </div>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.navi_terminal.principle"></span></p>
+                    <div class="example-box">
+                        <h4 data-i18n="help.algo.navi_terminal.example_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.navi_terminal.example_input"></div>
+                        <div class="example-output" style="white-space: pre; font-family: 'Courier New', monospace; font-size: 0.8em;" data-i18n="help.algo.navi_terminal.example_output"></div>
+                    </div>
+                    <div class="data-loss-warning">
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p><span data-i18n="help.algo.navi_terminal.feature1"></span><br><span data-i18n="help.algo.navi_terminal.feature2"></span><br><span data-i18n="help.algo.navi_terminal.feature3"></span></p>
+                    </div>
+                </div>
+
+                <div class="algorithm-card" data-node-type="knights_cipher">
+                    <div class="algorithm-header">
+                        <div class="algorithm-icon" style="background: linear-gradient(135deg, #4c1d95, #5b21b6);"><i class="fas fa-chess-knight"></i></div>
+                        <div class="algorithm-info">
+                            <h3 data-i18n="help.algo.knights_cipher.title"></h3>
+                            <p data-i18n="help.algo.knights_cipher.desc"></p>
+                        </div>
+                    </div>
+                    <p><strong data-i18n="help.general.principle"></strong> <span data-i18n="help.algo.knights_cipher.principle"></span></p>
+                    <div class="example-box">
+                        <h4 data-i18n="help.algo.knights_cipher.example_title"></h4>
+                        <div class="example-input" data-i18n="help.algo.knights_cipher.example_input_container"></div>
+                        <div class="example-input" data-i18n="help.algo.knights_cipher.example_input_secret"></div>
+                        <div class="example-output" data-i18n="help.algo.knights_cipher.example_output"></div>
+                    </div>
+                     <div class="data-loss-warning">
+                        <h4 data-i18n="help.general.features"></h4>
+                        <p><span data-i18n="help.algo.knights_cipher.feature1"></span><br><span data-i18n="help.algo.knights_cipher.feature2"></span><br><span data-i18n="help.algo.knights_cipher.feature3"></span></p>
+                    </div>
+                </div>
+
                 <div class="algorithm-card" data-node-type="multi_replace">
                     <div class="algorithm-header">
                         <div class="algorithm-icon" style="background: linear-gradient(135deg, #d946ef, #c026d3);"><i class="fas fa-exchange-alt"></i></div>
@@ -1407,49 +1448,72 @@ class HelpSystem {
     }
 }
 
-// Создаем глобальный экземпляр системы справки
 window.helpSystem = new HelpSystem();
 
-// Функция для показа справки (совместимость с существующим кодом)
 window.showHelp = () => {
     window.helpSystem.show();
 };
 
-// Функция для показа справки по конкретному ноду
 window.showNodeHelp = (nodeType) => {
-    // 1. Показываем общее окно справки
     window.helpSystem.show();
 
-    // 2. Используем setTimeout, чтобы дать DOM время на обновление после вызова .show()
     setTimeout(() => {
-        // Переключаемся на раздел с описанием алгоритмов
         window.helpSystem.switchSection('algorithms');
 
-        // 3. Используем еще один setTimeout с большей задержкой.
-        // Это необходимо, чтобы дождаться окончания CSS-анимации появления раздела (которая длится 0.5с).
-        // Без этого, браузер пытается прокрутить к элементу, который еще не полностью видим и спозиционирован.
         setTimeout(() => {
             const helpContent = document.querySelector('.help-content');
-            const nodeCard = helpContent?.querySelector(`[data-node-type="${nodeType}"]`);
             
+            const nodeTypeToHelpIdMap = {
+                'input': 'text_input',
+                'output': 'text_output',
+                'caesar': 'caesar_cipher',
+                'morse': 'morse_code',
+                'braille-cat': 'morse_cat',
+                'a1z26': 'a1z26_cipher',
+                'vigenere': 'vigenere_cipher',
+                'secret-word': 'secret_word', 
+                'numbers-to-words': 'numbers_to_words',
+                'math': 'math',
+                'reverse': 'reverse_text',
+                'case-transform': 'case_transform',
+                'binary': 'binary_code',
+                'planet-enchanter': 'planet_enchanter',
+                'multi-replacer': 'multi_replace',
+                'text-router': 'text_router',
+                'stream-merger': 'stream_merger',
+                'stream-splitter': 'stream_splitter',
+                'atbash': 'atbash_cipher',
+                'base64': 'base64',
+                'gawr-gura': 'shark_cipher',
+                'uwu-ifier': 'uwu_cipher',
+                'complex-substitution': 'complex_substitution',
+                'simple-substitution': 'simple_substitution',
+                'rle-compression': 'rle_compression',
+                'route-transposition': 'route_transposition',
+                'navi-terminal': 'navi_terminal', 
+                'knights-cipher': 'knights_cipher',
+                'monitor': 'monitor',
+                'comment': 'comment',
+            };
+
+            const helpId = nodeTypeToHelpIdMap[nodeType] || nodeType;
+            const nodeCard = helpContent?.querySelector(`[data-node-type="${helpId}"]`);
+
             if (nodeCard) {
-                // Прокручиваем к элементу
                 nodeCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-                // Добавляем эффект подсветки для наглядности
                 nodeCard.style.transition = 'all 0.3s ease';
                 nodeCard.style.background = 'var(--accent-primary-10)';
                 nodeCard.style.borderColor = 'var(--accent-primary)';
                 nodeCard.style.boxShadow = '0 0 20px rgba(124, 58, 237, 0.3)';
                 
-                // Убираем подсветку через 3 секунды
                 setTimeout(() => {
                     nodeCard.style.background = '';
                     nodeCard.style.borderColor = '';
                     nodeCard.style.boxShadow = '';
                 }, 3000);
             } else {
-                console.warn(`Элемент справки для нода "${nodeType}" не найден.`);
+                console.warn(`Элемент справки для нода "${nodeType}" (искали как "${helpId}") не найден.`);
             }
         }, 550); 
     }, 50); 

@@ -263,3 +263,187 @@
     66% { transform: translateY(5px) translateX(-5px); }
     100% { transform: translateY(0px) translateX(0px); }
 }
+
+/* === Стили для пасхалки "Присутствие в Сети" (Wired Presence) === */
+
+/* Глобальные эффекты при активации */
+.wired-active {
+    position: relative;
+}
+
+/* Шум на фоне */
+.wired-active::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9998;
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 255, 0, 0.03) 2px,
+            rgba(0, 255, 0, 0.03) 4px
+        );
+    animation: wired-scanlines 0.5s linear infinite;
+}
+
+@keyframes wired-scanlines {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(4px); }
+}
+
+/* Пульсация соединительных линий */
+.wired-active .connection-line {
+    animation: wired-pulse 2s ease-in-out infinite;
+}
+
+@keyframes wired-pulse {
+    0%, 100% { 
+        opacity: 0.7;
+        filter: drop-shadow(0 0 2px rgba(0, 255, 0, 0.5));
+    }
+    50% { 
+        opacity: 1;
+        filter: drop-shadow(0 0 8px rgba(0, 255, 0, 0.8));
+    }
+}
+
+.lain-ghost {
+    animation: lain-drift 20s linear infinite alternate;
+    box-shadow: 
+        2px 0 rgba(255, 0, 0, 0.5), 
+        -2px 0 rgba(0, 0, 255, 0.5),
+        0 0 20px rgba(0, 255, 0, 0.3);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    background: rgba(0, 0, 0, 0.8) !important;
+}
+
+.lain-ghost-inner {
+    animation: lain-jitter 0.15s infinite;
+}
+
+
+@keyframes lain-jitter {
+    0% { transform: translate(0px, 0px); }
+    25% { transform: translate(1px, -1px); }
+    50% { transform: translate(-1px, 1px); }
+    75% { transform: translate(1px, 1px); }
+    100% { transform: translate(0px, 0px); }
+}
+
+@keyframes lain-drift {
+    0% { opacity: 0.6; }
+    50% { opacity: 0.9; }
+    100% { opacity: 0.6; }
+}
+
+.lain-ghost::before,
+.lain-ghost::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: inherit;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.lain-ghost::before {
+    transform: translate(2px, 0);
+    filter: hue-rotate(90deg);
+    z-index: -1;
+}
+
+.lain-ghost::after {
+    transform: translate(-2px, 0);
+    filter: hue-rotate(-90deg);
+    z-index: -1;
+}
+
+/* Глитч-текст внутри призрака */
+.lain-ghost .glitch-text {
+    animation: glitch-text 2s infinite;
+}
+
+@keyframes glitch-text {
+    0%, 100% { 
+        text-shadow: 
+            2px 0 #ff0000,
+            -2px 0 #00ffff;
+    }
+    25% {
+        text-shadow: 
+            -2px 0 #ff0000,
+            2px 0 #00ffff;
+    }
+    50% {
+        text-shadow: 
+            2px 2px #ff0000,
+            -2px -2px #00ffff;
+    }
+    75% {
+        text-shadow: 
+            -2px -2px #ff0000,
+            2px 2px #00ffff;
+    }
+}
+
+/* Статичные помехи для заголовка призрака */
+
+.lain-ghost .node-header {
+    position: relative;
+    overflow: hidden;
+}
+
+.lain-ghost .node-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        linear-gradient(
+            rgba(255, 255, 255, 0.03) 50%, 
+            transparent 50%
+        );
+    background-size: 100% 4px;
+    animation: static-noise 0.2s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes static-noise {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(4px); }
+}
+
+/* Уведомление для Wired Presence */
+.wired-presence-notification {
+    background: linear-gradient(135deg, 
+        rgba(0, 0, 0, 0.9) 0%, 
+        rgba(30, 41, 59, 0.9) 100%);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    color: #00ff41;
+}
+
+.wired-presence-notification .notification-title {
+    text-shadow: 0 0 10px #00ff41;
+    animation: wired-text-glow 2s ease-in-out infinite;
+}
+
+@keyframes wired-text-glow {
+    0%, 100% { text-shadow: 0 0 10px #00ff41; }
+    50% { text-shadow: 0 0 20px #00ff41, 0 0 30px #00ff41; }
+}
+
+.wired-presence-notification .notification-subtitle {
+    color: rgba(0, 255, 65, 0.7);
+    font-family: 'Courier New', monospace;
+}

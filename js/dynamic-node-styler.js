@@ -29,6 +29,8 @@ class DynamicNodeStyler {
             'simple-substitution': '#ea580c',
             'rle-compression': '#059669',
             'route-transposition': '#7c2d12',
+            'navi-terminal': '#1e293b',
+            'knights-cipher': '#581c87',
         };
 
         this.generateAndInjectStyles();

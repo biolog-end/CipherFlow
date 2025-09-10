@@ -88,6 +88,22 @@ class SettingsSystem {
         document.removeEventListener('keydown', this.handleKeyPress);
     }
 
+    resetAchievements() {
+        const t = window.i18n ? window.i18n.t.bind(window.i18n) : (key) => key;
+        
+        if (confirm(t('dialog.reset_achievements_confirm'))) {
+            if (window.easterEggs) {
+                window.easterEggs.resetAchievements();
+            }
+            
+            if (window.fileManager) {
+                window.fileManager.showNotification(t('notification.achievements_reset'), 'success');
+            }
+            
+            this.playSound('node_delete');
+        }
+    }
+
     createSettingsModal() {
         const overlay = document.createElement('div');
         overlay.className = 'settings-overlay';
@@ -234,6 +250,45 @@ class SettingsSystem {
                 </div>
             </div>
 
+            <div class="settings-section">
+                <h3><i class="fas fa-info-circle"></i> ${t('settings.section_info')}</h3>
+                
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>${t('settings.app_version')}</h4>
+                        <p>${t('settings.app_version_desc')}</p>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>${t('settings.hotkeys')}</h4>
+                        <p>${t('settings.hotkeys_desc')}</p>
+                    </div>
+                    <div class="setting-control">
+                        <button class="settings-button secondary" onclick="window.showHelp(); window.settingsSystem.hide();">
+                            <i class="fas fa-keyboard"></i>
+                            ${t('button.show')}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h3><i class="fas fa-trophy"></i> ${t('settings.section_achievements')}</h3>
+                
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>${t('settings.reset_achievements')}</h4>
+                        <p>${t('settings.reset_achievements_desc')}</p>
+                    </div>
+                    <div class="setting-control">
+                        <button class="settings-button secondary" style="background: var(--error); border: 1px solid var(--error);" onclick="window.settingsSystem.resetAchievements()">
+                            <i class="fas fa-trash-alt"></i>
+                            ${t('button.reset')}
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div class="settings-section">
                 <h3><i class="fas fa-info-circle"></i> ${t('settings.section_info')}</h3>
                 

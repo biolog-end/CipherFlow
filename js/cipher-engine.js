@@ -1,33 +1,17 @@
-// === Движок шифрования и выполнения цепочки нодов ===
-
 class CipherEngine {
     constructor() {
-        // Создаем отдельные таблицы для русского и английского морзе
         this.morseCodeRu = {
-            // Русский алфавит (кириллица) - используем чуть другие символы
-            'А': '·−',      'Б': '−···',    'В': '·−−',     'Г': '−−·',     'Д': '−··',     
-            'Ё': '·',       'Е': '·',       'Ж': '···−',    'З': '−−··',    'И': '··',      
-            'Й': '·−−−',    'К': '−·−',     'Л': '·−··',    'М': '−−',      'Н': '−·',      
-            'О': '−−−',     'П': '·−−·',    'Р': '·−·',     'С': '···',     'Т': '−',       
-            'У': '··−',     'Ф': '··−·',    'Х': '····',    'Ц': '−·−·',    'Ч': '−−−·',    
-            'Ш': '−−−−',    'Щ': '−−·−',    'Ъ': '−−·−−',   'Ы': '−·−−',    'Ь': '−··−',    
+            'А': '·−',      'Б': '−···',    'В': '·−−',     'Г': '−−·',     'Д': '−··',
+            'Ё': '·',       'Е': '·',       'Ж': '···−',    'З': '−−··',    'И': '··',
+            'Й': '·−−−',    'К': '−·−',     'Л': '·−··',    'М': '−−',      'Н': '−·',
+            'О': '−−−',     'П': '·−−·',    'Р': '·−·',     'С': '···',     'Т': '−',
+            'У': '··−',     'Ф': '··−·',    'Х': '····',    'Ц': '−·−·',    'Ч': '−−−·',
+            'Ш': '−−−−',    'Щ': '−−·−',    'Ъ': '−−·−−',   'Ы': '−·−−',    'Ь': '−··−',
             'Э': '···−···',    'Ю': '··−−',    'Я': '·−·−'
         };
-        
-        // Альтернативная таблица с отдельным кодом для Ё
-        this.morseCodeRuWithYo = {
-            // Русский алфавит (кириллица) с отдельным кодом для Ё
-            'А': '·−',      'Б': '−···',    'В': '·−−',     'Г': '−−·',     'Д': '−··',     
-            'Ё': '··−··',   'Е': '·',       'Ж': '···−',    'З': '−−··',    'И': '··',      
-            'Й': '·−−−',    'К': '−·−',     'Л': '·−··',    'М': '−−',      'Н': '−·',      
-            'О': '−−−',     'П': '·−−·',    'Р': '·−·',     'С': '···',     'Т': '−',       
-            'У': '··−',     'Ф': '··−·',    'Х': '····',    'Ц': '−·−·',    'Ч': '−−−·',    
-            'Ш': '−−−−',    'Щ': '−−·−',    'Ъ': '−−·−−',   'Ы': '−·−−',    'Ь': '−··−',    
-            'Э': '···−···',    'Ю': '··−−',    'Я': '·−·−'
-        };
-        
+
+
         this.morseCodeEn = {
-            // Английский алфавит (латиница) - стандартные коды Морзе
             'A': '.-',      'B': '-...',    'C': '-.-.',    'D': '-..',     'E': '.',
             'F': '..-.',    'G': '--.',     'H': '....',    'I': '..',      'J': '.---',
             'K': '-.-',     'L': '.-..',    'M': '--',      'N': '-.',      'O': '---',
@@ -35,59 +19,51 @@ class CipherEngine {
             'U': '..-',     'V': '...-',    'W': '.--',     'X': '-..-',    'Y': '-.--',
             'Z': '--..'
         };
-        
-        // Объединяем таблицы для общего использования
+
         this.morseCode = {
             ...this.morseCodeRu,
             ...this.morseCodeEn,
-            
-            // Цифры
+
             '0': '-----',   '1': '.----',   '2': '..---',   '3': '...--',   '4': '....-',
             '5': '.....',   '6': '-....',   '7': '--...',   '8': '---..',   '9': '----.',
-            
-            // Знаки препинания и специальные символы
             ' ': '/',       '.': '.-.-.-',  ',': '--..--',  '?': '..--..',  "'": '.----.',
             '!': '-.-.--',  '/': '-..-.',   '(': '-.--.',   ')': '-.--.-',  '&': '.-...',
             ':': '---...',  ';': '-.-.-.',  '=': '-...-',   '+': '.-.-.',   '-': '-....-',
             '_': '..--.-',  '"': '.-..-.',  '$': '...-..-', '@': '.--.-.'
         };
-        
+
         this.reverseMorseCode = {};
         for (const [key, value] of Object.entries(this.morseCode)) {
             this.reverseMorseCode[value] = key;
         }
-        
+
         this.numbersRu = {
             '0': 'ноль', '1': 'один', '2': 'два', '3': 'три', '4': 'четыре', '5': 'пять',
             '6': 'шесть', '7': 'семь', '8': 'восемь', '9': 'девять'
         };
-        
+
         this.numbersEn = {
             '0': 'zero', '1': 'one', '2': 'two', '3': 'three', '4': 'four', '5': 'five',
             '6': 'six', '7': 'seven', '8': 'eight', '9': 'nine'
         };
-        
+
         this.reverseNumbersRu = {};
         this.reverseNumbersEn = {};
-        
+
         for (const [key, value] of Object.entries(this.numbersRu)) {
             this.reverseNumbersRu[value] = key;
         }
         for (const [key, value] of Object.entries(this.numbersEn)) {
             this.reverseNumbersEn[value] = key;
         }
-        
+
         this.bindEvents();
     }
-    
-    // Метод для получения символов и цифр в коде Морзе
+
     getNumbersAndSymbolsMorse() {
         return {
-            // Цифры
             '0': '-----',   '1': '.----',   '2': '..---',   '3': '...--',   '4': '....-',
             '5': '.....',   '6': '-....',   '7': '--...',   '8': '---..',   '9': '----.',
-            
-            // Знаки препинания и специальные символы
             ' ': '/',       '.': '.-.-.-',  ',': '--..--',  '?': '..--..',  "'": '.----.',
             '!': '-.-.--',  '/': '-..-.',   '(': '-.--.',   ')': '-.--.-',  '&': '.-...',
             ':': '---...',  ';': '-.-.-.',  '=': '-...-',   '+': '.-.-.',   '-': '-....-',
@@ -341,6 +317,12 @@ class CipherEngine {
                 case 'route-transposition':
                     return this.processRouteTransposition(node, inputData, allNodeResults);
                     
+                case 'navi-terminal':
+                    return this.processNaviTerminal(nodeData, inputData);
+                    
+                case 'knights-cipher':
+                    return this.processKnightsCipher(node, inputData, allNodeResults);
+                    
                 default:
                     return inputData;
             }
@@ -405,57 +387,49 @@ class CipherEngine {
     processMorseCode(nodeData, text) {
         const modeField = nodeData.fields.find(f => f.name === 'mode');
         const supportYoField = nodeData.fields.find(f => f.name === 'supportYo');
-        
+
         const mode = modeField?.value || 'encode';
         const supportYo = supportYoField?.value === 'true' || supportYoField?.value === true;
-        
+
         const isReverse = window.connectionManager?.reverseMode || false;
         const actualMode = (mode === 'encode' && !isReverse) || (mode === 'decode' && isReverse) ? 'encode' : 'decode';
-        
+
         return actualMode === 'encode' ? this._morseEncode(text, supportYo) : this._morseDecode(text, supportYo);
     }
 
     _morseEncode(text, supportYo = false) {
         if (typeof text !== 'string') return '';
-        
-        // Выбираем нужную таблицу Морзе в зависимости от настройки
-        const morseTable = supportYo ? 
-            { ...this.morseCodeRuWithYo, ...this.morseCodeEn, ...this.getNumbersAndSymbolsMorse() } :
-            this.morseCode;
-        
+
+        const morseTable = { ...this.morseCode };
+        if (supportYo) {
+            morseTable['Ё'] = '··−··'; 
+        }
+
         return text.split('\n').map(line => {
-           
             return line.toUpperCase().split('').map(char => {
-                return morseTable[char] || ''; 
+                return morseTable[char] || '';
             }).join(' ');
-        }).join('\n'); 
+        }).join('\n');
     }
 
     _morseDecode(morseText, supportYo = false) {
         if (typeof morseText !== 'string') return '';
-        
-        // Создаем обратную таблицу в зависимости от настройки
-        let reverseMorseTable;
+
+        let reverseMorseTable = { ...this.reverseMorseCode };
         if (supportYo) {
-            const fullMorseTable = { ...this.morseCodeRuWithYo, ...this.morseCodeEn, ...this.getNumbersAndSymbolsMorse() };
-            reverseMorseTable = {};
-            for (const [key, value] of Object.entries(fullMorseTable)) {
-                reverseMorseTable[value] = key;
-            }
-        } else {
-            reverseMorseTable = this.reverseMorseCode;
+            reverseMorseTable['··−··'] = 'Ё';
         }
-        
+
         return morseText.split('\n').map(line => {
             return line
-                .trim() 
-                .split(/\s*\/\s*/) 
-                .map(word => 
-                    word.split(' ').filter(code => code) 
+                .trim()
+                .split(/\s*\/\s*/)
+                .map(word =>
+                    word.split(' ').filter(code => code)
                         .map(code => reverseMorseTable[code] || '')
                         .join('')
                 ).join(' ');
-        }).join('\n'); 
+        }).join('\n');
     }
 
     processNumbersToWords(nodeData, text) {
@@ -2107,13 +2081,37 @@ class CipherEngine {
         return uwuifiedWords.join(' ');
     }
     
+    /**
+     * Общий метод для применения шифра замены.
+     * @param {string} text - Исходный текст.
+     * @param {string} fromAlphabet - Алфавит, символы которого нужно заменить.
+     * @param {string} toAlphabet - Алфавит, на символы которого нужно заменить.
+     * @returns {string} - Преобразованный текст.
+     */
+    _applySubstitution(text, fromAlphabet, toAlphabet) {
+        const substitutionMap = {};
+        for (let i = 0; i < fromAlphabet.length; i++) {
+            substitutionMap[fromAlphabet[i]] = toAlphabet[i];
+        }
+
+        return text.split('').map(char => {
+            const lowerChar = char.toLowerCase();
+            const resultChar = substitutionMap[lowerChar];
+            
+            if (resultChar === undefined) {
+                return char; // Если символа нет в алфавите, оставляем его как есть
+            }
+            
+            // Сохраняем регистр
+            return char === lowerChar ? resultChar : resultChar.toUpperCase();
+        }).join('');
+    }
+
     processComplexSubstitution(node, inputData, allNodeResults) {
         const isReverse = window.connectionManager?.reverseMode;
-
         let text, key;
 
         if (isReverse) {
-           
             text = inputData || '';
             key = '';
             const connections = window.connectionManager.getNodeConnections(node.id);
@@ -2121,12 +2119,10 @@ class CipherEngine {
             if (keyConnection) {
                 const keySourceNode = window.nodeManager.nodes.get(keyConnection.fromNodeId);
                 if (keySourceNode) {
-                    
                     key = this.processNode(keySourceNode, null, allNodeResults);
                 }
             }
         } else {
-            
             text = (typeof inputData === 'object' && inputData !== null) ? (inputData.text || '') : '';
             key = (typeof inputData === 'object' && inputData !== null) ? (inputData.key || '') : '';
         }
@@ -2144,24 +2140,13 @@ class CipherEngine {
         const fromAlphabet = actualDecrypt ? substitutionAlphabet : baseAlphabet;
         const toAlphabet = actualDecrypt ? baseAlphabet : substitutionAlphabet;
 
-        const substitutionMap = {};
-        for (let i = 0; i < fromAlphabet.length; i++) {
-            substitutionMap[fromAlphabet[i]] = toAlphabet[i];
-        }
-
-        return text.split('').map(char => {
-            const lowerChar = char.toLowerCase();
-            const resultChar = substitutionMap[lowerChar];
-            if (resultChar === undefined) return char;
-            return char === lowerChar ? resultChar : resultChar.toUpperCase();
-        }).join('');
+        // Используем общий метод
+        return this._applySubstitution(text, fromAlphabet, toAlphabet);
     }
-    
+
     generateComplexSubstitutionAlphabet(key, baseAlphabet) {
         if (!key) return baseAlphabet;
-
         const processedKey = [...new Set(key.toLowerCase().split(''))].join('');
-        
         const alphabetPart = [];
         const nonAlphabetPart = [];
         
@@ -2175,15 +2160,13 @@ class CipherEngine {
         
         const remainingChars = baseAlphabet.split('').filter(char => !alphabetPart.includes(char));
         let newAlphabet = [...alphabetPart, ...remainingChars];
-        
         newAlphabet.unshift(...nonAlphabetPart);
         
         return newAlphabet.slice(0, baseAlphabet.length).join('');
     }
-    
+
     processSimpleSubstitution(node, inputData, allNodeResults) {
         const isReverse = window.connectionManager?.reverseMode;
-
         let text, key;
 
         if (isReverse) {
@@ -2212,21 +2195,14 @@ class CipherEngine {
         const ruSubst = this.generateSimpleSubstitutionAlphabet(key, ruAlphabet);
         const enSubst = this.generateSimpleSubstitutionAlphabet(key, enAlphabet);
         
-        const ruMap = this.createSubstitutionMap(ruAlphabet, ruSubst, actualDecrypt);
-        const enMap = this.createSubstitutionMap(enAlphabet, enSubst, actualDecrypt);
+        const [fromRu, toRu] = actualDecrypt ? [ruSubst, ruAlphabet] : [ruAlphabet, ruSubst];
+        const [fromEn, toEn] = actualDecrypt ? [enSubst, enAlphabet] : [enAlphabet, enSubst];
 
-        return text.split('').map(char => {
-            const lowerChar = char.toLowerCase();
-            let resultChar;
-            if (ruAlphabet.includes(lowerChar)) {
-                resultChar = ruMap[lowerChar];
-            } else if (enAlphabet.includes(lowerChar)) {
-                resultChar = enMap[lowerChar];
-            } else {
-                return char;
-            }
-            return char === lowerChar ? resultChar : resultChar.toUpperCase();
-        }).join('');
+        
+        let result = this._applySubstitution(text, fromRu, toRu);
+        result = this._applySubstitution(result, fromEn, toEn);
+
+        return result;
     }
 
     generateSimpleSubstitutionAlphabet(key, baseAlphabet) {
@@ -2235,20 +2211,8 @@ class CipherEngine {
         const remainingChars = baseAlphabet.split('').filter(char => !uniqueKeyChars.includes(char));
         return [...uniqueKeyChars, ...remainingChars].join('');
     }
-    
-    createSubstitutionMap(fromAlphabet, toAlphabet, reverse = false) {
-        const map = {};
-        const source = reverse ? toAlphabet : fromAlphabet;
-        const target = reverse ? fromAlphabet : toAlphabet;
-        for (let i = 0; i < source.length; i++) {
-            map[source[i]] = target[i];
-        }
-        return map;
-    }
 
-
-    // --- Узел сжатия (RLE) ---
-processRleCompression(nodeData, text) {
+    processRleCompression(nodeData, text) {
         if (!text) return '';
         const isReverse = window.connectionManager?.reverseMode;
 
@@ -2260,32 +2224,27 @@ processRleCompression(nodeData, text) {
         const START_PATTERN = '[';
         const END_PATTERN = ']';
 
-        if (actualDecrypt) { // Декомпрессия
-            // Это регулярное выражение ищет ОДНОВРЕМЕННО:
-            // 1. Сжатые паттерны: #число[паттерн]
-            // 2. Сжатые RLE: #число<символ>
-            // 3. Экранированные символы: ##, [[, ]]
-            // 4. Любой другой одиночный символ
+        if (actualDecrypt) { 
             const regex = /#(\d+)(?:\[([\s\S]*?)]|([\s\S]))|##|\[\[|]]|[\s\S]/g;
             
             return text.replace(regex, (match, count, pattern, singleChar) => {
-                // Если сработала группа сжатия (есть `count`)
+                
                 if (count) {
                     const repeatCount = parseInt(count);
-                    // Если это паттерн в скобках
+                    
                     if (pattern !== undefined) return pattern.repeat(repeatCount);
-                    // Если это одиночный символ
+                    
                     if (singleChar !== undefined) return singleChar.repeat(repeatCount);
                 }
-                // Если это экранированные символы
+                
                 if (match === '##') return '#';
                 if (match === '[[') return '[';
                 if (match === ']]') return ']';
-                // Иначе это обычный, нетронутый символ
+                
                 return match;
             });
 
-        } else { // Компрессия
+        } else { 
             let result = '';
             let i = 0;
             const len = text.length;
@@ -2293,7 +2252,7 @@ processRleCompression(nodeData, text) {
             while (i < len) {
                 let bestMatch = { benefit: 0, compressed: '', length: 0 };
 
-                // Ищем самый выгодный паттерн (включая одиночные символы)
+                
                 const maxPatternLen = Math.min(Math.floor(len / 2), 50);
 
                 for (let pLen = 1; pLen <= maxPatternLen && i + pLen <= len; pLen++) {
@@ -2307,11 +2266,10 @@ processRleCompression(nodeData, text) {
                     let compressed = '';
                     let compressedLength = Infinity;
                     
-                    // Условия для RLE (один символ, >= 4 повторов)
                     if (pLen === 1 && count >= 4) {
                         compressed = `${OPEN}${count}${pattern}`;
                         compressedLength = compressed.length;
-                    // Условия для паттернов (>1 символа, >= 3 повторов)
+                    
                     } else if (pLen > 1 && count >= 3) {
                         compressed = `${OPEN}${count}${START_PATTERN}${pattern}${END_PATTERN}`;
                         compressedLength = compressed.length;
@@ -2323,12 +2281,10 @@ processRleCompression(nodeData, text) {
                     }
                 }
 
-                // Если нашли выгодное сжатие, используем его
                 if (bestMatch.benefit > 0) {
                     result += bestMatch.compressed;
                     i += bestMatch.length;
                 } else {
-                    // Иначе берем один символ, экранируем если нужно, и идем дальше
                     const char = text[i];
                     if (char === OPEN) result += '##';
                     else if (char === START_PATTERN) result += '[[';
@@ -2425,8 +2381,242 @@ processRleCompression(nodeData, text) {
         
         return inputs;
     }
+
+    // Обработчик для NAVI Terminal
+    processNaviTerminal(nodeData, inputData) {
+        const modeField = nodeData.fields.find(f => f.name === 'mode');
+        const detailLevelField = nodeData.fields.find(f => f.name === 'detailLevel');
+        
+        const mode = modeField?.value || 'encrypt';
+        const detailLevel = detailLevelField?.value || 'standard';
+
+        const isReverseMode = window.connectionManager?.reverseMode || false;
+
+        const shouldEncrypt = (mode === 'encrypt' && !isReverseMode) || (mode === 'decrypt' && isReverseMode);
+
+        if (shouldEncrypt) {
+            return this.encryptNaviTerminal(inputData, detailLevel);
+        } else {
+            return this.decryptNaviTerminal(inputData);
+        }
+    }
+
+    // ФУНКЦИЯ ШИФРОВКИ
+    encryptNaviTerminal(text, detailLevel) {
+        if (typeof text !== 'string' || !text) return '';
+        
+        const seededRandom = this.createSeededRandom(text.length); 
+        
+        const lines = [];
+        let timestamp = 1663459200.0;
+        const pid = Math.floor(seededRandom() * 9000) + 1000;
+        
+        if (detailLevel === 'full') {
+            lines.push(`[${timestamp.toFixed(1)}] [PID:${pid}] KERNEL_MSG: User input detected...`);
+            timestamp += 0.1;
+        }
+        
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+            
+            if (char === ' ') {
+                lines.push(this.formatNaviLine(timestamp, pid, 'SYS_CALL: WSPACE', detailLevel, seededRandom));
+            } else if (char === '\n') {
+                lines.push(this.formatNaviLine(timestamp, pid, 'SYS_CALL: NEWLINE', detailLevel, seededRandom));
+            } else if (char === '.') {
+                lines.push(this.formatNaviLine(timestamp, pid, 'SYS_CALL: DOT', detailLevel, seededRandom));
+            } else if (char === ',') {
+                lines.push(this.formatNaviLine(timestamp, pid, 'SYS_CALL: COMMA', detailLevel, seededRandom));
+            } else if (char === '!') {
+                lines.push(this.formatNaviLine(timestamp, pid, 'SYS_CALL: EXCLAIM', detailLevel, seededRandom));
+            } else if (char === '?') {
+                lines.push(this.formatNaviLine(timestamp, pid, 'SYS_CALL: QUESTION', detailLevel, seededRandom));
+            } else {
+                const hexCode = '0x' + char.charCodeAt(0).toString(16).toUpperCase();
+                lines.push(this.formatNaviLine(timestamp, pid, `MEM_WRITE: ${hexCode}`, detailLevel, seededRandom));
+            }
+            
+            if (detailLevel === 'full' && seededRandom() > 0.7) {
+                timestamp += 0.1;
+                const noiseMessages = [
+                    'CACHE_HIT: block ' + Math.floor(seededRandom() * 512),
+                    'IRQ_HANDLED: timer',
+                    'SCHED: context switch',
+                    'MM_ALLOC: 4096 bytes'
+                ];
+                const noise = noiseMessages[Math.floor(seededRandom() * noiseMessages.length)];
+                lines.push(`[${timestamp.toFixed(1)}] [PID:${pid}] ${noise}`);
+            }
+            
+            timestamp += 0.1;
+        }
+        
+        return lines.join('\n');
+    }
+
+    formatNaviLine(timestamp, pid, message, detailLevel, seededRandom) {
+        if (detailLevel === 'brief') {
+            const memWriteMatch = message.match(/MEM_WRITE:\s*(0x[0-9A-Fa-f]+)/);
+            if (memWriteMatch) {
+                return memWriteMatch[1]; 
+            }
+            const sysCallMatch = message.match(/SYS_CALL:\s*(\w+)/);
+            if (sysCallMatch) {
+                return `[${sysCallMatch[1]}]`;
+            }
+            return message;
+        } else if (detailLevel === 'standard') {
+            return `[${timestamp.toFixed(1)}] [PID:${pid}] ${message} <OK>`;
+        } else { // full
+            const status = seededRandom() > 0.05 ? '<OK>' : '<RETRY>';
+            return `[${timestamp.toFixed(1)}] [PID:${pid}] ${message} ${status}`;
+        }
+    }
+
+    decryptNaviTerminal(logText) {
+        if (typeof logText !== 'string' || !logText) return '';
+        
+        const lines = logText.split('\n');
+        let result = '';
+        
+        for (const line of lines) {
+            let match = line.match(/MEM_WRITE:\s*(0x[0-9A-Fa-f]+)/i);
+            if (match) {
+                result += String.fromCharCode(parseInt(match[1], 16));
+                continue;
+            }
+
+            match = line.match(/^0x[0-9A-Fa-f]+$/i);
+            if (match) {
+                result += String.fromCharCode(parseInt(match[0], 16));
+                continue;
+            }
+            
+            const lowerLine = line.toLowerCase();
+            
+            if (lowerLine.includes('sys_call: wspace') || lowerLine.includes('[wspace]')) {
+                result += ' ';
+            } else if (lowerLine.includes('sys_call: newline') || lowerLine.includes('[newline]')) {
+                result += '\n';
+            } else if (lowerLine.includes('sys_call: dot') || lowerLine.includes('[dot]')) {
+                result += '.';
+            } else if (lowerLine.includes('sys_call: comma') || lowerLine.includes('[comma]')) {
+                result += ',';
+            } else if (lowerLine.includes('sys_call: exclaim') || lowerLine.includes('[exclaim]')) {
+                result += '!';
+            } else if (lowerLine.includes('sys_call: question') || lowerLine.includes('[question]')) {
+                result += '?';
+            }
+        }
+        
+        return result;
+    }
+    
+    // Обработчик для Knights Cipher (стеганография)
+    processKnightsCipher(node, inputData, allNodeResults) {
+    const nodeData = node.data;
+    const modeField = nodeData.fields.find(f => f.name === 'mode');
+    const mode = modeField?.value || 'encrypt';
+
+    const isReverseMode = window.connectionManager?.reverseMode || false;
+    const shouldEncrypt = (mode === 'encrypt' && !isReverseMode) || (mode === 'decrypt' && isReverseMode);
+
+    if (shouldEncrypt) {
+        const container = inputData.container || '';
+        const secret = inputData.secret || '';
+        
+        if (!container || !secret) {
+            return window.i18n.t('error.knights_cipher_needs_inputs', 'Нужны оба входа: Контейнер и Секрет');
+        }
+        
+        return this.encryptKnightsCipher(container, secret);
+    } else {
+        const textToDecrypt = typeof inputData === 'string' ? inputData : '';
+        return this.decryptKnightsCipher(textToDecrypt);
+    }
 }
 
+// 2. ФУНКЦИЯ ШИФРОВАНИЯ (НОВАЯ, ИСПРАВЛЕННАЯ ЛОГИКА)
+encryptKnightsCipher(container, secret) {
+    // Проверяем, что есть и контейнер, и секрет. Если контейнер пуст, шифровать некуда.
+    if (!container || !secret) return container;
+
+    const ZERO_CHAR = '\u200C'; // Zero-Width Non-Joiner для '0'
+    const ONE_CHAR = '\u200B';  // Zero-Width Space для '1'
+    const MARKER = '\u200D\u200D'; // Маркер начала секрета
+
+    // Преобразуем секрет в последовательность невидимых символов
+    const invisibleString = secret.split('')
+        .map(char => char.charCodeAt(0).toString(2).padStart(16, '0')) // Используем 16 бит для лучшей поддержки Unicode
+        .join('')
+        .split('')
+        .map(bit => (bit === '0' ? ZERO_CHAR : ONE_CHAR))
+        .join('');
+    
+    // --- КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ ---
+    // Рассчитываем, сколько невидимых символов нужно вставить после каждой буквы контейнера.
+    const containerLength = container.length;
+    const invisibleLength = invisibleString.length;
+    const chunkSize = Math.ceil(invisibleLength / containerLength);
+
+    let result = '';
+    let invisibleIndex = 0;
+
+    // Проходим по каждой букве контейнера
+    for (let i = 0; i < containerLength; i++) {
+        // Добавляем видимую букву
+        result += container[i];
+        
+        // Вырезаем и добавляем "порцию" невидимых символов
+        const chunk = invisibleString.substring(invisibleIndex, invisibleIndex + chunkSize);
+        if (chunk) {
+            result += chunk;
+        }
+        invisibleIndex += chunkSize;
+    }
+
+    // Добавляем маркер в самое начало, чтобы дешифратор его легко нашел
+    return MARKER + result;
+}
+
+
+// 3. ФУНКЦИЯ ДЕШИФРОВКИ (логика была верной, но теперь с 16-битной поддержкой)
+decryptKnightsCipher(text) {
+    if (typeof text !== 'string' || !text) return '';
+
+    const ZERO_CHAR = '\u200C';
+    const ONE_CHAR = '\u200B';
+    const MARKER = '\u200D\u200D';
+
+    // Если в тексте нет нашего маркера, значит, там нет скрытого сообщения
+    if (!text.startsWith(MARKER)) {
+        return ''; 
+    }
+
+    let binaryString = '';
+    
+    // Проходим по всему полученному тексту и собираем ТОЛЬКО наши секретные символы
+    for (const char of text) {
+        if (char === ZERO_CHAR) {
+            binaryString += '0';
+        } else if (char === ONE_CHAR) {
+            binaryString += '1';
+        }
+        // Все остальные символы (буквы, пробелы, маркер) просто игнорируются
+    }
+
+    // Преобразуем собранную двоичную строку обратно в текст
+    let result = '';
+    // Используем 16-битные чанки, как и при шифровании
+    for (let i = 0; i + 16 <= binaryString.length; i += 16) {
+        const byte = binaryString.substring(i, i + 16);
+        const charCode = parseInt(byte, 2);
+        result += String.fromCharCode(charCode);
+    }
+    
+    return result;
+}
+}
 // Инициализация после загрузки DOM
 let cipherEngine;
 document.addEventListener('DOMContentLoaded', () => {

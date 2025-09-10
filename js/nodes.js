@@ -812,6 +812,59 @@ class NodeManager {
                     { name: 'key', label: t('option.key_input'), color: '#f59e0b' }
                 ],
                 isTitleCustomized: false
+            },
+            'navi-terminal': {
+                title: t('node.navi_terminal'),
+                icon: 'fas fa-terminal',
+                fields: [
+                    {
+                        name: 'mode',
+                        type: 'select',
+                        label: t('param.mode'),
+                        value: 'encrypt',
+                        options: [
+                            { value: 'encrypt', label: t('option.encrypt') },
+                            { value: 'decrypt', label: t('option.decrypt') }
+                        ]
+                    },
+                    {
+                        name: 'detailLevel',
+                        type: 'select',
+                        label: t('param.detail_level'),
+                        value: 'standard',
+                        options: [
+                            { value: 'brief', label: t('option.detail_brief') },
+                            { value: 'standard', label: t('option.detail_standard') },
+                            { value: 'full', label: t('option.detail_full') }
+                        ]
+                    }
+                ],
+                hasInput: true,
+                hasOutput: true,
+                isTitleCustomized: false
+            },
+            'knights-cipher': {
+                title: t('node.knights_cipher'),
+                icon: 'fas fa-chess-knight',
+                fields: [
+                    {
+                        name: 'mode',
+                        type: 'select',
+                        label: t('param.mode'),
+                        value: 'encrypt',
+                        options: [
+                            { value: 'encrypt', label: t('option.encrypt') },
+                            { value: 'decrypt', label: t('option.decrypt') }
+                        ]
+                    }
+                ],
+                hasInput: false,
+                hasOutput: true,
+                multipleInputs: [
+                    { name: 'secret', label: t('option.secret_text'), color: '#ef4444' },
+                    { name: 'container', label: t('option.container_text'), color: '#3b82f6' }
+                ],
+                isTitleCustomized: false
             }
         };
         

@@ -2,8 +2,13 @@ class EasterEggsSystem {
     constructor() {
         this.isActive = false;
         this.currentEasterEgg = null;
-        this.videoWindow = null; 
-        
+        this.videoWindow = null;
+
+        this.unlockedAchievements = new Set();
+        this.achievementsData = new Map();
+
+        this.canvas = document.getElementById('canvas');
+
         this.easterEggs = new Map([
             ['cute_mode', {
                 activation: (chains) => {
@@ -15,7 +20,6 @@ class EasterEggsSystem {
                     }
                     return false;
                 },
-                // Все данные для уведомления и эффектов
                 payload: {
                     title: 'easter_eggs.cute_mode.title', 
                     subtitle: 'easter_eggs.cute_mode.subtitle',
@@ -23,7 +27,6 @@ class EasterEggsSystem {
                     sound: 'src/easter_eggs/sounds/default_notification.mp3', 
                     className: 'cute-mode-notification', 
                 },
-                // Функции, которые вызываются при активации/деактивации
                 onActivate: () => {
                     document.body.classList.add('cute-mode');
                     this.showCuteModeVideo(); 
@@ -35,13 +38,52 @@ class EasterEggsSystem {
                     console.log('💔 Няшный режим деактивирован');
                 }
             }],
+            ['wired_presence', {
+                activation: (chains) => {
+                    const hasLongChain = chains.some(chain => chain.length >= 10);
+                    if (!hasLongChain) return false;
+                    
+                    const specialNodes = ['navi-terminal', 'knights-cipher', 'protocol-7', 'schumann-resonance'];
+                    const hasSpecialNode = chains.some(chain => 
+                        chain.some(node => specialNodes.includes(node.type))
+                    );
+                    if (!hasSpecialNode) return false;
+                    
+                    const hasLainKeyword = this.checkForLainKeyword();
+                    
+                    return hasLainKeyword;
+                },
+                payload: {
+                    title: 'easter_eggs.wired_presence.title',
+                    subtitle: 'easter_eggs.wired_presence.subtitle',
+                    image: 'src/easter_eggs/images/lain.gif', 
+                    sound: 'src/easter_eggs/sounds/default_notification.mp3', 
+                    className: 'wired-presence-notification',
+                },
+                onActivate: () => {
+                    console.log('🌐 Присутствие в Сети активировано!');
+                    this.activateWiredPresence();
+                },
+                onDeactivate: () => {
+                    console.log('📡 Присутствие в Сети деактивировано');
+                    this.deactivateWiredPresence();
+                }
+            }],
         ]);
+        
+        this.lainGhostNode = null;
+        this.wiredAudio = null;
         
         this.init();
     }
     
     init() {
         console.log('🐣 Инициализация системы пасхалок...');
+
+        this.loadUnlockedAchievements();
+        this.easterEggs.forEach((egg, id) => {
+            this.achievementsData.set(id, egg.payload);
+        });
         document.addEventListener('nodes-updated', () => this.checkForEasterEggs());
         document.addEventListener('connections-updated', () => this.checkForEasterEggs());
     }
@@ -71,14 +113,55 @@ class EasterEggsSystem {
         }
     }
     
+    loadUnlockedAchievements() {
+        try {
+            const saved = localStorage.getItem('unlockedAchievements');
+            if (saved) {
+                this.unlockedAchievements = new Set(JSON.parse(saved));
+                console.log('🏆 Загружено ачивок:', this.unlockedAchievements.size);
+            }
+        } catch (error) {
+            console.error('❌ Ошибка загрузки ачивок из localStorage:', error);
+            this.unlockedAchievements = new Set();
+        }
+    }
+
+    /**
+     * Сохраняет разблокированные ачивки в localStorage.
+     */
+    saveUnlockedAchievements() {
+        try {
+            localStorage.setItem('unlockedAchievements', JSON.stringify([...this.unlockedAchievements]));
+        } catch (error) {
+            console.error('❌ Ошибка сохранения ачивок в localStorage:', error);
+        }
+    }
+
+    /**
+     * Сбрасывает все полученные ачивки.
+     */
+    resetAchievements() {
+        this.unlockedAchievements.clear();
+        localStorage.removeItem('unlockedAchievements');
+        console.log('🗑️ Все ачивки сброшены.');
+    }
+    
     activateEasterEgg(eggId) {
         const egg = this.easterEggs.get(eggId);
         if (!egg) return;
 
+        const isFirstTime = !this.unlockedAchievements.has(eggId);
+
+        if (isFirstTime) {
+            console.log(`🎉 Новая ачивка: ${eggId}!`);
+            this.unlockedAchievements.add(eggId);
+            this.saveUnlockedAchievements();
+    
+            this.showNotification(egg.payload); 
+        }
+
         this.isActive = true;
         this.currentEasterEgg = eggId;
-        
-        this.showNotification(egg.payload); 
         
         if (egg.onActivate) {
             egg.onActivate();
@@ -388,6 +471,268 @@ class EasterEggsSystem {
         observer.observe(element.parentNode || document.body, { childList: true });
     }
     
+    // Методы для пасхалки "Присутствие в Сети"
+    checkForLainKeyword() {
+        // Проверяем основное поле ввода
+        const mainInput = document.getElementById('inputText');
+        if (mainInput && mainInput.value.toLowerCase().includes('lain')) {
+            return true;
+        }
+        
+        // Проверяем все textarea в нодах
+        const textareas = document.querySelectorAll('.canvas-node textarea');
+        for (const textarea of textareas) {
+            if (textarea.value.toLowerCase().includes('lain')) {
+                return true;
+            }
+        }
+        
+        // Проверяем все input в нодах
+        const inputs = document.querySelectorAll('.canvas-node input[type="text"]');
+        for (const input of inputs) {
+            if (input.value.toLowerCase().includes('lain')) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    activateWiredPresence() {
+        this.lainGhostNodes = new Map();
+        
+        this.createLainGhostNode(); 
+        
+        this.startWiredAudio();
+        document.body.classList.add('wired-active');
+    }
+    
+    deactivateWiredPresence() {
+        if (this.lainGhostNodes) {
+            for (const ghost of this.lainGhostNodes.values()) {
+                // Предотвращаем запуск новых таймаутов анимации
+                clearTimeout(ghost.animationTimeout); 
+                ghost.element.remove();
+            }
+            this.lainGhostNodes.clear();
+        }
+        
+        if (this.wiredAudio) {
+            this.wiredAudio.pause();
+            this.wiredAudio.remove();
+            this.wiredAudio = null;
+        }
+        
+        // Убираем глобальные эффекты
+        document.body.classList.remove('wired-active');
+    }
+    
+    // === ИЗМЕНЕНИЕ: Функция теперь создает "нулевого пациента" с базовыми "генами" ===
+    createLainGhostNode() {
+        const canvas = document.getElementById('nodesLayer');
+        if (!canvas) return;
+
+        const viewCenterX = this.canvas.clientWidth / 2;
+        const viewCenterY = this.canvas.clientHeight / 2;
+        const worldCenter = window.canvasManager.screenToWorld(viewCenterX, viewCenterY);
+
+        const ghostData = {
+            id: 'lain_ghost_' + Date.now(),
+            element: null,
+            movementFrequency: 2000,
+            movementDistance: 100,
+            size: 1.0,
+            jitterSpeed: 0.15,
+            duplicationChance: 0.12,
+            animationTimeout: null
+        };
+        
+        const ghostNode = document.createElement('div');
+        ghostNode.className = 'canvas-node lain-ghost';
+        ghostNode.id = ghostData.id;
+        ghostNode.style.position = 'absolute';
+        ghostNode.style.left = (worldCenter.x - 90) + 'px';
+        ghostNode.style.top = (worldCenter.y - 50) + 'px';
+        ghostNode.style.zIndex = '1000';
+        
+        
+        ghostNode.style.transform = `scale(${ghostData.size})`;
+        
+        ghostNode.style.animation = 'lain-drift 20s linear infinite alternate';
+
+        ghostNode.innerHTML = `
+            <div class="lain-ghost-inner">
+                <div class="node-header" style="background: rgba(0,0,0,0.8); border: none;">
+                    <span class="node-title" style="color: transparent; text-shadow: 0 0 8px #fff;">░▒▓█▓▒░</span>
+                </div>
+                <div class="node-body" style="background: rgba(0,0,0,0.5); min-height: 50px;">
+                    <div class="glitch-text" style="color: #00ff00; font-family: monospace; text-align: center; padding: 10px;">
+                        <span style="opacity: 0.5;">Present Day</span><br>
+                        <span style="opacity: 0.7;">Present Time</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const innerWrapper = ghostNode.querySelector('.lain-ghost-inner');
+        innerWrapper.style.animation = `lain-jitter ${ghostData.jitterSpeed}s infinite`;
+
+        canvas.appendChild(ghostNode);
+        ghostData.element = ghostNode;
+        this.lainGhostNodes.set(ghostData.id, ghostData);
+        this.makeLainGhostDraggable(ghostNode);
+        this.animateLainGhost(ghostData);
+    }
+
+    /**
+     * @param {object} parentData - Данные родительского нода.
+     */
+    createMutatedClone(parentData) {
+        const canvas = document.getElementById('nodesLayer');
+        if (!canvas || !parentData) return;
+
+        const MUTATION_FACTOR = 0.25;
+        const mutate = (value) => value * (1 + (Math.random() - 0.5) * MUTATION_FACTOR);
+
+        const childData = {
+            id: 'lain_ghost_' + Date.now(),
+            element: null,
+            movementFrequency: Math.max(50, mutate(parentData.movementFrequency)), 
+            movementDistance: mutate(parentData.movementDistance), 
+            size: Math.max(0.1, mutate(parentData.size)), 
+            jitterSpeed: Math.max(0.01, mutate(parentData.jitterSpeed)), 
+            duplicationChance: Math.max(0, mutate(parentData.duplicationChance)),
+            animationTimeout: null
+        };
+
+        const childNode = parentData.element.cloneNode(true);
+        childNode.id = childData.id;
+
+        childNode.style.left = (parseFloat(parentData.element.style.left) + (Math.random() - 0.5) * 50) + 'px';
+        childNode.style.top = (parseFloat(parentData.element.style.top) + (Math.random() - 0.5) * 50) + 'px';
+        
+        childNode.style.transform = `scale(${childData.size})`;
+        childNode.style.animation = 'lain-drift 20s linear infinite alternate';
+
+        const innerWrapper = childNode.querySelector('.lain-ghost-inner');
+        innerWrapper.style.animation = `lain-jitter ${childData.jitterSpeed}s infinite`;
+        
+        canvas.appendChild(childNode);
+        childData.element = childNode;
+
+        this.lainGhostNodes.set(childData.id, childData);
+
+        this.makeLainGhostDraggable(childNode);
+        this.animateLainGhost(childData);
+    }
+
+    animateLainGhost(ghostData) {
+        if (!ghostData || !this.lainGhostNodes.has(ghostData.id)) return;
+
+        const moveGhost = () => {
+            if (!ghostData.element || ghostData.element.isBeingDragged) {
+                if(ghostData.element) {
+                    ghostData.animationTimeout = setTimeout(moveGhost, ghostData.movementFrequency);
+                }
+                return;
+            }
+
+            const currentLeft = parseFloat(ghostData.element.style.left);
+            const currentTop = parseFloat(ghostData.element.style.top);
+            
+            const finalLeft = currentLeft + (Math.random() - 0.5) * ghostData.movementDistance;
+            const finalTop = currentTop + (Math.random() - 0.5) * ghostData.movementDistance;
+
+            this.performJerkyMove(ghostData.element, finalLeft, finalTop, () => {
+                if (Math.random() < ghostData.duplicationChance) {
+                    this.createMutatedClone(ghostData);
+                }
+                
+                if (this.lainGhostNodes.has(ghostData.id)) {
+
+                    const nextDelay = ghostData.movementFrequency * (0.5 + Math.random()); 
+                    ghostData.animationTimeout = setTimeout(moveGhost, nextDelay);   
+                }
+            });
+        };
+        moveGhost();
+    }
+
+    /**
+     * === НОВАЯ ФУНКЦИЯ (заменяет performGlitchyMove): Выполняет один резкий рывок к цели ===
+     * @param {HTMLElement} element - Перемещаемый элемент.
+     * @param {number} finalX - Конечная координата X.
+     * @param {number} finalY - Конечная координата Y.
+     * @param {function} onComplete - Колбэк после завершения.
+     */
+    performJerkyMove(element, finalX, finalY, onComplete) {
+        const JERKINESS = 40; 
+        
+        const targetX = finalX + (Math.random() - 0.5) * JERKINESS;
+        const targetY = finalY + (Math.random() - 0.5) * JERKINESS;
+        
+        const transitionDuration = 100; 
+        element.style.transition = `left ${transitionDuration}ms ease-out, top ${transitionDuration}ms ease-out`;
+        
+        element.style.left = targetX + 'px';
+        element.style.top = targetY + 'px';
+        
+        
+        setTimeout(onComplete, transitionDuration);
+    }
+
+    makeLainGhostDraggable(element) {
+        const header = element.querySelector('.node-header');
+        let initialX, initialY, startLeft, startTop;
+    
+        const dragStart = (e) => {
+            if (e.button !== 0) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+    
+            element.isBeingDragged = true; 
+            element.style.transition = 'none'; 
+
+            startLeft = parseFloat(element.style.left);
+            startTop = parseFloat(element.style.top);
+            initialX = e.clientX;
+            initialY = e.clientY;
+    
+            document.addEventListener('mousemove', dragMove);
+            document.addEventListener('mouseup', dragEnd, { once: true });
+        };
+    
+        const dragMove = (e) => {
+            if (!element.isBeingDragged) return;
+
+            const scale = window.canvasManager ? window.canvasManager.getScale() : 1;
+            const deltaX = (e.clientX - initialX) / scale;
+            const deltaY = (e.clientY - initialY) / scale;
+    
+            element.style.left = `${startLeft + deltaX}px`;
+            element.style.top = `${startTop + deltaY}px`;
+        };
+    
+        const dragEnd = () => {
+            element.isBeingDragged = false;
+            document.removeEventListener('mousemove', dragMove);
+        };
+    
+        header.addEventListener('mousedown', dragStart);
+    }
+    
+    startWiredAudio() {
+        this.wiredAudio = document.createElement('audio');
+        this.wiredAudio.src = 'src/easter_eggs/sounds/lain.mp3';
+        this.wiredAudio.loop = true;
+        this.wiredAudio.volume = 0.1;
+        
+        this.wiredAudio.play().catch(err => {
+            console.log('Не удалось запустить аудио:', err);
+        });
+    }
+    
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -396,4 +741,3 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.EasterEggsSystem = EasterEggsSystem;
-

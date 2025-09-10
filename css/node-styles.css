@@ -349,3 +349,57 @@
 .output-label {
     text-align: right;
 }
+
+/* === Стиль для NAVI Terminal === */
+.canvas-node[data-node-type="navi-terminal"] {
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, 
+        rgba(30, 41, 59, 0.9) 0%, 
+        rgba(15, 23, 42, 0.8) 100%);
+    border: 1px solid #1e3a5f;
+}
+
+.canvas-node[data-node-type="navi-terminal"] .node-header {
+    background: rgba(15, 23, 42, 0.7);
+    color: #00ff41; /* Янтарный/зеленый цвет терминала */
+    text-shadow: 0 0 5px #00ff41;
+}
+
+.canvas-node[data-node-type="navi-terminal"] .node-body {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.canvas-node[data-node-type="navi-terminal"] input,
+.canvas-node[data-node-type="navi-terminal"] select,
+.canvas-node[data-node-type="navi-terminal"] textarea {
+    font-family: 'Courier New', monospace;
+    background: rgba(0, 0, 0, 0.5);
+    color: #00ff41;
+    border: 1px solid #1e3a5f;
+}
+
+/* === Стиль для Knights Cipher === */
+.canvas-node[data-node-type="knights-cipher"] {
+    background: linear-gradient(135deg, 
+        rgba(88, 28, 135, 0.7) 0%, 
+        rgba(59, 7, 100, 0.6) 100%);
+    border: 1px solid #6b21a8;
+}
+
+.canvas-node[data-node-type="knights-cipher"] .node-header {
+    background: rgba(59, 7, 100, 0.8);
+    color: #e9d5ff;
+    text-shadow: 0 0 5px #9333ea;
+}
+
+.canvas-node[data-node-type="knights-cipher"] .node-body {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.canvas-node[data-node-type="knights-cipher"] input,
+.canvas-node[data-node-type="knights-cipher"] select,
+.canvas-node[data-node-type="knights-cipher"] textarea {
+    background: rgba(0, 0, 0, 0.4);
+    color: #e9d5ff;
+    border: 1px solid #6b21a8;
+}

@@ -348,3 +348,20 @@
 .example-load-btn i {
     font-size: 1rem;
 }
+
+.help-modal .algorithm-card[data-node-type="navi_terminal"] .algorithm-icon {
+    background: linear-gradient(135deg, #0a192f, #1e293b) !important;
+    border: 2px solid rgba(0, 255, 65, 0.4);
+    color: #00ff41;
+    text-shadow: 0 0 8px #00ff41, 0 0 12px #00ff41;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+    font-size: 1.7rem; 
+}
+
+.help-modal .algorithm-card[data-node-type="knights_cipher"] .algorithm-icon {
+    background: linear-gradient(135deg, #4c1d95, #2e1065) !important;
+    border: 2px solid #7c3aed;
+    color: #e9d5ff;
+    text-shadow: 0 0 8px #a78bfa;
+    box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
+}

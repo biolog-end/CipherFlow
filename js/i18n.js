@@ -49,6 +49,7 @@ class I18n {
                 'nodes.logical_operations': 'Логические операции',
                 'nodes.modern_ciphers': 'Современные шифры',
                 'nodes.fun_ciphers': 'Забавные шифры',
+                'nodes.system_ciphers': 'Системные шифры',
                 'nodes.utilities': 'Утилиты',
                 
                 // Типы нодов
@@ -78,6 +79,8 @@ class I18n {
                 'node.base64': 'Base64 Кодировщик',
                 'node.shark_cipher': 'Акулий шифр',
                 'node.uwu_cipher': 'UwU-фикатор (Шифр Няшек)',
+                'node.navi_terminal': 'NAVI Terminal',
+                'node.knights_cipher': 'Шифр Рыцарей',
                 'node.monitor': 'Монитор',
                 'node.comment': 'Комментарий',
                 'node.route_transposition': 'Маршрутная перестановка', 
@@ -168,6 +171,7 @@ class I18n {
                 'dialog.overwrite_confirm': 'Это заменит текущую схему. Продолжить?',
                 'dialog.clear_all_confirm': 'Это удалит все ноды и соединения. Продолжить?',
                 'dialog.autosave_found_confirm': 'Найдено автоматически сохраненная схема. Восстановить?',
+                'dialog.reset_achievements_confirm': 'Вы уверены, что хотите сбросить все достижения? Это действие необратимо.',
                 
                 // Настройки
                 'settings.title': 'Настройки',
@@ -196,10 +200,16 @@ class I18n {
                 'settings.section_sound': 'Звук и эффекты',
                 'settings.section_info': 'Информация',
                 'settings.sound_on_indicator': 'Звук включен',
+                'settings.section_achievements': 'Достижения',
+                'settings.reset_achievements': 'Сброс достижений',
+                'settings.reset_achievements_desc': 'Стереть все полученные пасхалки и достижения. Это действие необратимо.',
                 'button.show': 'Показать',
+                'button.reset': 'Сбросить',
                 'notification.autosave_complete': 'Автосохранение выполнено',
                 'dialog.reset_settings_confirm': 'Сбросить все настройки до значений по умолчанию?',
                 'dialog.settings_reset_alert': 'Настройки сброшены до значений по умолчанию',
+                'dialog.unsaved_changes': 'У вас есть несохраненная схема. Вы уверены, что хотите покинуть страницу?',
+
                                 
                 // Темы
                 'theme.dark': 'Темная',
@@ -225,6 +235,7 @@ class I18n {
                 'notification.scheme_cleared': 'Схема очищена',
                 'notification.scheme_restored': 'Схема восстановлена из автосохранения',
                 'notification.example_loaded': 'Пример "{{name}}" загружен!',
+                'notification.achievements_reset': 'Все достижения сброшены!',
                 
                 // Горячие клавиши
                 'hotkey.save': 'Ctrl+S',
@@ -270,6 +281,7 @@ class I18n {
                 // Ошибки движка
                 'error.execution_failed': 'Ошибка выполнения: {{message}}',
                 'error.node_processing': 'Ошибка в ноде: {{message}}',
+                'error.knights_cipher_needs_inputs': 'Шифр Рыцарей требует два входа: контейнер и секрет',
                 'error.division_by_zero': 'Ошибка: деление на 0',
                 'error.invalid_binary_input': 'Ошибка: Некорректный бинарный ввод',
                 'error.binary_decode': 'Ошибка декодирования: {{message}}',
@@ -287,9 +299,6 @@ class I18n {
 
                 // Прочее
                 'scheme.unknown_name': 'Неизвестная схема',
-
-                // Диалоги
-                'dialog.unsaved_changes': 'У вас есть несохраненная схема. Вы уверены, что хотите покинуть страницу?',
 
                 // Обучающее окно (Tutorial)
                 'tutorial.welcome': 'Добро пожаловать в CipherFlow!',
@@ -651,6 +660,27 @@ class I18n {
                 'help.algo.uwu.example_output': 'Выход (может отличаться из-за случайности): П-привет мив >w<',
                 'help.algo.uwu.data_loss_title': 'Потеря данных',
                 'help.algo.uwu.data_loss_desc': 'Замены "р/л→в" необратимы. При дешифровке невозможно восстановить исходные символы "р" и "л".',
+
+                'help.algo.navi_terminal.title': 'NAVI Terminal',
+                'help.algo.navi_terminal.desc': 'Имитирует вывод данных со старого терминала NAVI из аниме "Эксперименты Лэйн"',
+                'help.algo.navi_terminal.principle': 'Преобразует текст в псевдо-системный лог, кодируя каждый символ в его шестнадцатеричное представление и добавляя системный "шум" (метки времени, ID процессов).',
+                'help.algo.navi_terminal.example_title': 'Пример шифровки (стандартный режим):',
+                'help.algo.navi_terminal.example_input': 'Вход: "LAIN"',
+                'help.algo.navi_terminal.example_output': '[1663459200.1] [PID:4815] MEM_WRITE: 0x4C <OK>\n[1663459200.2] [PID:4815] MEM_WRITE: 0x41 <OK>\n[1663459200.3] [PID:4815] MEM_WRITE: 0x49 <OK>\n[1663459200.4] [PID:4815] MEM_WRITE: 0x4E <OK>',
+                'help.algo.navi_terminal.feature1': '• Три уровня детализации: от чистого кода до лога с системными сообщениями.',
+                'help.algo.navi_terminal.feature2': '• Дешифратор игнорирует весь системный "шум", извлекая только полезные данные.',
+                'help.algo.navi_terminal.feature3': '• Использует детерминированный рандом для стабильного результата.',
+                
+                'help.algo.knights_cipher.title': 'Шифр Рыцарей',
+                'help.algo.knights_cipher.desc': 'Прячет секретное сообщение внутри обычного текста с помощью невидимых символов (стеганография)',
+                'help.algo.knights_cipher.principle': 'Секретное сообщение преобразуется в бинарный код, где 0 и 1 заменяются на разные невидимые Unicode-символы. Эта последовательность затем равномерно "вплетается" между символами обычного текста-контейнера.',
+                'help.algo.knights_cipher.example_title': 'Пример шифровки:',
+                'help.algo.knights_cipher.example_input_container': 'Вход "Контейнер": Просто текст',
+                'help.algo.knights_cipher.example_input_secret': 'Вход "Секрет": lain',
+                'help.algo.knights_cipher.example_output': 'Выход: (визуально неотличим от "Просто текст", но содержит скрытые данные)',
+                'help.algo.knights_cipher.feature1': '• Имеет два входа: "Контейнер" и "Секрет".',
+                'help.algo.knights_cipher.feature2': '• Зашифрованный текст можно безопасно копировать и вставлять.',
+                'help.algo.knights_cipher.feature3': '• Дешифратор полностью игнорирует видимый текст, восстанавливая только скрытое сообщение.',
                 
                 'help.algo.monitor.title': 'Монитор',
                 'help.algo.monitor.desc': 'Промежуточный просмотр данных в цепочке',
@@ -832,10 +862,18 @@ class I18n {
                 'param.value': 'Значение',
                 'param.yo_support': 'Поддержка Ё (··−··)',
                 'param.yo_tooltip': 'Включить отдельный код для буквы Ё. По умолчанию Ё = Е',
+                'param.detail_level': 'Уровень детализации',
                 
                 // Значения полей выбора
                 'option.encode': 'Кодировать',
                 'option.decode': 'Декодировать',
+                'option.encrypt': 'Шифровать',
+                'option.decrypt': 'Дешифровать',
+                'option.detail_brief': 'Краткий',
+                'option.detail_standard': 'Стандартный',
+                'option.detail_full': 'Полный (DEBUG)',
+                'option.container_text': 'Контейнер',
+                'option.secret_text': 'Секрет',
                 'option.russian': 'Русский',
                 'option.english': 'English',
                 'option.mix': 'Перемешать',
@@ -880,6 +918,8 @@ class I18n {
                 
                 // Пасхалки (Easter Eggs)
                 'easter_eggs.cute_mode.title': 'Няшный режим активирован! 🌸',
+                'easter_eggs.wired_presence.title': 'Присутствие в Сети обнаружено',
+                'easter_eggs.wired_presence.subtitle': 'Lain is watching...',
                 'easter_eggs.cute_mode.subtitle': 'UwU! Добро пожаловать в мир няшек! ✨',
                 'easter_eggs.cute_mode.video_title': 'Няшные мелодии',
                 'easter_eggs.cute_mode.minimize': 'Свернуть',
@@ -911,6 +951,7 @@ class I18n {
                 'nodes.logical_operations': 'Logical Operations',
                 'nodes.modern_ciphers': 'Modern Ciphers',
                 'nodes.fun_ciphers': 'Fun Ciphers',
+                'nodes.system_ciphers': 'System Ciphers',
                 'nodes.utilities': 'Utilities',
                 
                 // Node types
@@ -940,6 +981,8 @@ class I18n {
                 'node.base64': 'Base64 Encoder',
                 'node.shark_cipher': 'Shark Cipher',
                 'node.uwu_cipher': 'UwU-ifier (Cuteness Cipher)',
+                'node.navi_terminal': 'NAVI Terminal',
+                'node.knights_cipher': 'Knights Cipher',
                 'node.monitor': 'Monitor',
                 'node.comment': 'Comment',
                 'node.route_transposition': 'Route Transposition',
@@ -1030,6 +1073,9 @@ class I18n {
                 'dialog.overwrite_confirm': 'This will replace the current scheme. Continue?',
                 'dialog.clear_all_confirm': 'This will delete all nodes and connections. Continue?',
                 'dialog.autosave_found_confirm': 'An automatically saved scheme was found. Restore it?',
+                'dialog.reset_achievements_confirm': 'Are you sure you want to reset all achievements? This action is irreversible.',
+                'dialog.unsaved_changes': 'You have an unsaved scheme. Are you sure you want to leave the page?',
+
                 
                 // Settings
                 'settings.title': 'Settings',
@@ -1058,7 +1104,11 @@ class I18n {
                 'settings.section_sound': 'Sound & Effects',
                 'settings.section_info': 'Information',
                 'settings.sound_on_indicator': 'Sound is ON',
+                'settings.section_achievements': 'Achievements',
+                'settings.reset_achievements': 'Reset Achievements',
+                'settings.reset_achievements_desc': 'Erase all unlocked easter eggs and achievements. This action is irreversible.',
                 'button.show': 'Show',
+                'button.reset': 'Reset',
                 'notification.autosave_complete': 'Autosave complete',
                 'dialog.reset_settings_confirm': 'Reset all settings to their default values?',
                 'dialog.settings_reset_alert': 'Settings have been reset to default',
@@ -1087,6 +1137,7 @@ class I18n {
                 'notification.scheme_cleared': 'Scheme cleared',
                 'notification.scheme_restored': 'Scheme restored from autosave',
                 'notification.example_loaded': 'Example "{{name}}" loaded!',
+                'notification.achievements_reset': 'All achievements have been reset!',
                 
                 // Hotkeys
                 'hotkey.save': 'Ctrl+S',
@@ -1132,6 +1183,7 @@ class I18n {
                 // Engine Errors
                 'error.execution_failed': 'Execution error: {{message}}',
                 'error.node_processing': 'Error in node: {{message}}',
+                'error.knights_cipher_needs_inputs': 'Knights Cipher requires two inputs: container and secret',
                 'error.division_by_zero': 'Error: Division by zero',
                 'error.invalid_binary_input': 'Error: Invalid binary input',
                 'error.binary_decode': 'Decoding error: {{message}}',
@@ -1149,9 +1201,6 @@ class I18n {
 
                 // Miscellaneous
                 'scheme.unknown_name': 'Unknown Scheme',
-
-                // Dialogs
-                'dialog.unsaved_changes': 'You have an unsaved scheme. Are you sure you want to leave the page?',
 
                 // Tutorial Window
                 'tutorial.welcome': 'Welcome to CipherFlow!',
@@ -1513,6 +1562,27 @@ class I18n {
                 'help.algo.uwu.data_loss_title': 'Data Loss',
                 'help.algo.uwu.data_loss_desc': 'The "r/l→w" replacements are irreversible. It is impossible to restore the original "r" and "l" characters during decryption.',
 
+                'help.algo.navi_terminal.title': 'NAVI Terminal',
+                'help.algo.navi_terminal.desc': 'Simulates data output from the old NAVI terminal from the anime "Serial Experiments Lain"',
+                'help.algo.navi_terminal.principle': 'Transforms text into a pseudo-system log by encoding each character into its hexadecimal representation and adding system "noise" (timestamps, process IDs).',
+                'help.algo.navi_terminal.example_title': 'Encryption Example (standard mode):',
+                'help.algo.navi_terminal.example_input': 'Input: "LAIN"',
+                'help.algo.navi_terminal.example_output': '[1663459200.1] [PID:4815] MEM_WRITE: 0x4C <OK>\n[1663459200.2] [PID:4815] MEM_WRITE: 0x41 <OK>\n[1663459200.3] [PID:4815] MEM_WRITE: 0x49 <OK>\n[1663459200.4] [PID:4815] MEM_WRITE: 0x4E <OK>',
+                'help.algo.navi_terminal.feature1': '• Three detail levels: from clean code to a log with system messages.',
+                'help.algo.navi_terminal.feature2': '• The decryptor ignores all system "noise", extracting only useful data.',
+                'help.algo.navi_terminal.feature3': '• Uses deterministic random for a stable result.',
+
+                'help.algo.knights_cipher.title': 'The Knights Cipher',
+                'help.algo.knights_cipher.desc': 'Hides a secret message inside normal text using invisible characters (steganography)',
+                'help.algo.knights_cipher.principle': 'The secret message is converted to binary code, where 0s and 1s are replaced by different invisible Unicode characters. This sequence is then evenly "woven" between the characters of a normal container text.',
+                'help.algo.knights_cipher.example_title': 'Encryption Example:',
+                'help.algo.knights_cipher.example_input_container': 'Input "Container": Just text',
+                'help.algo.knights_cipher.example_input_secret': 'Input "Secret": lain',
+                'help.algo.knights_cipher.example_output': 'Output: (visually indistinguishable from "Just text", but contains hidden data)',
+                'help.algo.knights_cipher.feature1': '• Has two inputs: "Container" and "Secret".',
+                'help.algo.knights_cipher.feature2': '• The encrypted text can be safely copied and pasted.',
+                'help.algo.knights_cipher.feature3': '• The decryptor completely ignores the visible text, recovering only the hidden message.',
+
                 'help.algo.monitor.title': 'Monitor',
                 'help.algo.monitor.desc': 'Intermediate data preview in the chain',
                 'help.algo.monitor.principle': 'Displays data passing through it without modification, allowing you to track intermediate results.',
@@ -1693,10 +1763,18 @@ class I18n {
                 'param.value': 'Value',
                 'param.yo_support': 'Ё Support (··−··)',
                 'param.yo_tooltip': 'Enable separate code for letter Ё. By default Ё = Е',
+                'param.detail_level': 'Detail Level',
                 
                 // Option values
                 'option.encode': 'Encode',
                 'option.decode': 'Decode',
+                'option.encrypt': 'Encrypt',
+                'option.decrypt': 'Decrypt',
+                'option.detail_brief': 'Brief',
+                'option.detail_standard': 'Standard',
+                'option.detail_full': 'Full (DEBUG)',
+                'option.container_text': 'Container',
+                'option.secret_text': 'Secret',
                 'option.russian': 'Russian',
                 'option.english': 'English',
                 'option.mix': 'Mix',
@@ -1741,6 +1819,8 @@ class I18n {
                 
                 // Easter Eggs
                 'easter_eggs.cute_mode.title': 'Cute Mode Activated! 🌸',
+                'easter_eggs.wired_presence.title': 'Wired Presence Detected',
+                'easter_eggs.wired_presence.subtitle': 'Lain is watching...',
                 'easter_eggs.cute_mode.subtitle': 'UwU! Welcome to the world of cuteness! ✨',
                 'easter_eggs.cute_mode.video_title': 'Cute Melodies',
                 'easter_eggs.cute_mode.minimize': 'Minimize',
