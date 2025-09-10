@@ -80,7 +80,8 @@
 
 .canvas-node[data-node-type="text-router"],
 .canvas-node[data-node-type="stream-merger"],
-.canvas-node[data-node-type="stream-splitter"] {
+.canvas-node[data-node-type="stream-splitter"],
+.canvas-node[data-node-type="stream-duplicator"] { 
     min-height: 140px;
 }
 
