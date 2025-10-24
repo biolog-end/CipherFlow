@@ -1201,6 +1201,10 @@ class NodeManager {
         const t = window.i18n.t.bind(window.i18n);
         const node = this.nodes.get(nodeId);
         if (!node) return;
+
+        if (!skipHistory && window.settingsSystem?.settings.soundEffects) {
+            window.settingsSystem.playSound('node_delete');
+        }
         
         if (!skipHistory && window.historyManager) {
             const connections = [];
