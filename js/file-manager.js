@@ -1,39 +1,31 @@
-// === Система управления файлами для сохранения и загрузки схем ===
-
 class FileManager {
     constructor() {
         this.initializeHandlers();
     }
     
     initializeHandlers() {
-        // Кнопка сохранения
         const saveBtn = document.getElementById('saveBtn');
         saveBtn.addEventListener('click', () => {
             this.saveScheme();
         });
         
-        // Кнопка загрузки
         const loadBtn = document.getElementById('loadBtn');
         loadBtn.addEventListener('click', () => {
             this.loadScheme();
         });
         
-        // Кнопка очистки
         const clearBtn = document.getElementById('clearBtn');
         clearBtn.addEventListener('click', () => {
             this.clearScheme();
         });
         
-        // Скрытый input для файлов
         const fileInput = document.getElementById('fileInput');
         fileInput.addEventListener('change', (e) => {
             this.handleFileLoad(e.target.files[0]);
         });
-        
-        // Обработка drag & drop для файлов
+
         this.initializeDragAndDrop();
         
-        // Автоматическое сохранение в localStorage
         this.initializeAutoSave();
     }
     
@@ -45,7 +37,6 @@ class FileManager {
                 throw new Error(t('error.node_systems_not_ready'));
             }
             
-            // Показываем диалог для ввода имени схемы
             this.showSaveDialog();
             
         } catch (error) {
@@ -110,24 +101,21 @@ class FileManager {
         try {
             const schemeData = JSON.parse(window.cipherEngine.exportScheme());
             
-            // Добавляем метаданные
             schemeData.name = schemeName;
             schemeData.description = schemeDescription;
             schemeData.created = new Date().toISOString();
             
             const blob = new Blob([JSON.stringify(schemeData, null, 2)], { type: 'application/json' });
             
-            // Создаем безопасное имя файла
             const safeFileName = schemeName
                 .replace(/[^a-zа-я0-9\s-_]/gi, '')
                 .replace(/\s+/g, '-')
                 .toLowerCase();
             
             const now = new Date();
-            const timestamp = now.toISOString().slice(0, 10); // YYYY-MM-DD
+            const timestamp = now.toISOString().slice(0, 10);
             const filename = `${safeFileName}-${timestamp}.json`;
             
-            // Создаем ссылку для скачивания
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -140,7 +128,6 @@ class FileManager {
             
             URL.revokeObjectURL(url);
             
-            // Закрываем диалог
             const dialog = document.querySelector('.save-dialog-overlay');
             if (dialog) {
                 dialog.remove();
@@ -179,7 +166,6 @@ class FileManager {
                     throw new Error('Движок шифрования не инициализирован');
                 }
                 
-                // Подтверждение загрузки (если есть существующая схема)
                 if (window.nodeManager && window.nodeManager.getAllNodes().length > 0) {
                     if (!confirm(t('dialog.overwrite_confirm'))) {
                         return;
@@ -199,7 +185,6 @@ class FileManager {
                 
                 this.showNotification(message, 'success');
                 
-                // Сохраняем в localStorage для автовосстановления
                 this.saveToLocalStorage(schemeData);
                 
             } catch (error) {
@@ -234,11 +219,9 @@ class FileManager {
                 window.nodeManager.clearAllNodes();
             }
             
-            // Очищаем поля ввода и вывода
             document.getElementById('inputText').value = '';
             document.getElementById('outputText').value = '';
             
-            // Очищаем localStorage
             this.clearLocalStorage();
             
             this.showNotification(t('notification.scheme_cleared'), 'success');
@@ -280,17 +263,14 @@ class FileManager {
     }
     
     initializeAutoSave() {
-        // Автоматическое сохранение каждые 30 секунд
         setInterval(() => {
             this.autoSave();
         }, 30000);
         
-        // Сохранение при закрытии страницы
         window.addEventListener('beforeunload', () => {
             this.autoSave();
         });
         
-        // Попытка восстановления при загрузке
         this.tryRestoreFromLocalStorage();
     }
     
@@ -321,9 +301,8 @@ class FileManager {
             
             if (savedScheme && timestamp) {
                 const saveTime = parseInt(timestamp);
-                const hourAgo = Date.now() - (60 * 60 * 1000); // 1 час назад
+                const hourAgo = Date.now() - (60 * 60 * 1000); 
                 
-                // Предлагаем восстановить только если сохранение было недавно
                 if (saveTime > hourAgo) {
                     setTimeout(() => {
                         if (confirm(window.i18n.t('dialog.autosave_found_confirm'))) {
@@ -349,13 +328,11 @@ class FileManager {
     
     showNotification(message, type = 'info') {
         const notification = document.createElement('div');
-        // Используем классы вместо inline-стилей
         notification.className = `notification notification-${type} slide-in`;
         notification.textContent = message;
         
         document.body.appendChild(notification);
         
-        // Логика удаления через классы
         const removeNotification = () => {
             notification.classList.remove('slide-in');
             notification.classList.add('slide-out');
@@ -374,7 +351,6 @@ class FileManager {
         });
     }
     
-    // Методы для работы с примерами схем
     loadExampleScheme(exampleName) {
         const t = window.i18n.t.bind(window.i18n); 
         
@@ -536,9 +512,8 @@ class FileManager {
     }
 }
 
-// Инициализация после загрузки DOM
 let fileManager;
 document.addEventListener('DOMContentLoaded', () => {
     fileManager = new FileManager();
-    window.fileManager = fileManager; // Делаем доступным глобально
+    window.fileManager = fileManager; 
 });

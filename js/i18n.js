@@ -5,9 +5,9 @@
 
 class I18n {
     constructor() {
-        this.currentLanguage = 'ru';
+        this.currentLanguage = 'en';
         this.translations = {};
-        this.defaultLanguage = 'ru';
+        this.defaultLanguage = 'en';
         this.supportedLanguages = ['ru', 'en'];
         
         // Загружаем сохраненный язык из localStorage

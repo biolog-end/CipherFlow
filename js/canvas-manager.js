@@ -1,5 +1,3 @@
-// === Система управления канвасом (масштабирование, перемещение) ===
-
 class CanvasManager {
     constructor() {
         this.canvas = document.getElementById('canvas');
@@ -19,16 +17,14 @@ class CanvasManager {
         this.panStartOffsetX = 0;
         this.panStartOffsetY = 0;
         
-        // Начальное смещение для центрирования виртуального пространства
         this.virtualCenterX = 5000;
         this.virtualCenterY = 5000;
         
-        // Режим резки соединений
-        this.cuttingModeEnabled = false; // Переключается клавишей 'X'
-        this.altKeyDown = false;         // Удерживается клавиша 'Alt'
-        this.isDrawingCutLine = false;   // Происходит ли сейчас рисование линии
-        this.cutPath = [];               // Координаты линии резки
-        this.cutLineElement = null;      // SVG элемент линии резки
+        this.cuttingModeEnabled = false; 
+        this.altKeyDown = false;         
+        this.isDrawingCutLine = false;   
+        this.cutPath = [];               
+        this.cutLineElement = null;      
         
         this.initializeControls();
         this.bindEvents();
@@ -47,7 +43,6 @@ class CanvasManager {
     }
     
     bindEvents() {
-        // Масштабирование колесом мыши
         this.canvas.addEventListener('wheel', (e) => {
             e.preventDefault();
             
@@ -59,9 +54,7 @@ class CanvasManager {
             this.zoomToPoint(mouseX, mouseY, delta);
         });
         
-        // Перемещение канваса (панорамирование)
         this.canvas.addEventListener('mousedown', (e) => {
-            // Если активен режим резки, начинаем рисовать линию
             if (this.isCuttingActive() && e.button === 0) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -69,18 +62,16 @@ class CanvasManager {
                 return;
             }
 
-            // Проверяем, что клик не по ноду или точке соединения
             if (e.target.closest('.canvas-node') || e.target.closest('.connection-point')) {
                 return;
             }
             
-            if (e.button === 1 || (e.button === 0 && e.ctrlKey)) { // Средняя кнопка или Ctrl+левая
+            if (e.button === 1 || (e.button === 0 && e.ctrlKey)) { 
                 e.preventDefault();
                 this.startPanning(e);
             }
         });
         
-        // Также поддерживаем правую кнопку мыши для панорамирования
         this.canvas.addEventListener('contextmenu', (e) => {
             if (!e.target.closest('.canvas-node')) {
                 e.preventDefault();
@@ -88,7 +79,7 @@ class CanvasManager {
         });
         
         this.canvas.addEventListener('mousedown', (e) => {
-            if (e.button === 2) { // Правая кнопка
+            if (e.button === 2) { 
                 if (!e.target.closest('.canvas-node') && !e.target.closest('.connection-point')) {
                     e.preventDefault();
                     this.startPanning(e);
@@ -103,10 +94,7 @@ class CanvasManager {
 
             if (this.isDrawingCutLine) {
                 this.updateCutting(e);
-            } else if (this.isCuttingActive()) {
-                // Подсветка соединений даже без рисования линии
-                this.highlightConnectionsUnderCursor(e);
-            }
+            } 
         });
         
         document.addEventListener('mouseup', (e) => {
@@ -119,7 +107,6 @@ class CanvasManager {
             }
         });
         
-        // Горячие клавиши для масштабирования
         document.addEventListener('keydown', (e) => {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
                 return;
@@ -186,7 +173,6 @@ class CanvasManager {
     
     centerView() {
         const rect = this.canvas.getBoundingClientRect();
-        // Центрируем вид на начальной позиции (0, 0)
         this.offsetX = rect.width / 2 - this.virtualCenterX * this.scale;
         this.offsetY = rect.height / 2 - this.virtualCenterY * this.scale;
         this.updateTransform();
@@ -198,14 +184,11 @@ class CanvasManager {
         
         if (newScale === this.scale) return;
         
-        // Вычисляем мировые координаты точки под мышью
         const worldX = (mouseX - this.offsetX) / this.scale;
         const worldY = (mouseY - this.offsetY) / this.scale;
         
-        // Обновляем масштаб
         this.scale = newScale;
         
-        // Пересчитываем смещение, чтобы точка под мышью осталась на месте
         this.offsetX = mouseX - worldX * this.scale;
         this.offsetY = mouseY - worldY * this.scale;
         
@@ -215,7 +198,6 @@ class CanvasManager {
     updateTransform() {
         const transform = `translate(${this.offsetX}px, ${this.offsetY}px) scale(${this.scale})`;
         
-        // Применяем одинаковую трансформацию ко всем слоям
         this.nodesLayer.style.transform = transform;
         this.nodesLayer.style.transformOrigin = '0 0';
         
@@ -227,14 +209,12 @@ class CanvasManager {
             this.canvasBackground.style.transformOrigin = '0 0';
         }
         
-        // Обновляем отображение масштаба
         const zoomLevel = document.getElementById('zoomLevel');
         if (zoomLevel) {
             zoomLevel.textContent = Math.round(this.scale * 100) + '%';
         }
     }
-    
-    // Преобразование экранных координат в мировые
+
     screenToWorld(screenX, screenY) {
         return {
             x: (screenX - this.offsetX) / this.scale,
@@ -242,7 +222,6 @@ class CanvasManager {
         };
     }
     
-    // Преобразование мировых координат в экранные
     worldToScreen(worldX, worldY) {
         return {
             x: worldX * this.scale + this.offsetX,
@@ -250,12 +229,10 @@ class CanvasManager {
         };
     }
     
-    // Получить текущий масштаб
     getScale() {
         return this.scale;
     }
     
-    // Получить текущее смещение
     getOffset() {
         return { x: this.offsetX, y: this.offsetY };
     }
@@ -297,21 +274,16 @@ class CanvasManager {
                 e.preventDefault();
                 this.altKeyDown = false;
                 this.updateCuttingVisuals();
-                this.highlightConnectionsUnderCursor(null, true); // Снимаем подсветку
+
             }
         });
     }
+
     toggleCuttingMode() {
         this.cuttingModeEnabled = !this.cuttingModeEnabled;
         this.updateCuttingVisuals();
-        if (!this.cuttingModeEnabled) {
-            this.highlightConnectionsUnderCursor(null, true); // Снимаем подсветку при выключении
-        }
     }
 
-    /**
-     * Обновляет визуальное состояние (курсор, кнопка) в зависимости от режима резки
-     */
     updateCuttingVisuals() {
         const scissorBtn = document.getElementById('scissorBtn');
         if (this.isCuttingActive()) {
@@ -342,7 +314,6 @@ class CanvasManager {
         const t = window.i18n.t.bind(window.i18n);
 
         const hint = document.createElement('div');
-        // Используем класс вместо inline-стилей
         hint.className = 'cutting-hint-tooltip'; 
         hint.innerHTML = `
             <div class="cutting-hint">
@@ -353,9 +324,6 @@ class CanvasManager {
         document.body.appendChild(hint);
     }
 
-    /**
-     * Скрывает большую подсказку о режиме резки.
-     */
     hideCuttingHint() {
         const hint = document.querySelector('.cutting-hint-tooltip');
         if (hint) {
@@ -366,10 +334,6 @@ class CanvasManager {
         }
     }
     
-    /**
-     * Начинает рисование линии резки
-     * @param {MouseEvent} e 
-     */
     startCutting(e) {
         this.isDrawingCutLine = true;
         const rect = this.canvas.getBoundingClientRect();
@@ -389,10 +353,6 @@ class CanvasManager {
         }
     }
 
-    /**
-     * Обновляет путь линии резки во время движения мыши
-     * @param {MouseEvent} e 
-     */
     updateCutting(e) {
         const rect = this.canvas.getBoundingClientRect();
         const newPoint = this.screenToWorld(e.clientX - rect.left, e.clientY - rect.top);
@@ -403,12 +363,8 @@ class CanvasManager {
             pathData += ` L ${this.cutPath[i].x} ${this.cutPath[i].y}`;
         }
         this.cutLineElement.setAttribute('d', pathData);
-        this.highlightConnectionsUnderCursor(e);
     }
-    
-    /**
-     * Завершает рисование линии и выполняет резку
-     */
+
     endCutting() {
         if (this.isDrawingCutLine) {
             this.performCut();
@@ -419,66 +375,9 @@ class CanvasManager {
             this.cutLineElement.remove();
             this.cutLineElement = null;
         }
-        // Не сбрасываем подсветку, если режим все еще активен
-        if (this.isCuttingActive()) {
-            this.highlightConnectionsUnderCursor(null, false);
-        } else {
-            this.highlightConnectionsUnderCursor(null, true);
-        }
+
     }
 
-    /**
-     * Подсвечивает соединения, пересекаемые линией резки или находящиеся под курсором
-     * @param {MouseEvent | null} e - Событие мыши или null
-     * @param {boolean} forceClear - Принудительно убрать всю подсветку
-     */
-    highlightConnectionsUnderCursor(e, forceClear = false) {
-        if (!window.connectionManager) return;
-        
-        const connections = this.getConnectionsAsSegments();
-        let segmentsToTest = [];
-
-        if (this.isDrawingCutLine && this.cutPath.length > 1) {
-            // Проверяем последний сегмент нарисованной линии
-            const lastPoint = this.cutPath[this.cutPath.length - 1];
-            const prevPoint = this.cutPath[this.cutPath.length - 2];
-            segmentsToTest.push({ p1: prevPoint, p2: lastPoint });
-        } else if (e) {
-            // Создаем небольшой сегмент вокруг курсора для проверки "наведения"
-            const rect = this.canvas.getBoundingClientRect();
-            const worldPos = this.screenToWorld(e.clientX - rect.left, e.clientY - rect.top);
-            const tolerance = 1 / this.scale;
-            segmentsToTest.push({
-                p1: { x: worldPos.x - tolerance, y: worldPos.y },
-                p2: { x: worldPos.x + tolerance, y: worldPos.y }
-            });
-        }
-        
-        connections.forEach(conn => {
-            const element = conn.element;
-            if (!element) return;
-            
-            let intersected = false;
-            if (!forceClear) {
-                for (const testSeg of segmentsToTest) {
-                    if (this.doSegmentsIntersect(conn.p1, conn.p2, testSeg.p1, testSeg.p2)) {
-                        intersected = true;
-                        break;
-                    }
-                }
-            }
-            
-            if (intersected) {
-                element.classList.add('cut-highlight');
-            } else {
-                element.classList.remove('cut-highlight');
-            }
-        });
-    }
-
-    /**
-     * Выполняет фактическое удаление пересеченных соединений
-     */
     performCut() {
         if (this.cutPath.length < 2 || !window.connectionManager) return;
         const t = window.i18n.t.bind(window.i18n);
@@ -507,10 +406,6 @@ class CanvasManager {
         }
     }
 
-    /**
-     * Получает все соединения в виде отрезков с мировыми координатами
-     * @returns {Array<{id: string, p1: {x,y}, p2: {x,y}, element: SVGElement}>}
-     */
     getConnectionsAsSegments() {
         if (!window.connectionManager) return [];
         
@@ -537,7 +432,6 @@ class CanvasManager {
         return segments;
     }
 
-    /* Проверяет, пересекаются ли два отрезка*/
     doSegmentsIntersect(p1, p2, p3, p4) {
         function onSegment(p, q, r) {
             return (q.x <= Math.max(p.x, r.x) && q.x >= Math.min(p.x, r.x) &&
@@ -546,8 +440,8 @@ class CanvasManager {
 
         function orientation(p, q, r) {
             const val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
-            if (val == 0) return 0; // Collinear
-            return (val > 0) ? 1 : 2; // Clockwise or Counterclockwise
+            if (val == 0) return 0; 
+            return (val > 0) ? 1 : 2; 
         }
 
         const o1 = orientation(p1, p2, p3);
@@ -557,7 +451,6 @@ class CanvasManager {
 
         if (o1 !== o2 && o3 !== o4) return true;
 
-        // Special Cases for collinear points
         if (o1 === 0 && onSegment(p1, p3, p2)) return true;
         if (o2 === 0 && onSegment(p1, p4, p2)) return true;
         if (o3 === 0 && onSegment(p3, p1, p4)) return true;
@@ -574,7 +467,6 @@ class CanvasManager {
         
         if (!pathData) return false;
         
-        // Преобразуем экранные координаты с учетом трансформации SVG
         const svg = path.ownerSVGElement;
         const point = svg.createSVGPoint();
         point.x = screenX;
@@ -583,10 +475,8 @@ class CanvasManager {
         try {
             const transformedPoint = point.matrixTransform(svg.getScreenCTM().inverse());
             
-            // Проверяем расстояние до линии
-            const tolerance = 10 / this.scale; // Увеличиваем толерантность при уменьшении масштаба
+            const tolerance = 10 / this.scale; 
             
-            // Получаем точки начала и конца соединения
             const fromElement = connection.from.element;
             const toElement = connection.to.element;
             
@@ -601,7 +491,6 @@ class CanvasManager {
             const toX = (toRect.left + toRect.width / 2 - canvasRect.left - this.offsetX) / this.scale;
             const toY = (toRect.top + toRect.height / 2 - canvasRect.top - this.offsetY) / this.scale;
             
-            // Вычисляем расстояние от точки до линии
             const distance = this.distanceToLine(
                 transformedPoint.x, transformedPoint.y,
                 fromX, fromY,
@@ -624,7 +513,6 @@ class CanvasManager {
         const lenSq = C * C + D * D;
         
         if (lenSq === 0) {
-            // Точки совпадают
             return Math.sqrt(A * A + B * B);
         }
         
@@ -650,9 +538,8 @@ class CanvasManager {
     }
 }
 
-// Инициализация после загрузки DOM
 let canvasManager;
 document.addEventListener('DOMContentLoaded', () => {
     canvasManager = new CanvasManager();
-    window.canvasManager = canvasManager; // Делаем доступным глобально
+    window.canvasManager = canvasManager; 
 });

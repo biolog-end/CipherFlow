@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,6 @@
 </head>
 <body>
     <div class="app">
-        <!-- Заголовок -->
         <header class="header">
             <div class="header-content">
                 <div class="logo">
@@ -57,7 +56,6 @@
         </header>
 
         <div class="main-content">
-            <!-- Панель нодов -->
             <aside class="nodes-panel">
                 <h3 data-i18n="nodes.title">Ноды шифрования</h3>
                 <div class="node-categories">
@@ -214,7 +212,6 @@
                 </div>
             </aside>
 
-            <!-- Рабочая область -->
             <main class="workspace">
                 <div class="canvas-controls">
                     <button class="canvas-control-btn" id="zoomInBtn" data-i18n-title="canvas.zoom_in">
@@ -236,7 +233,6 @@
             </main>
         </div>
 
-        <!-- Нижняя панель с вводом/выводом -->
         <footer class="input-output-panel">
             <div class="input-section" id="inputSection">
                 <label for="inputText" id="inputLabel" data-i18n="io.input_label">Входной текст:</label>
@@ -249,7 +245,6 @@
         </footer>
     </div>
 
-    <!-- Скрытый input для загрузки файлов -->
     <input type="file" id="fileInput" accept=".json" style="display: none;">
     
     <script src="js/i18n.js"></script>

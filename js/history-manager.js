@@ -1,6 +1,3 @@
-// File: js/history-manager.js
-// === Система управления историей действий (Undo/Redo) ===
-
 class HistoryManager {
     constructor() {
         this.history = [];
@@ -13,7 +10,7 @@ class HistoryManager {
     
     initializeKeyboardShortcuts() {
         document.addEventListener('keydown', (e) => {
-            // Проверяем, что фокус не на элементах ввода текста
+
             const activeElement = document.activeElement;
             const isTextInput = activeElement && (
                 activeElement.tagName === 'INPUT' ||
@@ -21,25 +18,20 @@ class HistoryManager {
                 activeElement.contentEditable === 'true'
             );
             
-            // Не обрабатываем горячие клавиши в текстовых полях
             if (isTextInput) return;
             
-            // Создаем мапинг клавиш для поддержки русской раскладки
             const keyMap = {
-                'я': 'z',  // я - русская Z
-                'н': 'y'   // н - русская Y
+                'я': 'z',  
+                'н': 'y'   
             };
             
-            // Нормализуем клавишу (поддержка русской раскладки)
             const normalizedKey = keyMap[e.key.toLowerCase()] || e.key.toLowerCase();
             
-            // Ctrl/Cmd + Z для Undo (поддержка 'я' для русской раскладки)
             if ((e.ctrlKey || e.metaKey) && normalizedKey === 'z' && !e.shiftKey) {
                 e.preventDefault();
                 this.undo();
             }
             
-            // Ctrl/Cmd + Shift + Z или Ctrl/Cmd + Y для Redo (поддержка 'я' и 'н' для русской раскладки)
             if ((e.ctrlKey || e.metaKey) && (normalizedKey === 'y' || (normalizedKey === 'z' && e.shiftKey))) {
                 e.preventDefault();
                 this.redo();
@@ -47,17 +39,13 @@ class HistoryManager {
         });
     }
     
-    // Добавить действие в историю
     addAction(action) {
         if (this.isExecutingCommand) return;
         
-        // Удаляем все действия после текущего индекса
         this.history = this.history.slice(0, this.currentIndex + 1);
         
-        // Добавляем новое действие
         this.history.push(action);
         
-        // Ограничиваем размер истории
         if (this.history.length > this.maxHistorySize) {
             this.history.shift();
         } else {
@@ -65,7 +53,6 @@ class HistoryManager {
         }
     }
     
-    // Отменить действие
     undo() {
         const t = window.i18n.t.bind(window.i18n);
         if (this.currentIndex < 0) {
@@ -88,7 +75,6 @@ class HistoryManager {
         }
     }
     
-    // Повторить действие
     redo() {
         const t = window.i18n.t.bind(window.i18n);
         if (this.currentIndex >= this.history.length - 1) {
@@ -111,7 +97,6 @@ class HistoryManager {
         }
     }
     
-    // Выполнить отмену действия
     executeUndo(action) {
         switch (action.type) {
             case 'create_node':
@@ -123,7 +108,7 @@ class HistoryManager {
             case 'delete_node':
                 if (window.nodeManager) {
                     const node = window.nodeManager.restoreNode(action.data);
-                    // Восстанавливаем соединения
+                   
                     if (action.data.connections) {
                         action.data.connections.forEach(conn => {
                             window.connectionManager.restoreConnection(conn);
@@ -171,7 +156,7 @@ class HistoryManager {
                         const input = node.element.querySelector(`[name="${action.data.fieldName}"]`);
                         if (input) {
                             input.value = action.data.oldValue;
-                            // Обновляем данные нода
+                           
                             const field = node.data.fields.find(f => f.name === action.data.fieldName);
                             if (field) {
                                 field.value = action.data.oldValue;
@@ -184,7 +169,6 @@ class HistoryManager {
         }
     }
     
-    // Выполнить повтор действия
     executeRedo(action) {
         switch (action.type) {
             case 'create_node':
@@ -238,7 +222,6 @@ class HistoryManager {
                         const input = node.element.querySelector(`[name="${action.data.fieldName}"]`);
                         if (input) {
                             input.value = action.data.newValue;
-                            // Обновляем данные нода
                             const field = node.data.fields.find(f => f.name === action.data.fieldName);
                             if (field) {
                                 field.value = action.data.newValue;
@@ -251,7 +234,6 @@ class HistoryManager {
         }
     }
     
-    // Показать индикатор действия
     showIndicator(message, type = 'info') {
         let indicator = document.querySelector('.undo-redo-indicator');
         if (!indicator) {
@@ -273,14 +255,11 @@ class HistoryManager {
         }, 2000);
     }
     
-    // Очистить историю
     clear() {
         this.history = [];
         this.currentIndex = -1;
     }
 }
-
-// === Система группового выделения и копирования ===
 
 class SelectionManager {
     constructor() {
@@ -307,19 +286,16 @@ class SelectionManager {
                 return;
             }
 
-            // Запускаем выделение рамкой
             e.preventDefault();
             this.startSelection(e);
         });
         
-        // Обновление выделения
         document.addEventListener('mousemove', (e) => {
             if (this.isSelecting) {
                 this.updateSelection(e);
             }
         });
         
-        // Завершение выделения
         document.addEventListener('mouseup', () => {
             if (this.isSelecting) {
                 this.endSelection();
@@ -328,11 +304,6 @@ class SelectionManager {
     }
     
     initializeKeyboardShortcuts() {
-        // Убираем обработчики клавиатуры из SelectionManager,
-        // так как они обрабатываются в main.js для лучшего контроля контекста
-        // (проверка текстовых полей, справки и т.д.)
-        
-        // Остается только обработчик Escape для снятия выделения при клике на пустое место
         document.addEventListener('click', (e) => {
             if (e.target === document.getElementById('canvas') || 
                 e.target.classList.contains('canvas-background')) {
@@ -349,7 +320,6 @@ class SelectionManager {
         this.startX = e.clientX - rect.left;
         this.startY = e.clientY - rect.top;
         
-        // Создаем прямоугольник выделения
         this.selectionBox = document.createElement('div');
         this.selectionBox.className = 'selection-box';
         this.selectionBox.style.left = this.startX + 'px';
@@ -359,7 +329,6 @@ class SelectionManager {
         
         canvas.appendChild(this.selectionBox);
         
-        // Очищаем предыдущее выделение если не зажат Ctrl
         if (!e.ctrlKey && !e.metaKey) {
             this.clearSelection();
         }
@@ -384,7 +353,6 @@ class SelectionManager {
         this.selectionBox.style.width = width + 'px';
         this.selectionBox.style.height = height + 'px';
         
-        // Проверяем какие ноды попали в область выделения
         this.updateSelectedNodes(left, top, width, height, e);
     }
     
@@ -408,7 +376,6 @@ class SelectionManager {
                     bottom: nodeRect.bottom - canvasRect.top
                 };
                 
-                // Проверяем пересечение
                 if (nodePos.left < selectionRect.right &&
                     nodePos.right > selectionRect.left &&
                     nodePos.top < selectionRect.bottom &&
@@ -416,7 +383,6 @@ class SelectionManager {
                     
                     this.addToSelection(nodeId);
                 } else if (!event || (!event.ctrlKey && !event.metaKey)) {
-                    // Удаляем из выделения только если не используются модификаторы
                     this.removeFromSelection(nodeId);
                 }
             });
@@ -436,7 +402,6 @@ class SelectionManager {
         this.selectedNodes.add(nodeId);
         const node = window.nodeManager.nodes.get(nodeId);
         if (node) {
-            // === ИЗМЕНЕНИЕ: Используем один класс "selected" для консистентности ===
             node.element.classList.add('selected');
         }
     }
@@ -471,17 +436,16 @@ class SelectionManager {
         if (this.selectedNodes.size === 0) return;
         
         const copiedData = {
-            __cipherFlowData: true, // Добавляем метку для идентификации наших данных
+            __cipherFlowData: true, 
             nodes: [],
             connections: []
         };
         
-        // Копируем ноды
         this.selectedNodes.forEach(nodeId => {
             const node = window.nodeManager.nodes.get(nodeId);
             if (node) {
                 copiedData.nodes.push({
-                    id: nodeId, // Мы все еще используем старый ID для маппинга соединений
+                    id: nodeId, 
                     type: node.type,
                     x: node.x,
                     y: node.y,
@@ -495,7 +459,6 @@ class SelectionManager {
             }
         });
         
-        // Копируем соединения между выделенными нодами
         if (window.connectionManager) {
             window.connectionManager.connections.forEach(connection => {
                 if (this.selectedNodes.has(connection.from.nodeId) &&
@@ -510,10 +473,8 @@ class SelectionManager {
             });
         }
         
-        // Сохраняем во внутренний буфер для быстрого копирования в пределах одной вкладки
         this.clipboard = copiedData;
         
-        // Пытаемся записать в системный буфер обмена
         const t = window.i18n.t.bind(window.i18n);
         try {
             const jsonString = JSON.stringify(copiedData, null, 2);
@@ -534,27 +495,21 @@ class SelectionManager {
         const t = window.i18n.t.bind(window.i18n); 
         let clipboardData = null;
 
-        // Пытаемся прочитать данные из системного буфера обмена.
         try {
             const textFromClipboard = await navigator.clipboard.readText();
             const parsedData = JSON.parse(textFromClipboard);
 
-            // Проверяем наличие нашей специальной метки, чтобы не вставлять случайный JSON.
             if (parsedData && parsedData.__cipherFlowData) {
                 clipboardData = parsedData;
             }
         } catch (err) {
-            // Ошибка может возникнуть, если буфер пуст, содержит не JSON, или нет разрешений.
-            // Это не страшно, мы просто перейдем к использованию внутреннего буфера.
             console.warn('Не удалось прочитать данные из системного буфера, используется внутренний.', err);
         }
         
-        // Фалбэк на внутренний буфер, если из системного ничего не получили.
         if (!clipboardData) {
             clipboardData = this.clipboard;
         }
 
-        // Проверяем валидность данных перед вставкой.
         if (!clipboardData || !clipboardData.nodes || clipboardData.nodes.length === 0) {
             if (window.historyManager) {
                 window.historyManager.showIndicator(t('selection.paste_empty'), 'error');
@@ -562,31 +517,25 @@ class SelectionManager {
             return;
         }
         
-        // Логика вставки нодов.
         const nodeIdMapping = new Map();
 
-        // Получаем центр видимой области канваса в мировых координатах.
         const canvas = document.getElementById('canvas');
         const canvasRect = canvas.getBoundingClientRect();
         const centerScreenX = canvasRect.width / 2;
         const centerScreenY = canvasRect.height / 2;
         const worldCenter = window.canvasManager.screenToWorld(centerScreenX, centerScreenY);
 
-        // Вычисляем смещение, чтобы вставить ноды в центр.
         const firstNode = clipboardData.nodes[0];
         const offsetX = worldCenter.x - firstNode.x;
         const offsetY = worldCenter.y - firstNode.y;
 
-        // Вставляем ноды со смещением.
         clipboardData.nodes.forEach(nodeData => {
-            const newX = nodeData.x + offsetX + (Math.random() * 20 - 10); // Небольшая случайность, чтобы вставки не накладывались
+            const newX = nodeData.x + offsetX + (Math.random() * 20 - 10); 
             const newY = nodeData.y + offsetY + (Math.random() * 20 - 10);
             
-            // Создаем нод, передавая мировые координаты (третий параметр true).
             const newNodeId = window.nodeManager.createNode(nodeData.type, newX, newY, true);
             nodeIdMapping.set(nodeData.id, newNodeId);
             
-            // Восстанавливаем данные полей нода.
             const newNode = window.nodeManager.nodes.get(newNodeId);
             if (newNode && nodeData.data) {
                 newNode.data = JSON.parse(JSON.stringify(nodeData.data));
@@ -616,7 +565,6 @@ class SelectionManager {
             }
         });
         
-        // Восстанавливаем соединения между вставленными нодами.
         clipboardData.connections.forEach(connData => {
             const fromNodeId = nodeIdMapping.get(connData.from);
             const toNodeId = nodeIdMapping.get(connData.to);
@@ -628,14 +576,12 @@ class SelectionManager {
                 if (fromNode && toNode) {
                     let fromPoint, toPoint;
 
-                    // Ищем КОНКРЕТНУЮ точку выхода, если ее имя сохранено
                     if (connData.fromOutputName) {
                         fromPoint = fromNode.element.querySelector(`.connection-point.output[data-output-name="${connData.fromOutputName}"]`);
                     } else {
                         fromPoint = fromNode.element.querySelector('.connection-point.output');
                     }
 
-                    // Ищем КОНКРЕТНУЮ точку входа, если ее имя сохранено
                     if (connData.inputName) {
                         toPoint = toNode.element.querySelector(`.connection-point.input[data-input-name="${connData.inputName}"]`);
                     } else {
@@ -649,7 +595,6 @@ class SelectionManager {
             }
         });
         
-        // Выделяем вставленные ноды для удобства.
         this.clearSelection();
         nodeIdMapping.forEach(newNodeId => {
             this.addToSelection(newNodeId);
@@ -659,7 +604,6 @@ class SelectionManager {
             window.historyManager.showIndicator(t('selection.pasted', { count: nodeIdMapping.size }));
         }
 
-        // Запускаем пересчет цепочки
         window.nodeManager.triggerExecution();
     }
     
@@ -683,7 +627,5 @@ class SelectionManager {
         }
     }
 }
-
-// Создаем глобальные экземпляры
 window.historyManager = new HistoryManager();
 window.selectionManager = new SelectionManager();

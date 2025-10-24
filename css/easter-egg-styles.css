@@ -1,4 +1,4 @@
-/* === Универсальные стили для уведомлений о пасхалках === */
+/* === стили для уведомлений о пасхалках === */
 .easter-egg-notification {
     position: fixed;
     top: 20px;
@@ -59,14 +59,13 @@
     50% { transform: scale(1.1); }
 }
 
-/* === Специфичные стили для уведомления "Няшного режима" === */
+/* === стили для няшек === */
 .cute-mode-notification {
     background: linear-gradient(135deg, rgba(255, 105, 180, 0.8), rgba(255, 20, 147, 0.8));
     color: white;
 }
 
 
-/* === Розовая тема для няшного режима === */
 .cute-mode {
     --bg-primary: #2d1b2e;
     --bg-secondary: #3d2b3e;
@@ -83,15 +82,12 @@
     --error: #ff1493;
 }
 
-/* Анимации для няшного режима */
 .cute-mode .uwu-ifier {
     box-shadow: 0 0 20px #ff69b4, 0 0 40px #ff69b4, 0 0 60px #ff69b4;
 }
 
-/* Стили видео окна */
 .cute-video-window {
     position: fixed;
-    /* Начальное положение задается через JS transform, left/top здесь для запаса */
     left: 0; 
     top: 0;
     width: 400px;
@@ -112,11 +108,9 @@
 
 .cute-video-window.show {
     opacity: 1;
-    /* Позиция управляется JS, поэтому transform здесь только для анимации появления */
     transform: scale(1) translateY(0); 
 }
 
-/* Для перетаскивания transition будет временно отключаться JS */
 .cute-video-window.draggable-transition {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -137,7 +131,7 @@
     justify-content: space-between;
     align-items: center;
     user-select: none;
-    cursor: grab; /* Начальный курсор */
+    cursor: grab; 
 }
 
 .cute-video-title {
@@ -201,7 +195,6 @@
     border: none;
 }
 
-/* Дополнительные эффекты для няшного режима */
 .cute-mode .canvas-container::before {
     content: '';
     position: absolute;
@@ -224,7 +217,6 @@
     66% { transform: translateY(5px) rotate(-1deg); }
 }
 
-/* Эффекты для соединений в няшном режиме */
 .cute-mode .connection-line {
     stroke: #ff69b4;
     filter: drop-shadow(0 0 3px #ff69b4);
@@ -236,7 +228,6 @@
     50% { opacity: 1; stroke-width: 3; }
 }
 
-/* Анимированные частицы для няшного режима */
 .cute-mode::after {
     content: '';
     position: fixed;
@@ -245,7 +236,7 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: -1; /* Ставим ниже всего контента */
+    z-index: -1; 
     background-image: 
         radial-gradient(2px 2px at 20px 30px, rgba(255, 105, 180, 0.3), transparent),
         radial-gradient(2px 2px at 40px 70px, rgba(255, 182, 193, 0.3), transparent),
@@ -264,14 +255,12 @@
     100% { transform: translateY(0px) translateX(0px); }
 }
 
-/* === Стили для пасхалки "Присутствие в Сети" (Wired Presence) === */
+/* === Стили для лейн === */
 
-/* Глобальные эффекты при активации */
 .wired-active {
     position: relative;
 }
 
-/* Шум на фоне */
 .wired-active::before {
     content: '';
     position: fixed;
@@ -297,7 +286,6 @@
     100% { transform: translateY(4px); }
 }
 
-/* Пульсация соединительных линий */
 .wired-active .connection-line {
     animation: wired-pulse 2s ease-in-out infinite;
 }
@@ -367,7 +355,6 @@
     z-index: -1;
 }
 
-/* Глитч-текст внутри призрака */
 .lain-ghost .glitch-text {
     animation: glitch-text 2s infinite;
 }
@@ -394,8 +381,6 @@
             2px 2px #00ffff;
     }
 }
-
-/* Статичные помехи для заголовка призрака */
 
 .lain-ghost .node-header {
     position: relative;
@@ -424,7 +409,6 @@
     100% { transform: translateY(4px); }
 }
 
-/* Уведомление для Wired Presence */
 .wired-presence-notification {
     background: linear-gradient(135deg, 
         rgba(0, 0, 0, 0.9) 0%, 
@@ -448,9 +432,6 @@
     font-family: 'Courier New', monospace;
 }
 
-/* === РАСШИРЕННЫЕ СТИЛИ ДЛЯ УЛУЧШЕННОЙ LAIN ТЕМЫ === */
-
-/* Основная тема Лейн */
 .lain-theme {
     --bg-primary: #000000;
     --bg-secondary: #0a0a0a;
@@ -472,7 +453,6 @@
     font-family: 'Courier New', monospace;
 }
 
-/* Усиленные эффекты для wired-active состояния */
 .wired-active.lain-theme::before {
     background: 
         repeating-linear-gradient(
@@ -492,7 +472,6 @@
     animation: wired-scanlines 0.3s linear infinite;
 }
 
-/* Анимации для матричного дождя */
 @keyframes matrix-fall {
     0% { 
         transform: translateY(-100vh); 
@@ -507,7 +486,6 @@
     }
 }
 
-/* Анимации для глитч-полос */
 @keyframes glitch-bar {
     0% { 
         transform: translateX(-100%); 
@@ -522,7 +500,6 @@
     }
 }
 
-/* Анимация для потока данных */
 @keyframes data-stream-flow {
     0% { 
         background-position: 0 0, 0 0; 
@@ -532,7 +509,6 @@
     }
 }
 
-/* Анимация дрожания экрана */
 @keyframes screen-shake {
     0%, 100% { transform: translateX(0); }
     10% { transform: translateX(-2px) rotateZ(-0.1deg); }
@@ -546,7 +522,6 @@
     90% { transform: translateX(-2px) rotateZ(-0.1deg); }
 }
 
-/* Системные сообщения */
 @keyframes system-message-appear {
     0% { 
         opacity: 0; 
@@ -569,7 +544,6 @@
     }
 }
 
-/* Улучшенные стили для призраков Лейн */
 .lain-theme .lain-ghost {
     box-shadow: 
         0 0 20px rgba(0, 255, 0, 0.4),
@@ -603,7 +577,6 @@
     75% { transform: translate(-2px, -1px); opacity: 0.5; }
 }
 
-/* Стили для нодов в lain-theme */
 .lain-theme .canvas-node {
     background: rgba(0, 0, 0, 0.9);
     border: 1px solid rgba(0, 255, 0, 0.3);
@@ -628,7 +601,6 @@
     text-shadow: 0 0 5px #00ff41;
 }
 
-/* Соединения в lain-theme */
 .lain-theme .connection-line {
     stroke: #00ff41;
     filter: drop-shadow(0 0 5px #00ff41);
@@ -647,7 +619,6 @@
     }
 }
 
-/* Панели интерфейса в lain-theme */
 .lain-theme .header {
     background: rgba(0, 0, 0, 0.95);
     border-bottom: 2px solid #00ff41;
@@ -679,7 +650,6 @@
     box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
 }
 
-/* Кнопки в lain-theme */
 .lain-theme .btn {
     background: rgba(0, 0, 0, 0.8);
     border: 1px solid #00ff41;
@@ -692,7 +662,6 @@
     box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
 }
 
-/* Категории нодов в lain-theme */
 .lain-theme .node-item {
     background: rgba(0, 0, 0, 0.8);
     border: 1px solid rgba(0, 255, 0, 0.3);
@@ -705,7 +674,6 @@
     box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
-/* Рабочая область в lain-theme */
 .lain-theme .canvas {
     background: 
         radial-gradient(circle at 25% 25%, rgba(0, 255, 0, 0.03) 0%, transparent 50%),
@@ -714,7 +682,6 @@
         #000000;
 }
 
-/* Дополнительные эффекты искажения */
 .lain-theme .canvas-node.processing {
     animation: node-processing-glitch 0.5s infinite;
 }
@@ -727,7 +694,6 @@
     80% { transform: translateX(1px); filter: hue-rotate(360deg); }
 }
 
-/* Эффект цифрового шума для всей темы */
 .lain-theme::after {
     content: '';
     position: fixed;
@@ -753,7 +719,6 @@
     100% { transform: rotate(360deg) scale(1); }
 }
 
-/* Анимация загрузочных полос в призраках */
 @keyframes lain-loading {
     0%, 100% { 
         opacity: 0.3; 
@@ -765,7 +730,6 @@
     }
 }
 
-/* Дополнительные эффекты для системных сообщений */
 .system-message {
     font-weight: bold;
     letter-spacing: 2px;
@@ -783,7 +747,6 @@
     51%, 100% { opacity: 0; }
 }
 
-/* Улучшенные эффекты для wired-terminal */
 .wired-terminal {
     text-shadow: 0 0 5px #00ff41;
     backdrop-filter: blur(5px);
@@ -812,7 +775,6 @@
     100% { transform: translateY(4px); }
 }
 
-/* Пульсация для активных нодов в lain-theme */
 .lain-theme .canvas-node.active {
     animation: lain-node-active 2s ease-in-out infinite;
 }
@@ -826,7 +788,6 @@
     }
 }
 
-/* Анимация исчезновения призраков */
 @keyframes lain-ghost-disappear {
     0% { 
         opacity: 1; 

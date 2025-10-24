@@ -72,7 +72,6 @@ class CipherEngine {
     }
     
     bindEvents() {
-        // Обработка изменений в поле ввода
         const inputText = document.getElementById('inputText');
         inputText.addEventListener('input', () => {
             this.executeChain();
@@ -88,9 +87,6 @@ class CipherEngine {
             const executionOrder = window.connectionManager.getExecutionOrder();
             const isReverseMode = window.connectionManager.reverseMode;
             
-            // === КЛЮЧЕВОЕ ИЗМЕНЕНИЕ №1: ЧИСТОЕ СОСТОЯНИЕ ===
-            // Создаем новую карту результатов при КАЖДОМ запуске.
-            // Это полностью решает проблему "призрачного текста".
             const nodeResults = new Map();
 
             const initialInputElement = isReverseMode ? document.getElementById('outputText') : document.getElementById('inputText');
@@ -111,7 +107,7 @@ class CipherEngine {
                 } else {
                     const sourceConnections = isReverseMode ? connections.outputs : connections.inputs;
                     
-                    if (node.data.multipleInputs && !isReverseMode) { // Для слияния в прямом режиме
+                    if (node.data.multipleInputs && !isReverseMode) { 
                         inputData = {};
                         sourceConnections.forEach(conn => {
                             const inputName = conn.inputName || 'default';
@@ -119,46 +115,38 @@ class CipherEngine {
                             const sourceNode = window.nodeManager.nodes.get(sourceNodeId);
                             const sourceResult = nodeResults.get(sourceNodeId);
 
-                            // Проверяем, если источник - это разделитель потока
                             if (sourceNode && sourceNode.type === 'stream-splitter' && typeof sourceResult === 'object') {
-                                // Извлекаем нужный поток по имени выхода, к которому мы подключены
                                 const outputName = conn.fromOutputName; 
                                 inputData[inputName] = (sourceResult || {})[outputName] || '';
                             } else {
-                                // Стандартная логика для всех остальных нодов
                                 inputData[inputName] = sourceResult || '';
                             }
                         });
                     } else if (node.data.multipleOutputs && isReverseMode) { 
                         inputData = {};
                         sourceConnections.forEach(conn => {
-                            const sourceNodeId = conn.toNodeId; // ID нода-источника (в нашем случае, Соединителя)
+                            const sourceNodeId = conn.toNodeId; 
                             const sourceNode = window.nodeManager.nodes.get(sourceNodeId);
-                            const sourceResult = nodeResults.get(sourceNodeId); // Результат работы источника (объект {streamA, streamB})
+                            const sourceResult = nodeResults.get(sourceNodeId); 
                             
                             const originalConnection = Array.from(window.connectionManager.connections.values())
                                 .find(c => c.id === conn.connectionId);
                             
                             if (originalConnection) {
-                                const inputName = originalConnection.from.outputName || 'default'; // Имя "входа" для Разделителя ('streamA' или 'streamB')
+                                const inputName = originalConnection.from.outputName || 'default'; 
 
-                                // ДОБАВЛЕНА ПРОВЕРКА: Если источник - это Соединитель (работающий как разделитель) и его результат - объект,
-                                // то мы извлекаем из этого объекта только нужную нам часть.
                                 if (sourceNode && sourceNode.type === 'stream-merger' && typeof sourceResult === 'object') {
                                     inputData[inputName] = (sourceResult || {})[inputName] || ''; 
                                 } else {
-                                    // В противном случае, работаем как раньше.
                                     inputData[inputName] = sourceResult || '';
                                 }
                             }
                         });
-                    } else if (sourceConnections.length > 0) { // Для всех остальных нодов
+                    } else if (sourceConnections.length > 0) { 
                         const sourceConn = sourceConnections[0];
                         const sourceNodeId = isReverseMode ? sourceConn.toNodeId : sourceConn.fromNodeId;
                         let sourceResult = nodeResults.get(sourceNodeId);
 
-                        // Если у источника нет результата (он был в неактивной ветке),
-                        // принудительно устанавливаем пустую строку.
                         if (sourceResult === undefined) {
                             sourceResult = '';
                         }
@@ -172,7 +160,6 @@ class CipherEngine {
                                     if (sourceResult.chosenPath === sourceConn.fromOutputName) {
                                         inputData = sourceResult.output;
                                     } else {
-                                        // Принудительно очищаем неактивную ветку
                                         inputData = ''; 
                                     }
                                 }
@@ -194,7 +181,7 @@ class CipherEngine {
                             inputData = sourceResult;
                         }
                     } else {
-                        inputData = ''; // Нод без входов
+                        inputData = ''; 
                     }
                 }
                 
@@ -202,25 +189,22 @@ class CipherEngine {
                 nodeResults.set(nodeId, result);
             }
 
-            // === КЛЮЧЕВОЕ ИЗМЕНЕНИЕ №3: АГРЕГАЦИЯ ВСЕХ ВЫХОДОВ ===
-            // Находим ВСЕ выходные ноды на канвасе
             const allOutputNodes = window.nodeManager.getAllNodes().filter(n => {
                 return isReverseMode ? n.type === 'input' : n.type === 'output';
             });
 
-            // Собираем результаты только из тех нодов, которые были обработаны
             const finalOutputs = allOutputNodes.map(node => {
                 if (nodeResults.has(node.id)) {
                     let res = nodeResults.get(node.id);
                     if (typeof res === 'object' && res !== null) return res.output || '';
                     return res;
                 }
-                return ''; // Если нод не был затронут, его результат - пустота
-            }).filter(res => res !== ''); // Убираем пустые результаты, чтобы не создавать лишних переносов строк
+                return ''; 
+            }).filter(res => res !== ''); 
 
             const outputElement = isReverseMode ? document.getElementById('inputText') : document.getElementById('outputText');
             if (outputElement) {
-                outputElement.value = finalOutputs.join('\n'); // Объединяем результаты через перенос строки
+                outputElement.value = finalOutputs.join('\n');
             }
 
         } catch (error) {
@@ -333,9 +317,6 @@ class CipherEngine {
     }
     
     processInputNode(node, inputData) {
-        // Этот узел либо является стартовой точкой (в режиме шифрования),
-        // либо конечной (в режиме расшифровки). В обоих случаях он просто
-        // возвращает данные, которые ему передали из executeChain.
         return inputData;
     }
     
@@ -348,12 +329,10 @@ class CipherEngine {
         
         if (typeof text !== 'string') return '';
 
-        // Используем .map() на символах, чтобы обработать каждый
         return text.split('').map(char => {
             const isUpperCase = char === char.toUpperCase();
             const lowerChar = char.toLowerCase();
 
-            // Обработка русского алфавита
             if (lowerChar >= 'а' && lowerChar <= 'я' || lowerChar === 'ё') {
                 const alphabet = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя';
                 const alphabetSize = alphabet.length;
@@ -366,7 +345,6 @@ class CipherEngine {
                 }
             }
 
-            // Обработка английского алфавита
             if (lowerChar >= 'a' && lowerChar <= 'z') {
                 const startCode = 'a'.charCodeAt(0);
                 const charCode = lowerChar.charCodeAt(0);
@@ -378,10 +356,9 @@ class CipherEngine {
                 return isUpperCase ? resultChar.toUpperCase() : resultChar;
             }
 
-            // Если символ не является буквой, возвращаем его без изменений
             return char;
 
-        }).join(''); // Собираем массив символов обратно в строку
+        }).join(''); 
     }
     
     processMorseCode(nodeData, text) {
@@ -444,8 +421,7 @@ class CipherEngine {
         
         if (actualMode === 'to_words') {
             if (language === 'mix') {
-                // Перемешанный режим с фиксированным seed для стабильности
-                // Сбрасываем генератор для каждого нового преобразования
+
                 this.seededRandom = this.createSeededRandom(42);
                 
                 return text.replace(/\d/g, (digit) => {
@@ -455,23 +431,18 @@ class CipherEngine {
                 });
             } else {
                 const dict = language === 'ru' ? this.numbersRu : this.numbersEn;
-                // Заменяем каждую цифру отдельно
                 return text.replace(/\d/g, (digit) => {
                     return dict[digit] || digit;
                 });
             }
         } else {
-            // Обратное преобразование - от слов к числам
             let result = text;
             
-            // Создаем комбинированный словарь для более эффективного поиска
             const allNumbers = {...this.reverseNumbersRu, ...this.reverseNumbersEn};
             
-            // Сначала заменяем длинные слова, потом короткие (чтобы избежать конфликтов)
             const sortedEntries = Object.entries(allNumbers).sort((a, b) => b[0].length - a[0].length);
             
             for (const [word, num] of sortedEntries) {
-                // Используем более гибкий поиск, который работает и без пробелов
                 const regex = new RegExp(this.escapeRegExp(word), 'gi');
                 result = result.replace(regex, num);
             }
@@ -489,7 +460,6 @@ class CipherEngine {
     }
     
 
-    // Вспомогательная функция для экранирования специальных символов в регулярных выражениях
     escapeRegExp(string) {
         return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
@@ -519,12 +489,10 @@ class CipherEngine {
                     result = isReverse ? num + value : num - value;
                     break;
                 case 'multiply':
-                    // Проверка деления на ноль при дешифрации
                     if (value === 0) return isReverse ? t('error.division_by_zero') : 0;
                     result = isReverse ? num / value : num * value;
                     break;
                 case 'divide':
-                    // Проверка деления на ноль при шифрации
                     if (value === 0) return isReverse ? num * value : t('error.division_by_zero');
                     result = isReverse ? num * value : num / value;
                     break;
@@ -585,7 +553,6 @@ class CipherEngine {
         }
     }
     
-    // Методы для сохранения и загрузки схем
     exportScheme() {
         if (!window.nodeManager || !window.connectionManager) {
             throw new Error(window.i18n.t('error.node_systems_not_ready'));
@@ -599,7 +566,6 @@ class CipherEngine {
             data: node.data
         }));
         
-        // [ИСПРАВЛЕНО] Теперь мы сохраняем имена входов и выходов
         const connections = window.connectionManager.getAllConnections().map(conn => {
             const connData = {
                 id: conn.id,
@@ -607,12 +573,10 @@ class CipherEngine {
                 to: conn.to.nodeId
             };
             
-            // Сохраняем имя выхода, если оно есть (для нодов типа Text Router)
             if (conn.from.element && conn.from.element.dataset.outputName) {
                 connData.fromOutputName = conn.from.element.dataset.outputName;
             }
             
-            // Сохраняем имя входа, если оно есть (для нодов типа Vigenere, Stream Merger)
             if (conn.to.element && conn.to.element.dataset.inputName) {
                 connData.inputName = conn.to.element.dataset.inputName;
             }
@@ -621,7 +585,7 @@ class CipherEngine {
         });
         
         const scheme = {
-            version: '2.0', // Обновляем версию для совместимости
+            version: '2.0', 
             created: new Date().toISOString(),
             nodes: nodes,
             connections: connections
@@ -630,7 +594,6 @@ class CipherEngine {
         return JSON.stringify(scheme, null, 2);
     }
     
-    // Метод для загрузки схемы
     importScheme(schemeJson) {
         if (!window.nodeManager || !window.connectionManager) {
             throw new Error('Системы нодов не инициализированы');
@@ -638,10 +601,8 @@ class CipherEngine {
 
         const scheme = JSON.parse(schemeJson);
 
-        // Очищаем текущую схему
         window.nodeManager.clearAllNodes();
 
-        // Восстанавливаем ноды
         const nodeIdMapping = new Map();
 
         for (const nodeData of scheme.nodes) {
@@ -650,9 +611,8 @@ class CipherEngine {
 
             const node = window.nodeManager.nodes.get(newNodeId);
             if (node && nodeData.data) {
-                node.data = JSON.parse(JSON.stringify(nodeData.data)); // Глубокое копирование
+                node.data = JSON.parse(JSON.stringify(nodeData.data)); 
 
-                // Обновляем значения в элементах формы
                 nodeData.data.fields?.forEach(field => {
                     if (field.type === 'multi-rules') {
                         if (Array.isArray(field.value)) {
@@ -683,7 +643,7 @@ class CipherEngine {
                             titleElement.textContent = node.data.title;
                         }
                         if (iconElement && node.data.icon) {
-                            // Просто заменяем классы иконки на сохраненные.
+                            
                             iconElement.className = node.data.icon;
                         }
                     }
@@ -702,19 +662,15 @@ class CipherEngine {
                 if (fromNode && toNode) {
                     let fromPoint, toPoint;
 
-                    // Ищем КОНКРЕТНУЮ точку выхода, если ее имя сохранено
                     if (connData.fromOutputName) {
                         fromPoint = fromNode.element.querySelector(`.connection-point.output[data-output-name="${connData.fromOutputName}"]`);
                     } else {
-                        // Иначе берем первую попавшуюся
                         fromPoint = fromNode.element.querySelector('.connection-point.output');
                     }
 
-                    // Ищем КОНКРЕТНУЮ точку входа, если ее имя сохранено
                     if (connData.inputName) {
                         toPoint = toNode.element.querySelector(`.connection-point.input[data-input-name="${connData.inputName}"]`);
                     } else {
-                        // Иначе берем первую попавшуюся
                         toPoint = toNode.element.querySelector('.connection-point.input');
                     }
                     
@@ -743,12 +699,10 @@ class CipherEngine {
     processVigenereCipher(node, inputData, allNodeResults) {
         const isReverse = window.connectionManager?.reverseMode || false;
         
-        // Получаем режим шифра (обычный Виженер или Бофор)
         const modeField = node.data.fields.find(f => f.name === 'mode');
         const mode = modeField?.value || 'vigenere';
 
         if (isReverse) {
-            // Логика дешифровки
             const textToDecrypt = inputData || '';
             let key = 'DEFAULT_KEY';
 
@@ -766,8 +720,7 @@ class CipherEngine {
             
             return this.vigenereTransform(textToDecrypt, key, false, mode);
 
-        } else { // Режим шифрования
-            // [ИСПРАВЛЕНО] Корректно обрабатываем ситуацию, когда текст не подан на вход
+        } else { 
             const textToEncrypt = (typeof inputData === 'object' && inputData !== null) ? (inputData.text || '') : (inputData || '');
             const key = (typeof inputData === 'object' && inputData !== null) ? (inputData.key || 'DEFAULT_KEY') : 'DEFAULT_KEY';
             
@@ -778,15 +731,14 @@ class CipherEngine {
     vigenereTransform(text, key, encrypt = true, mode = 'vigenere') {
         if (!key || typeof text !== 'string') return text;
 
-        const russianAlphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'; // 33 буквы
-        const englishAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // 26 букв
+        const russianAlphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'; 
+        const englishAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; 
         
-        // "Очищаем" ключ, оставляя только буквы, которые есть в алфавитах
         const cleanKey = key.toUpperCase().split('').filter(char => 
             russianAlphabet.includes(char) || englishAlphabet.includes(char)
         ).join('');
 
-        if (cleanKey.length === 0) return text; // Если ключ пустой, ничего не делаем
+        if (cleanKey.length === 0) return text; 
 
         let result = '';
         let keyIndex = 0;
@@ -806,7 +758,6 @@ class CipherEngine {
                 const keyChar = cleanKey[keyIndex % cleanKey.length];
                 const keyShift = alphabet.indexOf(keyChar);
                 
-                // Если символ ключа (что маловероятно после очистки) не найден, пропускаем шифрацию для этого символа
                 if (keyShift === -1) {
                     result += char;
                     continue;
@@ -816,14 +767,11 @@ class CipherEngine {
                 let newIndex;
                 
                 if (mode === 'beaufort') {
-                    // Шифр Бофора: (Ключ - Текст) mod m
-                    // Для шифровки и дешифровки используется одна и та же формула
                     newIndex = (keyShift - charIndex + alphabet.length) % alphabet.length;
                 } else {
-                    // Обычный Виженер
                     if (encrypt) {
                         newIndex = (charIndex + keyShift) % alphabet.length;
-                    } else { // decrypt
+                    } else { 
                         newIndex = (charIndex - keyShift + alphabet.length) % alphabet.length;
                     }
                 }
@@ -832,7 +780,7 @@ class CipherEngine {
                 result += (char === upperChar) ? newChar : newChar.toLowerCase();
                 keyIndex++;
             } else {
-                result += char; // Если символ не из алфавита, добавляем как есть
+                result += char; 
             }
         }
         
@@ -868,12 +816,8 @@ class CipherEngine {
                 }).join('-'); 
             });
 
-        } else { // 'decode'
-            
-            // ================== НАЧАЛО ИЗМЕНЕНИЯ 1: РЕГУЛЯРНОЕ ВЫРАЖЕНИЕ ==================
-            // Обновлено, чтобы корректно обрабатывать числа с точками (например, 1.002) как единое целое.
+        } else { 
             const regex = /\b(\d+(\.\d+)*(-\d+(\.\d+)*)*)\b/g;
-            // =================== КОНЕЦ ИЗМЕНЕНИЯ 1: РЕГУЛЯРНОЕ ВЫРАЖЕНИЕ ===================
             
             return inputData.replace(regex, (match) => {
                 
@@ -882,11 +826,10 @@ class CipherEngine {
                     if (!isNaN(num) && num >= 1 && num <= currentAlphabet.length) {
                         return currentAlphabet[num - 1];
                     }
-                    return numStr; // Возвращаем как есть, если не удалось конвертировать
+                    return numStr; 
                 };
 
                 return match.split('-').map(part => {
-                    // ================== НАЧАЛО ИЗМЕНЕНИЯ 2: ЛОГИКА ОБРАБОТКИ ==================
                     if (part.includes('.')) {
                         return part.split('.').map(subPart => {
                             // Ищем ведущие нули и само число
@@ -912,7 +855,6 @@ class CipherEngine {
                             return subPart;
                         }).join('.');
                     }
-                    // =================== КОНЕЦ ИЗМЕНЕНИЯ 2: ЛОГИКА ОБРАБОТКИ ===================
                     return convertNumToLetter(part);
                 }).join('');
             });
@@ -1065,7 +1007,7 @@ class CipherEngine {
         }
     }
     
-    // Метод для обработки "Зачаровывателя планет"
+
     processPlanetEnchanter(nodeData, inputData) {
         const modeField = nodeData.fields.find(f => f.name === 'mode');
         const languageField = nodeData.fields.find(f => f.name === 'language');
@@ -1131,29 +1073,24 @@ class CipherEngine {
 
             let found = false;
             
-            // Функция для сравнения координат как чисел, а не как строк
             const compareCoords = (cityCoordStr, inputCoordStr) => {
                 const cityParts = cityCoordStr.split(',').map(s => s.trim());
                 const inputParts = inputCoordStr.split(',').map(s => s.trim());
 
                 if (cityParts.length !== 2 || inputParts.length !== 2) {
-                    return false; // Неверный формат координат
+                    return false; 
                 }
 
-                // Преобразуем строки в числа с плавающей точкой
                 const cityLat = parseFloat(cityParts[0]);
                 const cityLon = parseFloat(cityParts[1]);
                 const inputLat = parseFloat(inputParts[0]);
                 const inputLon = parseFloat(inputParts[1]);
                 
-                // Сравниваем именно числа
                 return cityLat === inputLat && cityLon === inputLon;
             };
 
-            // Поиск в русских городах
             if (language === 'ru' || language === 'mix') {
                 for (let [letter, cityList] of Object.entries(this.citiesRu)) {
-                    // Используем новую функцию для поиска
                     const city = cityList.find(city => compareCoords(city.coord, coord));
                     if (city) {
                         result += letter;
@@ -1163,10 +1100,8 @@ class CipherEngine {
                 }
             }
             
-            // Поиск в английских городах
             if (!found && (language === 'en' || language === 'mix')) {
                 for (let [letter, cityList] of Object.entries(this.citiesEn)) {
-                    // Используем новую функцию для поиска
                     const city = cityList.find(city => compareCoords(city.coord, coord));
                     if (city) {
                         result += letter;
@@ -1184,7 +1119,6 @@ class CipherEngine {
         return result;
     }
     
-    // Данные городов для "Зачаровывателя планет"
     citiesRu = {
         'а': [
             {name: 'Архангельск', coord: '64.5401, 40.5433'},
@@ -1648,7 +1582,6 @@ class CipherEngine {
             ? [...rules].reverse().map(rule => ({ find: rule.replace, replace: rule.find }))
             : rules;
 
-        // Если "только целые слова" не включено, используем простую глобальную замену
         if (!wholeWords) {
             let result = inputData;
             processedRules.forEach(rule => {
@@ -1665,18 +1598,14 @@ class CipherEngine {
             return result;
         }
 
-        // === НАЧАЛО НОВОЙ ЛОГИКИ ДЛЯ "ТОЛЬКО ПО СЛОВАМ" ===
-        
-        // Разделяем строку на слова и разделители (пробелы, переносы строк и т.д.)
         const parts = inputData.split(/(\s+)/);
 
         const newParts = parts.map(part => {
-            // Пропускаем пробелы и пустые строки
+            
             if (/\s+/.test(part) || part === '') {
                 return part;
             }
 
-            // Проверяем каждое правило для текущего слова
             for (const rule of processedRules) {
                 if (!rule.find) continue;
 
@@ -1684,20 +1613,16 @@ class CipherEngine {
                 const findToCompare = caseSensitive ? rule.find : rule.find.toLowerCase();
 
                 if (wordToCompare === findToCompare) {
-                    // Если нашли совпадение, заменяем и прекращаем поиск для этого слова
                     return rule.replace || '';
                 }
             }
 
-            // Если совпадений не найдено, возвращаем исходное слово
             return part;
         });
 
         return newParts.join('');
-        // === КОНЕЦ НОВОЙ ЛОГИКИ ===
     }
     
-    // Категория 2: Логические и структурные ноды
     processTextRouter(node, inputData, allNodeResults) {
         const nodeData = node.data;
         const condition = nodeData.fields?.find(f => f.name === 'condition')?.value || 'contains_numbers';
@@ -1741,11 +1666,8 @@ class CipherEngine {
             conditionMet = false;
         }
         
-        // Отправляем данные на соответствующий выход
-        // Это особый случай - нод маршрутизатора возвращает данные через специальный механизм
         const outputName = conditionMet ? 'true' : 'false';
         
-        // Сохраняем результат для каждого выхода
         if (!node.routerResults) {
             node.routerResults = {};
         }
@@ -1804,13 +1726,10 @@ class CipherEngine {
         const mode = nodeData.fields?.find(f => f.name === 'mode')?.value || 'alternating_chars';
 
         if (isReverseMode) {
-            // Логика разделения текста на два потока
             const { streamA, streamB } = this.unmergeStreams(inputData, mode);
-            // Возвращаем объект. executeChain теперь умеет его обрабатывать.
             return { streamA, streamB };
         }
 
-        // Логика прямого режима (слияние)
         const streamA = inputData.streamA || '';
         const streamB = inputData.streamB || '';
         
@@ -1822,7 +1741,7 @@ class CipherEngine {
             case 'alternating_lines':
                 return this.mergeAlternatingLines(streamA, streamB);
             default:
-                return ''; // Безопасное значение по умолчанию
+                return ''; 
         }
     }
     
@@ -1832,7 +1751,6 @@ class CipherEngine {
         const mode = nodeData.fields?.find(f => f.name === 'mode')?.value || 'alternating_chars';
 
         if (isReverseMode) {
-            // В режиме дешифровки Stream Splitter работает как Stream Merger
             const streamA = inputData.streamA || '';
             const streamB = inputData.streamB || '';
             
@@ -1848,15 +1766,13 @@ class CipherEngine {
             }
         }
 
-        // Логика прямого режима (разделение одного потока на два)
         if (typeof inputData !== 'string') inputData = '';
         const { streamA, streamB } = this.unmergeStreams(inputData, mode);
         return { streamA, streamB };
     }
 
-    // Добавьте этот универсальный метод для разделения (если его еще нет)
     unmergeStreams(text, mode) {
-        if (typeof text !== 'string') text = ''; // Защита от ошибок
+        if (typeof text !== 'string') text = ''; 
         switch (mode) {
             case 'alternating_chars':
                 return this.unmergeAlternatingChars(text);
@@ -1933,7 +1849,7 @@ class CipherEngine {
             } else if ((index = en_up.indexOf(char)) !== -1) {
                 result += en_up[en_up.length - 1 - index];
             } else {
-                result += char; // Если символ не в алфавите, оставляем его как есть
+                result += char; 
             }
         }
         
@@ -1945,7 +1861,6 @@ class CipherEngine {
         const isReverseMode = window.connectionManager?.reverseMode;
         const mode = nodeData.fields?.find(f => f.name === 'mode')?.value || 'encode';
         
-        // В режиме дешифрования инвертируем операцию
         const actualMode = isReverseMode ? (mode === 'encode' ? 'decode' : 'encode') : mode;
         
         try {
@@ -1965,8 +1880,8 @@ class CipherEngine {
     }
 
     encodeGawrGura(text) {
-        const ru_alphabet = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'; // 33 буквы
-        const en_alphabet = 'abcdefghijklmnopqrstuvwxyz'; // 26 букв
+        const ru_alphabet = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя';
+        const en_alphabet = 'abcdefghijklmnopqrstuvwxyz'; 
         
         const ru_tiers = ['а', 'шорк', 'гура'];
         const en_tiers = ['a', 'shork', 'gura'];
@@ -1974,12 +1889,12 @@ class CipherEngine {
         let result = [];
 
         for (const char of text.toLowerCase()) {
-            let encoded = char; // По умолчанию
+            let encoded = char;
             let index;
 
             const encodeChar = (idx, tiers, baseUnit) => {
                 const tier = Math.floor(idx / 12);
-                if (tier >= tiers.length) return null; // Буква вне диапазона
+                if (tier >= tiers.length) return null;
                 
                 const keyword = tiers[tier];
                 const repetitions = idx % 12;
@@ -2001,7 +1916,7 @@ class CipherEngine {
 
             result.push(encoded);
         }
-        return result.join('  '); // Двойной пробел между буквами
+        return result.join('  '); 
     }
 
     decodeGawrGura(guraText) {
@@ -2011,7 +1926,7 @@ class CipherEngine {
         const ru_tiers = {'а': 0, 'шорк': 1, 'гура': 2};
         const en_tiers = {'a': 0, 'shork': 1, 'gura': 2};
 
-        const encodedLetters = guraText.split('  '); // Разделяем по двойному пробелу
+        const encodedLetters = guraText.split('  ');
         let result = '';
 
         for (const part of encodedLetters) {
@@ -2024,7 +1939,7 @@ class CipherEngine {
             const keyword = tokens[0];
             const repetitions = tokens.length - 1;
 
-            let decoded = part; // По умолчанию
+            let decoded = part;
             
             if (keyword in ru_tiers) {
                 const tierIndex = ru_tiers[keyword];
@@ -2049,10 +1964,9 @@ class CipherEngine {
         const isReverseMode = window.connectionManager?.reverseMode;
         
         if (isReverseMode || typeof inputData !== 'string') {
-            return inputData; // UwU-фикатор необратим
+            return inputData;
         }
 
-        // ИЗМЕНЕНИЕ: Создаем "случайность" на основе самого текста, чтобы она была постоянной
         let seed = 0;
         for (let i = 0; i < inputData.length; i++) {
             seed += inputData.charCodeAt(i);
@@ -2063,7 +1977,6 @@ class CipherEngine {
         
         result = result.replace(/[рл]/g, 'в').replace(/[РЛ]/g, 'В');
         
-        // Дефисы теперь добавляются с некоторой вероятностью
         result = result.replace(/\b(\w)/g, (match) => {
             return seededRandom() < 0.7 ? `${match}-${match.toLowerCase()}` : match;
         });
@@ -2072,7 +1985,7 @@ class CipherEngine {
         const words = result.split(' ');
         
         const uwuifiedWords = words.map(word => {
-            if (seededRandom() < 0.3) { // 30% вероятность добавления смайлика
+            if (seededRandom() < 0.3) { 
                 return word + uwuEmoticons[Math.floor(seededRandom() * uwuEmoticons.length)];
             }
             return word;
@@ -2140,7 +2053,6 @@ class CipherEngine {
         const fromAlphabet = actualDecrypt ? substitutionAlphabet : baseAlphabet;
         const toAlphabet = actualDecrypt ? baseAlphabet : substitutionAlphabet;
 
-        // Используем общий метод
         return this._applySubstitution(text, fromAlphabet, toAlphabet);
     }
 
@@ -2535,26 +2447,20 @@ class CipherEngine {
         return this.decryptKnightsCipher(textToDecrypt);
     }
 }
-
-// 2. ФУНКЦИЯ ШИФРОВАНИЯ (НОВАЯ, ИСПРАВЛЕННАЯ ЛОГИКА)
 encryptKnightsCipher(container, secret) {
-    // Проверяем, что есть и контейнер, и секрет. Если контейнер пуст, шифровать некуда.
     if (!container || !secret) return container;
 
-    const ZERO_CHAR = '\u200C'; // Zero-Width Non-Joiner для '0'
-    const ONE_CHAR = '\u200B';  // Zero-Width Space для '1'
-    const MARKER = '\u200D\u200D'; // Маркер начала секрета
+    const ZERO_CHAR = '\u200C'; 
+    const ONE_CHAR = '\u200B';  
+    const MARKER = '\u200D\u200D'; 
 
-    // Преобразуем секрет в последовательность невидимых символов
     const invisibleString = secret.split('')
-        .map(char => char.charCodeAt(0).toString(2).padStart(16, '0')) // Используем 16 бит для лучшей поддержки Unicode
+        .map(char => char.charCodeAt(0).toString(2).padStart(16, '0')) 
         .join('')
         .split('')
         .map(bit => (bit === '0' ? ZERO_CHAR : ONE_CHAR))
         .join('');
     
-    // --- КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ ---
-    // Рассчитываем, сколько невидимых символов нужно вставить после каждой буквы контейнера.
     const containerLength = container.length;
     const invisibleLength = invisibleString.length;
     const chunkSize = Math.ceil(invisibleLength / containerLength);
@@ -2562,12 +2468,9 @@ encryptKnightsCipher(container, secret) {
     let result = '';
     let invisibleIndex = 0;
 
-    // Проходим по каждой букве контейнера
     for (let i = 0; i < containerLength; i++) {
-        // Добавляем видимую букву
         result += container[i];
         
-        // Вырезаем и добавляем "порцию" невидимых символов
         const chunk = invisibleString.substring(invisibleIndex, invisibleIndex + chunkSize);
         if (chunk) {
             result += chunk;
@@ -2575,12 +2478,9 @@ encryptKnightsCipher(container, secret) {
         invisibleIndex += chunkSize;
     }
 
-    // Добавляем маркер в самое начало, чтобы дешифратор его легко нашел
     return MARKER + result;
 }
 
-
-// 3. ФУНКЦИЯ ДЕШИФРОВКИ (логика была верной, но теперь с 16-битной поддержкой)
 decryptKnightsCipher(text) {
     if (typeof text !== 'string' || !text) return '';
 
@@ -2588,26 +2488,21 @@ decryptKnightsCipher(text) {
     const ONE_CHAR = '\u200B';
     const MARKER = '\u200D\u200D';
 
-    // Если в тексте нет нашего маркера, значит, там нет скрытого сообщения
     if (!text.startsWith(MARKER)) {
         return ''; 
     }
 
     let binaryString = '';
     
-    // Проходим по всему полученному тексту и собираем ТОЛЬКО наши секретные символы
     for (const char of text) {
         if (char === ZERO_CHAR) {
             binaryString += '0';
         } else if (char === ONE_CHAR) {
             binaryString += '1';
         }
-        // Все остальные символы (буквы, пробелы, маркер) просто игнорируются
     }
 
-    // Преобразуем собранную двоичную строку обратно в текст
     let result = '';
-    // Используем 16-битные чанки, как и при шифровании
     for (let i = 0; i + 16 <= binaryString.length; i += 16) {
         const byte = binaryString.substring(i, i + 16);
         const charCode = parseInt(byte, 2);
@@ -2617,9 +2512,9 @@ decryptKnightsCipher(text) {
     return result;
 }
 }
-// Инициализация после загрузки DOM
+
 let cipherEngine;
 document.addEventListener('DOMContentLoaded', () => {
     cipherEngine = new CipherEngine();
-    window.cipherEngine = cipherEngine; // Делаем доступным глобально
+    window.cipherEngine = cipherEngine; 
 });

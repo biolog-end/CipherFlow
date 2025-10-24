@@ -1,6 +1,3 @@
-// File: js/main.js
-// === Основной файл приложения CipherFlow ===
-
 class CipherFlowApp {
     constructor() {
         this.initialized = false;
@@ -14,7 +11,6 @@ class CipherFlowApp {
         try {
             console.log('🚀 Запуск CipherFlow...');
             
-            // Проверяем готовность DOM
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', () => this.initializeApp());
             } else {
@@ -31,7 +27,6 @@ class CipherFlowApp {
         const t = window.i18n.t.bind(window.i18n);
         console.log('🎯 Инициализация компонентов...');
         
-        // Ждем загрузки всех компонентов
         this.waitForComponents().then(() => {
             this.setupGlobalEventListeners();
             this.setupKeyboardShortcuts();
@@ -77,14 +72,12 @@ class CipherFlowApp {
     setupGlobalEventListeners() {
         const t = window.i18n.t.bind(window.i18n);
 
-        // Настройка i18n подписок
         if (window.i18n) {
             window.i18n.onLanguageChange(() => {
                 this.updateInterfaceLanguage();
             });
         }
         
-        // Обработка клика по логотипу для показа справки
         const logo = document.querySelector('.logo');
         if (logo) {
             logo.addEventListener('click', () => {
@@ -94,24 +87,20 @@ class CipherFlowApp {
             logo.title = t('header.help'); 
         }
         
-        // Обработка изменения размера окна
         window.addEventListener('resize', this.debounce(() => {
             if (this.components.connectionManager) {
-                // Обновляем все соединения при изменении размера
                 for (const [nodeId] of this.components.nodeManager.nodes) {
                     this.components.connectionManager.updateConnections(nodeId);
                 }
             }
         }, 250));
         
-        // Обработка потери фокуса - автосохранение
         window.addEventListener('blur', () => {
             if (this.components.fileManager) {
                 this.components.fileManager.autoSave();
             }
         });
         
-        // Предотвращение случайного закрытия с несохраненными изменениями
         window.addEventListener('beforeunload', (e) => {
             if (this.components.nodeManager && this.components.nodeManager.getAllNodes().length > 0) {
                 const message = t('dialog.unsaved_changes');
@@ -121,7 +110,6 @@ class CipherFlowApp {
             }
         });
         
-        // Обработка ошибок JavaScript
         window.addEventListener('error', (e) => {
             console.error('Необработанная ошибка:', e.error);
             this.showError(t('error.unhandled', { message: errorMessage }));
@@ -130,7 +118,6 @@ class CipherFlowApp {
     
     setupKeyboardShortcuts() {
         document.addEventListener('keydown', (e) => {
-            // Проверяем, что фокус не на элементах ввода текста
             const activeElement = document.activeElement;
             const isTextInput = activeElement && (
                 activeElement.tagName === 'INPUT' ||
@@ -138,11 +125,9 @@ class CipherFlowApp {
                 activeElement.contentEditable === 'true'
             );
             
-            // Проверяем, что не открыта справка
             const helpOverlay = document.querySelector('.help-overlay');
             const isHelpOpen = helpOverlay && helpOverlay.classList.contains('show');
             
-            // Проверяем, что не в области справки (включая example-input и example-output)
             const isInHelpArea = activeElement && (
                 activeElement.closest('.help-overlay') ||
                 activeElement.closest('.example-input') ||
@@ -151,17 +136,14 @@ class CipherFlowApp {
                 activeElement.classList.contains('example-output')
             );
             
-            // Создаем мапинг клавиш для поддержки русской раскладки
             const keyMap = {
-                'ы': 's', 'щ': 'o', 'т': 'n', 'з': 'p', // русские клавиши на соответствующих позициях
-                'a': 'f', 'и': 'b', 'с': 'c', 'м': 'v', // дополнительные мапинги
+                'ы': 's', 'щ': 'o', 'т': 'n', 'з': 'p', 
+                'a': 'f', 'и': 'b', 'с': 'c', 'м': 'v', 
                 'х': 'x', 'я': 'z'
             };
             
-            // Нормализуем клавишу (поддержка русской раскладки)
             const normalizedKey = keyMap[e.key.toLowerCase()] || e.key.toLowerCase();
             
-            // Ctrl/Cmd + S - сохранить схему (поддержка 'ы' для русской раскладки)
             if ((e.ctrlKey || e.metaKey) && (normalizedKey === 's')) {
                 e.preventDefault();
                 if (this.components.fileManager) {
@@ -170,7 +152,6 @@ class CipherFlowApp {
                 return;
             }
             
-            // Ctrl/Cmd + O - загрузить схему (поддержка 'щ' для русской раскладки)
             if ((e.ctrlKey || e.metaKey) && (normalizedKey === 'o')) {
                 e.preventDefault();
                 if (this.components.fileManager) {
@@ -179,7 +160,6 @@ class CipherFlowApp {
                 return;
             }
             
-            // Ctrl/Cmd + N - новая схема (поддержка 'т' для русской раскладки)
             if ((e.ctrlKey || e.metaKey) && (normalizedKey === 'n')) {
                 e.preventDefault();
                 if (this.components.fileManager) {
@@ -188,9 +168,7 @@ class CipherFlowApp {
                 return;
             }
             
-            // Ограничиваем копирование/вставку только для области нодов (не в текстовых полях и не в справке)
             if (!isTextInput && !isHelpOpen && !isInHelpArea) {
-                // Ctrl/Cmd + C - копирование выделенных нодов (поддержка 'с' для русской раскладки)
                 if ((e.ctrlKey || e.metaKey) && (normalizedKey === 'c')) {
                     e.preventDefault();
                     if (window.selectionManager) {
@@ -199,7 +177,6 @@ class CipherFlowApp {
                     return;
                 }
                 
-                // Ctrl/Cmd + V - вставка нодов (поддержка 'м' для русской раскладки)
                 if ((e.ctrlKey || e.metaKey) && (normalizedKey === 'v')) {
                     e.preventDefault();
                     if (window.selectionManager) {
@@ -208,7 +185,6 @@ class CipherFlowApp {
                     return;
                 }
                 
-                // Ctrl/Cmd + A - выделить все ноды (поддержка 'ф' для русской раскладки)
                 if ((e.ctrlKey || e.metaKey) && (normalizedKey === 'a')) {
                     e.preventDefault();
                     if (window.selectionManager) {
@@ -218,7 +194,6 @@ class CipherFlowApp {
                 }
             }
             
-            // === ИЗМЕНЕНИЕ: Удаление работает с группой выделенных нодов ===
             if (e.key === 'Delete' && !isTextInput) {
                 if (window.selectionManager && window.selectionManager.selectedNodes.size > 0) {
                     window.selectionManager.deleteSelected();
@@ -226,10 +201,9 @@ class CipherFlowApp {
                 return;
             }
             
-            // Escape - снять выделение
             if (e.key === 'Escape') {
                 if (this.components.nodeManager) {
-                    // this.components.nodeManager.deselectAllNodes(); // Заменено на selectionManager
+                    // Уже не надо, но если убрать. то всё умрёт, испарвь
                 }
                 if (window.selectionManager) {
                     window.selectionManager.clearSelection();
@@ -240,14 +214,12 @@ class CipherFlowApp {
                 return;
             }
             
-            // F1 - показать справку
             if (e.key === 'F1') {
                 e.preventDefault();
                 this.showHelp();
                 return;
             }
             
-            // X - режим резки соединений (поддержка 'ч' для русской раскладки)
             if ((normalizedKey === 'x') && !isTextInput) {
                 if (this.components.connectionManager) {
                     this.components.connectionManager.toggleCuttingMode();
@@ -255,7 +227,6 @@ class CipherFlowApp {
                 return;
             }
             
-            // + / = - увеличить масштаб
             if ((e.key === '+' || e.key === '=' || e.key === 'ъ') && !isTextInput) {
                 if (this.components.canvasManager) {
                     this.components.canvasManager.zoomIn();
@@ -263,7 +234,6 @@ class CipherFlowApp {
                 return;
             }
             
-            // - - уменьшить масштаб
             if (e.key === '-' && !isTextInput) {
                 if (this.components.canvasManager) {
                     this.components.canvasManager.zoomOut();
@@ -271,7 +241,6 @@ class CipherFlowApp {
                 return;
             }
             
-            // Ctrl/Cmd + 0 - сброс масштаба
             if ((e.ctrlKey || e.metaKey) && e.key === '0' && !isTextInput) {
                 e.preventDefault();
                 if (this.components.canvasManager) {
@@ -283,7 +252,6 @@ class CipherFlowApp {
     }
     
     showWelcomeMessage() {
-        // Показываем приветственное сообщение только новым пользователям
         const hasVisited = localStorage.getItem('cipher-flow-visited');
         
         if (!hasVisited) {
@@ -297,7 +265,6 @@ class CipherFlowApp {
     showTutorial() {
         const t = window.i18n.t.bind(window.i18n); 
         const tutorial = document.createElement('div');
-        // Используем классы вместо inline-стилей
         tutorial.className = 'tutorial-overlay';
         tutorial.innerHTML = `
             <div class="tutorial-modal">
@@ -356,7 +323,6 @@ class CipherFlowApp {
             this.components.fileManager.loadExampleScheme('simple-caesar');
         }
         
-        // Закрываем туториал
         const tutorial = document.querySelector('.tutorial-overlay');
         if (tutorial) {
             tutorial.remove();
@@ -364,7 +330,6 @@ class CipherFlowApp {
     }
     
     showHelp() {
-        // Используем новую систему справки
         if (window.helpSystem) {
             window.helpSystem.show();
         }
@@ -379,7 +344,6 @@ class CipherFlowApp {
         }
     }
     
-    // Утилиты
     debounce(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -392,7 +356,6 @@ class CipherFlowApp {
         };
     }
     
-    // Публичные методы для взаимодействия
     getStats() {
         if (!this.initialized) return null;
         
@@ -410,7 +373,6 @@ class CipherFlowApp {
         return null;
     }
     
-    // Тестовый метод для добавления нодов
     addTestNodes() {
         if (!this.components.nodeManager) {
             console.error('❌ nodeManager не доступен');
@@ -431,7 +393,6 @@ class CipherFlowApp {
         
         console.log('📊 Общее количество нодов:', this.components.nodeManager.getAllNodes().length);
         
-        // Проверим, есть ли элементы в DOM
         const nodesInDOM = document.querySelectorAll('.canvas-node');
         console.log('🎨 Ноды в DOM:', nodesInDOM.length);
         nodesInDOM.forEach((node, index) => {
@@ -444,18 +405,13 @@ class CipherFlowApp {
         });
     }
     
-    /**
-     * Обновляет интерфейс при смене языка
-     */
     updateInterfaceLanguage() {
         if (!window.i18n) return;
         
         const t = window.i18n.t.bind(window.i18n);
         
-        // Обновляем заголовок документа
         document.title = t('app.title');
         
-        // Обновляем placeholder'ы для ввода/вывода
         const inputTextArea = document.getElementById('inputText');
         if (inputTextArea) {
             inputTextArea.placeholder = t('io.input_placeholder');
@@ -466,26 +422,19 @@ class CipherFlowApp {
             outputTextArea.placeholder = t('io.output_placeholder');
         }
         
-        // Уведомляем другие компоненты об изменении языка
         this.notifyComponentsLanguageChange();
     }
     
-    /**
-     * Уведомляет компоненты об изменении языка
-     */
     notifyComponentsLanguageChange() {
-        // Обновляем панель нодов
         if (window.nodeManager && window.nodeManager.updateNodeTexts) {
             window.nodeManager.updateNodeTexts();
         }
     }
 }
 
-// Инициализация приложения
 const cipherFlowApp = new CipherFlowApp();
 window.cipherFlowApp = cipherFlowApp;
 
-// Экспорт для модульных систем (если нужно)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = CipherFlowApp;
 }

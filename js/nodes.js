@@ -1,6 +1,3 @@
-// File: js/nodes.js
-// === Система управления нодами ===
-
 class NodeManager {
     constructor() {
         this.nodes = new Map();
@@ -14,7 +11,6 @@ class NodeManager {
         this.initializeDragAndDrop();
         this.bindEvents();
         
-        // Подписываемся на изменения языка
         if (window.i18n) {
             window.i18n.onLanguageChange(() => {
                 this.updateNodeTexts();
@@ -48,28 +44,24 @@ class NodeManager {
         clone.style.transition = 'none';
         clone.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
         
-        // Получаем размеры элемента
         const itemRect = item.getBoundingClientRect();
         clone.style.width = itemRect.width + 'px';
         clone.style.height = itemRect.height + 'px';
         
-        // Оффсет для центрирования элемента под курсором
         const offsetX = itemRect.width / 2;
         const offsetY = itemRect.height / 2;
         
         document.body.appendChild(clone);
         
-        // Резервный таймер для удаления клона на случай зависания
         const failsafeTimer = setTimeout(() => {
             if (clone && clone.parentNode) {
                 clone.parentNode.removeChild(clone);
             }
-        }, 10000); // 10 секунд максимум
+        }, 10000); 
         
         let currentX = e.clientX;
         let currentY = e.clientY;
         
-        // Функция плавного обновления позиции
         const updateClonePosition = () => {
             const targetX = currentX - offsetX;
             const targetY = currentY - offsetY;
@@ -85,14 +77,11 @@ class NodeManager {
         };
         
         const finishDrag = (e) => {
-            // Очищаем резервный таймер
             clearTimeout(failsafeTimer);
             
-            // Сразу удаляем обработчики событий
             document.removeEventListener('mousemove', moveHandler);
             document.removeEventListener('mouseup', finishDrag);
             
-            // Проверим, попали ли мы на canvas
             const canvasRect = this.canvas.getBoundingClientRect();
             const droppedOnCanvas = e.clientX >= canvasRect.left && e.clientX <= canvasRect.right &&
                                    e.clientY >= canvasRect.top && e.clientY <= canvasRect.bottom;
@@ -101,7 +90,6 @@ class NodeManager {
                 const x = e.clientX - canvasRect.left;
                 const y = e.clientY - canvasRect.top;
                 
-                // Анимация успешного создания нода
                 clone.style.transition = 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
                 clone.style.opacity = '0';
                 clone.style.transform = 'rotate(0deg) scale(1.2)';
@@ -109,13 +97,11 @@ class NodeManager {
                 
                 this.createNode(item.dataset.type, x, y);
             } else {
-                // Анимация возврата при неуспешном дропе
                 clone.style.transition = 'all 0.2s ease-out';
                 clone.style.opacity = '0';
                 clone.style.transform = 'rotate(0deg) scale(0.8)';
             }
             
-            // Гарантированное удаление клона через короткое время
             setTimeout(() => {
                 if (clone && clone.parentNode) {
                     clone.parentNode.removeChild(clone);
@@ -123,7 +109,6 @@ class NodeManager {
             }, 300);
         };
         
-        // Начальная позиция
         updateClonePosition();
         
         document.addEventListener('mousemove', moveHandler);
@@ -187,13 +172,11 @@ class NodeManager {
                 worldX = worldCoords.x;
                 worldY = worldCoords.y;
             } else {
-                // Fallback на случай, если canvasManager недоступен
                 worldX = x;
                 worldY = y;
             }
         }
 
-        // Сохраняем нод перед созданием элемента
         this.nodes.set(nodeId, {
             id: nodeId,
             type: type,
@@ -209,7 +192,6 @@ class NodeManager {
         nodeElement.dataset.nodeType = type;
         this.nodesLayer.appendChild(nodeElement);
 
-        // Обновляем элемент в сохраненном ноде
         const node = this.nodes.get(nodeId);
         node.element = nodeElement;
 
@@ -240,7 +222,6 @@ class NodeManager {
             });
         }
 
-        // Уведомляем систему пасхалок о добавлении нода
         setTimeout(() => {
             document.dispatchEvent(new CustomEvent('nodes-updated', {
                 detail: { action: 'node-added', nodeId, nodeType: type }
@@ -887,7 +868,6 @@ class NodeManager {
         nodeElement.dataset.nodeType = nodeType;
         nodeElement.style.transform = `translate(${x}px, ${y}px)`;
         
-        // Создаем заголовок
         const header = document.createElement('div');
         header.className = 'node-header';
         header.innerHTML = `
@@ -915,14 +895,12 @@ class NodeManager {
             }
         });
         
-        // Создаем содержимое
         const content = document.createElement('div');
         content.className = 'node-content';
         
-        // Если это монитор, добавляем дисплей
         if (nodeData.isMonitor) {
             const displayWrapper = document.createElement('div');
-            displayWrapper.style.position = 'relative'; // Обертка для позиционирования кнопки
+            displayWrapper.style.position = 'relative'; 
 
             const display = document.createElement('div');
             display.className = 'monitor-display';
@@ -933,7 +911,7 @@ class NodeManager {
             copyBtn.className = 'monitor-copy-btn';
             copyBtn.title = t('monitor.copy_content');
             copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
-            copyBtn.onclick = () => this.copyMonitorContent(nodeId); // Используем this
+            copyBtn.onclick = () => this.copyMonitorContent(nodeId); 
             
             displayWrapper.appendChild(display);
             displayWrapper.appendChild(copyBtn);
@@ -941,7 +919,6 @@ class NodeManager {
 
         }
         
-        // Добавляем поля
         nodeData.fields.forEach(field => {
             const fieldElement = this.createFieldElement(field, nodeId);
             content.appendChild(fieldElement);
@@ -950,7 +927,6 @@ class NodeManager {
         nodeElement.appendChild(header);
         nodeElement.appendChild(content);
         
-        // Добавляем точки соединения
         if (nodeData.hasInput) {
             const inputPoint = document.createElement('div');
             inputPoint.className = 'connection-point input';
@@ -959,7 +935,6 @@ class NodeManager {
             nodeElement.appendChild(inputPoint);
         }
         
-        // Добавляем множественные входы (для шифра Виженера)
         if (nodeData.multipleInputs && Array.isArray(nodeData.multipleInputs)) {
             nodeData.multipleInputs.forEach((input, index) => {
                 const inputPoint = document.createElement('div');
@@ -967,8 +942,8 @@ class NodeManager {
                 inputPoint.dataset.nodeId = nodeId;
                 inputPoint.dataset.type = 'input';
                 inputPoint.dataset.inputName = input.name;
-                inputPoint.setAttribute('data-input-label', input.label); // Store label for tooltip
-                // Опускаем входы ниже, чтобы не накладывались на заголовок
+                inputPoint.setAttribute('data-input-label', input.label); 
+        
                 inputPoint.style.top = `${80 + index * 35}px`;
                 if (input.color) {
                     inputPoint.style.backgroundColor = input.color;
@@ -986,7 +961,6 @@ class NodeManager {
             nodeElement.appendChild(outputPoint);
         }
         
-        // Добавляем множественные выходы (для Text Router)
         if (nodeData.multipleOutputs && Array.isArray(nodeData.multipleOutputs)) {
             nodeData.multipleOutputs.forEach((output, index) => {
                 const outputPoint = document.createElement('div');
@@ -994,8 +968,7 @@ class NodeManager {
                 outputPoint.dataset.nodeId = nodeId;
                 outputPoint.dataset.type = 'output';
                 outputPoint.dataset.outputName = output.name;
-                outputPoint.setAttribute('data-output-label', output.label); // Store label for tooltip
-                // Размещаем выходы справа
+                outputPoint.setAttribute('data-output-label', output.label); 
                 outputPoint.style.top = `${80 + index * 35}px`;
                 if (output.color) {
                     outputPoint.style.backgroundColor = output.color;
@@ -1012,7 +985,6 @@ class NodeManager {
         const fieldDiv = document.createElement('div');
         fieldDiv.className = 'node-field';
         
-        // Создаем уникальный ID для поля
         const fieldId = `${nodeId}_${field.name}`;
         
         const label = document.createElement('label');
@@ -1072,9 +1044,7 @@ class NodeManager {
                 input.value = field.value || '';
         }
         
-        // Обработчики для специальных типов полей
         if (field.type === 'multi-rules') {
-            // Для multi-rules обработчики уже настроены в createMultiRulesField
             fieldDiv.appendChild(input);
             return fieldDiv;
         }
@@ -1082,13 +1052,11 @@ class NodeManager {
         input.name = field.name;
         input.id = fieldId;
         
-        // Обработчик изменений для всех типов полей
         const updateValue = () => {
             const value = field.type === 'checkbox' ? input.checked : input.value;
             this.updateNodeData(nodeId, field.name, value);
             this.triggerExecution();
             
-            // Обновляем видимость условных полей
             this.updateConditionalFields(nodeId);
         };
         
@@ -1099,18 +1067,16 @@ class NodeManager {
         
         fieldDiv.appendChild(input);
         
-        // Настраиваем условную видимость
         if (field.showWhen) {
             fieldDiv.dataset.showWhen = JSON.stringify(field.showWhen);
-            fieldDiv.style.display = 'none'; // Изначально скрыто
+            fieldDiv.style.display = 'none'; 
         }
         
         return fieldDiv;
     }
     
     initializeNodeHandlers(nodeId) {
-        // Логика выделения теперь находится в bindEvents,
-        // чтобы избежать дублирования обработчиков.
+        // Бб, он пака, но если его убрать, то вся программа умрёт, нужно исправить
     }
     
     startNodeMove(nodeElement, e) {
@@ -1182,7 +1148,6 @@ class NodeManager {
 
                 nodesToMove.forEach((node, id) => {
                     const initialPos = initialPositions.get(id);
-                    // Проверяем, изменилась ли позиция
                     if (node.x !== initialPos.x || node.y !== initialPos.y) {
                         hasMoved = true;
                     }
@@ -1195,7 +1160,6 @@ class NodeManager {
                     });
                 });
 
-                // Добавляем действие в историю, только если было реальное перемещение
                 if (hasMoved) {
                     window.historyManager.addAction({
                         type: 'move_node_group',
@@ -1228,7 +1192,6 @@ class NodeManager {
     moveNode(nodeId, x, y) {
         this.updateNodePosition(nodeId, x, y);
         
-        // Обновляем соединения
         if (window.connectionManager) {
             window.connectionManager.updateConnections(nodeId);
         }
@@ -1239,12 +1202,10 @@ class NodeManager {
         const node = this.nodes.get(nodeId);
         if (!node) return;
         
-        // Сохраняем информацию для истории
         if (!skipHistory && window.historyManager) {
             const connections = [];
             if (window.connectionManager) {
                 const nodeConns = window.connectionManager.getNodeConnections(nodeId);
-                // Сохраняем все соединения нода
                 [...nodeConns.inputs, ...nodeConns.outputs].forEach(conn => {
                     const connection = window.connectionManager.connections.get(conn.connectionId);
                     if (connection) {
@@ -1271,7 +1232,6 @@ class NodeManager {
             });
         }
         
-        // Удаляем все соединения с этим нодом
         if (window.connectionManager) {
             window.connectionManager.removeNodeConnections(nodeId);
         }
@@ -1284,7 +1244,6 @@ class NodeManager {
             window.selectionManager.removeFromSelection(nodeId);
         }
         
-        // Уведомляем систему пасхалок об удалении нода
         setTimeout(() => {
             document.dispatchEvent(new CustomEvent('nodes-updated', {
                 detail: { action: 'node-removed', nodeId, nodeType: node.type }
@@ -1297,7 +1256,6 @@ class NodeManager {
     restoreNode(nodeData) {
         const nodeId = nodeData.nodeId || `node_${this.nodeIdCounter++}`;
         
-        // Восстанавливаем нод в карте
         this.nodes.set(nodeId, {
             id: nodeId,
             type: nodeData.type,
@@ -1309,16 +1267,13 @@ class NodeManager {
             outputs: {}
         });
         
-        // Создаем элемент
         const nodeElement = this.createElement(nodeId, nodeData.data, nodeData.x, nodeData.y);
         nodeElement.dataset.nodeType = nodeData.type;
         this.nodesLayer.appendChild(nodeElement);
         
-        // Обновляем элемент в сохраненном ноде
         const node = this.nodes.get(nodeId);
         node.element = nodeElement;
         
-        // Инициализируем обработчики
         this.initializeNodeHandlers(nodeId);
         
         return nodeId;
@@ -1344,32 +1299,26 @@ class NodeManager {
     }
     
     clearAllNodes() {
-        // Удаляем все соединения
         if (window.connectionManager) {
             window.connectionManager.clearAllConnections();
         }
         
-        // Удаляем все ноды
         this.nodes.forEach(node => {
             node.element.remove();
         });
         
         this.nodes.clear();
         
-        // Очищаем выделение
         if (window.selectionManager) {
             window.selectionManager.clearSelection();
         }
         
         this.nodeIdCounter = 0;
         
-        // Очищаем вывод
         document.getElementById('outputText').value = '';
     }
     
     triggerExecution() {
-        // Запускаем выполнение цепочки через небольшую задержку
-        // чтобы избежать слишком частых вызовов
         if (this.executionTimeout) {
             clearTimeout(this.executionTimeout);
         }
@@ -1387,7 +1336,6 @@ class NodeManager {
         const container = document.createElement('div');
         container.className = 'multi-rules-container';
         
-        // Заголовок с кнопкой добавления
         const header = document.createElement('div');
         header.className = 'multi-rules-header';
         header.innerHTML = `
@@ -1398,13 +1346,11 @@ class NodeManager {
         `;
         container.appendChild(header);
         
-        // Контейнер для правил
         const rulesContainer = document.createElement('div');
         rulesContainer.className = 'rules-container';
         rulesContainer.dataset.nodeId = nodeId;
         container.appendChild(rulesContainer);
         
-        // Загружаем существующие правила
         const rules = field.value || [];
         rules.forEach((rule, index) => {
             this.createRuleElement(nodeId, index, rule);
@@ -1417,7 +1363,6 @@ class NodeManager {
         const node = this.nodes.get(nodeId);
         if (!node || !node.data.fields) return;
         
-        // Находим поле с правилами
         const rulesField = node.data.fields.find(f => f.type === 'multi-rules');
         if (!rulesField) return;
         
@@ -1481,7 +1426,6 @@ class NodeManager {
         
         rulesField.value.splice(ruleIndex, 1);
         
-        // Перестраиваем UI
         const rulesContainer = document.querySelector(`.rules-container[data-node-id="${nodeId}"]`);
         if (rulesContainer) {
             rulesContainer.innerHTML = '';
@@ -1499,7 +1443,6 @@ class NodeManager {
         
         const nodeElement = node.element;
         
-        // Находим все поля с условной видимостью
         const conditionalFields = nodeElement.querySelectorAll('[data-show-when]');
         
         conditionalFields.forEach(fieldDiv => {
@@ -1541,9 +1484,6 @@ class NodeManager {
         }
     }
     
-    /**
-     * Обновляет тексты всех нодов при смене языка
-     */
     updateNodeTexts() {
         if (!window.i18n) return;
         const t = window.i18n.t.bind(window.i18n);
@@ -1553,7 +1493,6 @@ class NodeManager {
             const titleElement = node.element.querySelector('.node-title');
 
             if (titleElement && !node.data.isTitleCustomized) {
-                // ИСПРАВЛЕНИЕ: Берем уже переведенный заголовок напрямую из шаблона
                 const newTitle = newTemplate.title;
                 node.data.title = newTitle;
                 titleElement.textContent = newTitle;
@@ -1664,9 +1603,8 @@ class NodeManager {
     }
 }
 
-// Инициализация после загрузки DOM
 let nodeManager;
 document.addEventListener('DOMContentLoaded', () => {
     nodeManager = new NodeManager();
-    window.nodeManager = nodeManager; // Делаем доступным глобально
+    window.nodeManager = nodeManager; 
 });

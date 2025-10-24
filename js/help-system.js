@@ -59,28 +59,23 @@ class HelpSystem {
 
         document.body.appendChild(overlay);
         
-        // Показываем с анимацией
         requestAnimationFrame(() => {
             overlay.classList.add('show');
         });
 
-        // Обновляем переводы если i18n доступен
         if (window.i18n) {
             window.i18n.updateInterface();
         }
 
-        // Обработчики событий
         overlay.querySelector('.help-close').onclick = () => this.hide();
         overlay.onclick = (e) => {
             if (e.target === overlay) this.hide();
         };
 
-        // Навигация
         overlay.querySelectorAll('.help-nav-item').forEach(item => {
             item.onclick = () => this.switchSection(item.dataset.section);
         });
 
-        // Закрытие по ESC
         document.addEventListener('keydown', this.handleKeyPress);
     }
 
@@ -92,13 +87,11 @@ class HelpSystem {
     }
 
     switchSection(sectionId) {
-        // Обновляем навигацию
         document.querySelectorAll('.help-nav-item').forEach(item => {
             item.classList.remove('active');
         });
         document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
 
-        // Показываем секцию
         document.querySelectorAll('.help-section').forEach(section => {
             section.classList.remove('active');
         });
@@ -109,10 +102,8 @@ class HelpSystem {
 
     async loadExample(exampleName) {
         try {
-            // Скрываем справку
             this.hide();
             
-            // Загружаем файл примера
             const response = await fetch(`examples/${exampleName}.json`);
             if (!response.ok) {
                 throw new Error(`Не удалось загрузить пример: ${response.status}`);
@@ -120,14 +111,11 @@ class HelpSystem {
             
             const exampleData = await response.text();
             
-            // Используем файловый менеджер для загрузки схемы
             if (window.fileManager) {
                 window.fileManager.importScheme(exampleData);
                 
-                // Показываем уведомление
                 this.showExampleLoadedNotification(exampleName);
 
-                // Воспроизводим звук если включены звуковые эффекты
                 if (window.settingsSystem?.settings.soundEffects) {
                     window.settingsSystem.playSound('select');
                 }
@@ -142,7 +130,6 @@ class HelpSystem {
     }
 
     showExampleLoadedNotification(exampleName) {
-        // Получаем переведенные имена примеров
         const getExampleName = (name) => {
             const key = `help.example.${name.replace('-', '_')}`;
             return window.i18n ? window.i18n.t(key) : name;

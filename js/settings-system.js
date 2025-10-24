@@ -21,7 +21,7 @@ class SettingsSystem {
             animations: true,
             compactMode: false,
             showGrid: false,
-            language: window.i18n ? window.i18n.getCurrentLanguage() : 'ru'
+            language: window.i18n ? window.i18n.getCurrentLanguage() : 'en'
         };
         if (saved) {
             const parsedSettings = JSON.parse(saved);
@@ -438,7 +438,6 @@ class SettingsSystem {
     }
 
     enableAutoSave() {
-        // Автосохранение каждые 30 секунд
         if (this.autoSaveInterval) {
             clearInterval(this.autoSaveInterval);
         }
@@ -486,9 +485,8 @@ class SettingsSystem {
     playSound(type) {
         if (!this.settings.soundEffects) return;
         
-        // Создаем звуковые эффекты через Web Audio API
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        if (!audioContext) return; // Добавлена проверка на случай, если Web Audio API не поддерживается
+        if (!audioContext) return; 
         
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
@@ -496,7 +494,6 @@ class SettingsSystem {
         oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
         
-        // Разные звуки для разных действий
         switch (type) {
             case 'toggle':
                 oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
@@ -506,7 +503,6 @@ class SettingsSystem {
                 oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
                 break;
             case 'connection':
-                // Восходящий звук для соединения
                 oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
                 oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.15);
                 gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
@@ -516,7 +512,6 @@ class SettingsSystem {
                 oscillator.stop(audioContext.currentTime + 0.3);
                 return; 
             case 'disconnect':
-                // Нисходящий звук для разрыва соединения
                 oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
                 oscillator.frequency.setValueAtTime(300, audioContext.currentTime + 0.2);
                 gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
@@ -526,10 +521,9 @@ class SettingsSystem {
                 oscillator.stop(audioContext.currentTime + 0.25);
                 return;
             case 'node_create':
-                // Звук создания нода - восходящий аккорд
-                oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
-                oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
-                oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2); // G5
+                oscillator.frequency.setValueAtTime(523, audioContext.currentTime); 
+                oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); 
+                oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2); 
                 gainNode.gain.setValueAtTime(0.12, audioContext.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
                 
@@ -537,10 +531,9 @@ class SettingsSystem {
                 oscillator.stop(audioContext.currentTime + 0.3);
                 return;
             case 'node_delete':
-                // Звук удаления нода - нисходящий
-                oscillator.frequency.setValueAtTime(659, audioContext.currentTime); // E5
-                oscillator.frequency.setValueAtTime(523, audioContext.currentTime + 0.1); // C5
-                oscillator.frequency.setValueAtTime(392, audioContext.currentTime + 0.2); // G4
+                oscillator.frequency.setValueAtTime(659, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(523, audioContext.currentTime + 0.1); 
+                oscillator.frequency.setValueAtTime(392, audioContext.currentTime + 0.2); 
                 gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.25);
                 
@@ -548,18 +541,16 @@ class SettingsSystem {
                 oscillator.stop(audioContext.currentTime + 0.25);
                 return;
             case 'cipher_process':
-                // Звук обработки шифра - быстрая трель
                 oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
                 oscillator.frequency.setValueAtTime(554, audioContext.currentTime + 0.05);
                 oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1);
                 oscillator.frequency.setValueAtTime(440, audioContext.currentTime + 0.15);
                 break;
             case 'success':
-                // Звук успеха - мажорный аккорд
-                oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
-                oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.05); // E5
-                oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.1); // G5
-                oscillator.frequency.setValueAtTime(1047, audioContext.currentTime + 0.15); // C6
+                oscillator.frequency.setValueAtTime(523, audioContext.currentTime); 
+                oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.05); 
+                oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.1); 
+                oscillator.frequency.setValueAtTime(1047, audioContext.currentTime + 0.15); 
                 gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
                 
@@ -567,7 +558,6 @@ class SettingsSystem {
                 oscillator.stop(audioContext.currentTime + 0.4);
                 return;
             case 'error':
-                // Звук ошибки - диссонанс
                 oscillator.frequency.setValueAtTime(220, audioContext.currentTime);
                 oscillator.frequency.setValueAtTime(233, audioContext.currentTime + 0.1);
                 oscillator.frequency.setValueAtTime(196, audioContext.currentTime + 0.2);
@@ -578,7 +568,6 @@ class SettingsSystem {
                 oscillator.stop(audioContext.currentTime + 0.3);
                 return;
             case 'hover':
-                // Тихий звук при наведении
                 oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
                 gainNode.gain.setValueAtTime(0.03, audioContext.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
@@ -587,22 +576,19 @@ class SettingsSystem {
                 oscillator.stop(audioContext.currentTime + 0.1);
                 return;
             case 'mode_switch':
-                // Звук переключения режима шифрования/дешифрования
                 oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
                 oscillator.frequency.setValueAtTime(880, audioContext.currentTime + 0.1);
                 oscillator.frequency.setValueAtTime(440, audioContext.currentTime + 0.2);
                 break;
             case 'file_save':
-                // Звук сохранения файла
-                oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
-                oscillator.frequency.setValueAtTime(698, audioContext.currentTime + 0.1); // F5
-                oscillator.frequency.setValueAtTime(523, audioContext.currentTime + 0.2); // C5
+                oscillator.frequency.setValueAtTime(523, audioContext.currentTime); 
+                oscillator.frequency.setValueAtTime(698, audioContext.currentTime + 0.1); 
+                oscillator.frequency.setValueAtTime(523, audioContext.currentTime + 0.2); 
                 break;
             case 'file_load':
-                // Звук загрузки файла
-                oscillator.frequency.setValueAtTime(392, audioContext.currentTime); // G4
-                oscillator.frequency.setValueAtTime(523, audioContext.currentTime + 0.1); // C5
-                oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.2); // E5
+                oscillator.frequency.setValueAtTime(392, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(523, audioContext.currentTime + 0.1); 
+                oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.2); 
                 break;
             default:
                 oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
@@ -624,19 +610,16 @@ class SettingsSystem {
                 soundEffects: false,
                 animations: true,
                 compactMode: false,
-                language: 'ru'
+                language: 'en'
             };
             
             this.saveSettings();
             this.hide();
             
-            // Показываем уведомление
             setTimeout(() => {
                 alert(t('dialog.settings_reset_alert'));
             }, 100);
         }
     }
 }
-
-// Создаем глобальный экземпляр системы настроек
 window.settingsSystem = new SettingsSystem();

@@ -571,7 +571,6 @@ class EasterEggsSystem {
         wiredElements.forEach(el => el.remove());
     }
     
-    // === ИЗМЕНЕНИЕ: Функция теперь создает "нулевого пациента" с базовыми "генами" ===
     createLainGhostNode() {
         const canvas = document.getElementById('nodesLayer');
         if (!canvas) return;
@@ -604,7 +603,8 @@ class EasterEggsSystem {
         
         ghostNode.style.animation = 'lain-drift 20s linear infinite alternate';
 
-        const ghostTexts = [
+        // Вынес массив текстов сюда, чтобы он был доступен для функции клонирования
+        this.ghostTexts = [
             'Present Day<br>Present Time',
             'Layer 07<br>Protocol',
             'Identity<br>Verified',
@@ -617,7 +617,8 @@ class EasterEggsSystem {
             'The Wired<br>Is Real'
         ];
         
-        const selectedText = ghostTexts[Math.floor(Math.random() * ghostTexts.length)];
+        const selectedText = this.ghostTexts[Math.floor(Math.random() * this.ghostTexts.length)];
+        
         
         ghostNode.innerHTML = `
             <div class="lain-ghost-inner">
@@ -647,7 +648,6 @@ class EasterEggsSystem {
         ghostData.element = ghostNode;
         this.lainGhostNodes.set(ghostData.id, ghostData);
         
-        // Добавляем обработчик для кнопки закрытия
         const closeBtn = ghostNode.querySelector('.node-close-btn');
         if (closeBtn) {
             closeBtn.addEventListener('click', (e) => {
@@ -656,7 +656,6 @@ class EasterEggsSystem {
             });
         }
         
-        // Добавляем обработчик двойного клика для генерации сообщения
         ghostNode.addEventListener('dblclick', () => {
             this.showSystemMessage('Ghost node activated: Reality breach detected');
         });
@@ -698,6 +697,32 @@ class EasterEggsSystem {
         const innerWrapper = childNode.querySelector('.lain-ghost-inner');
         innerWrapper.style.animation = `lain-jitter ${childData.jitterSpeed}s infinite`;
         
+
+        if (this.ghostTexts && this.ghostTexts.length > 0) {
+            const newText = this.ghostTexts[Math.floor(Math.random() * this.ghostTexts.length)];
+            const textElement = childNode.querySelector('.glitch-text');
+            if (textElement) {
+                textElement.innerHTML = newText;
+            }
+        }
+
+        const closeBtn = childNode.querySelector('.node-close-btn');
+        if (closeBtn) {
+            if (Math.random() < 0.6) {
+                closeBtn.remove();
+            } else {
+                closeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.removeGhostNode(childData.id);
+                });
+            }
+        }
+
+        childNode.addEventListener('dblclick', () => {
+            this.showSystemMessage('Ghost node activated: Reality breach detected');
+        });
+
+
         canvas.appendChild(childNode);
         childData.element = childNode;
 

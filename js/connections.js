@@ -1,6 +1,3 @@
-// ФАЙЛ: js/connections.js
-// === Система управления соединениями между нодами ===
-
 class ConnectionManager {
     constructor() {
         this.connections = new Map();
