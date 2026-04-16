@@ -1,105 +1,105 @@
-# CipherFlow - Нодовый Шифратор
+# CipherFlow - Node Cipher
 
-**CipherFlow** - это СУПЕР САЙТ ДЛЯ СОЗДАНИЯ ШИФРОВ с помощьью интерактивного визуального программирования нодами. Как в блендере или скретч. Можно легко сохрнаять и передавать свои схемы
+**CipherFlow** is an AWESOME SITE FOR CREATING CIPHERS using interactive visual node-based programming. Like in Blender or Scratch. You can easily save and share your schemas
 
-## ✨ Основные возможности
+## ✨ Core Features
 
-### Реализованные функции
+### Implemented Functions
 
-- **ꙮ Сам крутой редактор нодов** - как геометрические ноды в блендере, удобно, легко, и красиво
-- **Ԫ Режим шифрования/дешифрования** - Не только шифрует, но и дешифрует ! Чтобы можно было удобно с друзьями обмениваться зашифрованными текстами например
-- **Ꚙ Очень много разных алгоритмы шифрования** (в приложении есть более подробные описания каждого из шифров):
-  - **Шифр Цезаря** с настраиваемым сдвигом
-  - **Шифр Виженера**  полиалфавитное шифрование с ключевым словом
-  - **Код Морзе** с улучшенной поддержкой русского (буква ё) и английского языков
-  - **Зачаровыватель планет** - шифрование через координаты городов мира. (М - Москва)
-  - **Шифр A1Z26** - замена букв на числа
-  - **Морзе (Бинарный)** - кодирование в 0 и 1
-  - **Морзе (Кошачий)** - как морзе, но с мяу бряяу
-  - **Мульти-замена** - множественная замена по правилам
-  - **Шифр Атбаш** - зеркальная замена букв в алфавите
-  - **Base64** - стандартное кодирование/декодирование
-  - **Акулий шифр** - кодирование через повторы символа "a"
-  - **UwU-фикатор (Шифр Няшек)** - преобразование в "няшный" язык
-  - Преобразование чисел в слова (русский/английский)
-  - Математические операции над числами
-  - Обращение текста
-  - Изменение регистра
-  - и многое другое!
+- **ꙮ The cool node editor itself** - like geometry nodes in Blender, convenient, easy, and beautiful
+- **Ԫ Encryption/Decryption mode** - Not only encrypts, but also decrypts! So you can conveniently exchange encrypted texts with friends, for example
+- **Ꚙ Lots of different encryption algorithms** (the app has more detailed descriptions for each cipher):
+  - **Caesar Cipher** with an adjustable shift
+  - **Vigenère Cipher** polyalphabetic encryption with a keyword
+  - **Morse Code** with improved support for Russian (the letter ё) and English languages
+  - **Planet Enchanter** - encryption via coordinates of world cities. (M - Moscow)
+  - **A1Z26 Cipher** - replacing letters with numbers
+  - **Morse (Binary)** - encoding into 0 and 1
+  - **Morse (Cat)** - like Morse, but with meow mrrow
+  - **Multi-replacement** - multiple replacements by rules
+  - **Atbash Cipher** - mirror replacement of letters in the alphabet
+  - **Base64** - standard encoding/decoding
+  - **Shark Cipher** - encoding through repetitions of the character "a"
+  - **UwU-ficator (Cutie Cipher)** - transformation into a "cute" language
+  - Number to word conversion (Russian/English)
+  - Mathematical operations on numbers
+  - Text reversal
+  - Case changing
+  - and much more!
 
-- **⨭Автосохранение!** - автоматическое сохранение работы
-- **Крутой UI/UX** - разные темы и плавные анимации
+- **⨭Autosave!** - automatic saving of your work
+- **Cool UI/UX** - different themes and smooth animations
 
-### Структура проекта
+### Project Structure
 
 ```
 CipherFlow/
-├── index.html              # Главная страница
+├── index.html              # Main page
 ├── css/
-│   └── style.css          # Основные стили приложения
+│   └── style.css          # Main application styles
 ├── js/
-│   ├── main.js           # Основной файл приложения
-│   ├── nodes.js          # Система управления нодами
-│   ├── connections.js    # Система соединений
-│   ├── cipher-engine.js  # Движок шифрования
-│   └── file-manager.js   # Управление файлами
-└── README.md             # Документация
+│   ├── main.js           # Main application file
+│   ├── nodes.js          # Node management system
+│   ├── connections.js    # Connection system
+│   ├── cipher-engine.js  # Encryption engine
+│   └── file-manager.js   # File management
+└── README.md             # Documentation
 ```
 
-## КАК ЗАПУСТИТЬ?
+## HOW TO RUN?
 
-1. Открой `index.html` в веб-браузере ( В Chrome и Firefox точно рабоатет )
-2. Готово!
+1. Open `index.html` in a web browser (Definitely works in Chrome and Firefox)
+2. Done!
 
-### Основные действия
+### Basic Actions
 
-1. **Создание нодов**: Перетащите нод из левой панели на рабочую область
-2. **Соединение нодов**: Кликните на точку вывода и перетащите к точке ввода
-3. **Настройка параметров**: Измените значения в полях нодов
-4. **Ввод текста**: Введите текст в нижней панели или в ноде "Ввод текста"
-5. **Просмотр результата**: Результат отображается в правой части нижней панели
+1. **Creating nodes**: Drag a node from the left panel to the workspace
+2. **Connecting nodes**: Click on an output point and drag it to an input point
+3. **Configuring parameters**: Change values in the node fields
+4. **Entering text**: Enter text in the bottom panel or in the "Text Input" node
+5. **Viewing the result**: The result is displayed on the right side of the bottom panel
 
-## Горячие клавиши (работают через раз)
+## Hotkeys (work half the time)
 
-| Клавиши | Действие | Русская раскладка |
+| Keys | Action | Russian Layout |
 |---------|----------|-------------------|
-| `Ctrl/Cmd + S` | Сохранить схему с диалогом имени | `Ctrl + Ы` |
-| `Ctrl/Cmd + O` | Загрузить схему | `Ctrl + Щ` |
-| `Ctrl/Cmd + N` | Новая схема | `Ctrl + Т` |
-| `Ctrl/Cmd + C` | Копировать выделенные ноды | `Ctrl + С` |
-| `Ctrl/Cmd + V` | Вставить ноды | `Ctrl + М` |
-| `Ctrl/Cmd + A` | Выделить все ноды | `Ctrl + Ф` |
-| `Ctrl/Cmd + Z` | Отменить действие | - |
-| `Ctrl/Cmd + Y` | Повторить действие | - |
-| `Delete` | Удалить выбранный нод | - |
-| `Escape` | Снять выделение / Отменить соединение | - |
-| `F1` | Показать справку | - |
-| `X` | Включить/выключить режим резки соединений | `Ч` |
-| `+` / `=` | Увеличить масштаб | `Ъ` |
-| `-` | Уменьшить масштаб | - |
-| `Ctrl/Cmd + 0` | Сбросить масштаб | - |
+| `Ctrl/Cmd + S` | Save schema with a name dialog | `Ctrl + Ы` |
+| `Ctrl/Cmd + O` | Load schema | `Ctrl + Щ` |
+| `Ctrl/Cmd + N` | New schema | `Ctrl + Т` |
+| `Ctrl/Cmd + C` | Copy selected nodes | `Ctrl + С` |
+| `Ctrl/Cmd + V` | Paste nodes | `Ctrl + М` |
+| `Ctrl/Cmd + A` | Select all nodes | `Ctrl + Ф` |
+| `Ctrl/Cmd + Z` | Undo action | - |
+| `Ctrl/Cmd + Y` | Redo action | - |
+| `Delete` | Delete selected node | - |
+| `Escape` | Deselect / Cancel connection | - |
+| `F1` | Show help | - |
+| `X` | Toggle connection cutting mode | `Ч` |
+| `+` / `=` | Zoom in | `Ъ` |
+| `-` | Zoom out | - |
+| `Ctrl/Cmd + 0` | Reset zoom | - |
 
 
-## Режимы работы
+## Operating Modes
 
-**Режим шифрования**:
-- Данные проходят слева направо
-- Алгоритмы работают в прямом направлении
+**Encryption mode**:
+- Data flows from left to right
+- Algorithms work in the forward direction
 
-**Режим дешифрования**:
-- Направление стрелок меняется
-- Алгоритмы автоматически инвертируются
-- Например, шифр Цезаря со сдвигом +3 становится сдвигом -3
+**Decryption mode**:
+- The direction of arrows changes
+- Algorithms are automatically inverted
+- For example, a Caesar cipher with a +3 shift becomes a -3 shift
 
-## Формат файлов схем
+## Schema File Format
 
-Схемы сохраняются в JSON формате и содержат:
+Schemas are saved in JSON format and contain:
 
 ```json
 {
   "version": "1.0",
   "created": "2024-01-01T00:00:00.000Z",
-  "nodes": [
+  "nodes":[
     {
       "id": "node_0",
       "type": "input",
@@ -108,7 +108,7 @@ CipherFlow/
       "data": { ... }
     }
   ],
-  "connections": [
+  "connections":[
     {
       "id": "connection_0",
       "from": "node_0",
@@ -118,39 +118,39 @@ CipherFlow/
 }
 ```
 
-## Технологии ( •̀ ω •́ )✧
+## Technologies ( •̀ ω •́ )✧
 
-- **HTML5** - структура приложения
-- **CSS3** - современный дизайн с CSS Grid, Flexbox, анимациями
-- **Vanilla JavaScript** - чистый JS без фреймворков
-- **SVG** - векторная графика для соединений
+- **HTML5** - application structure
+- **CSS3** - modern design with CSS Grid, Flexbox, animations
+- **Vanilla JavaScript** - pure JS without frameworks
+- **SVG** - vector graphics for connections
 - **Web APIs** - File API, localStorage, drag & drop
 
-## 🌟 Примеры использования
+## 🌟 Usage Examples
 
-### 1. Простое шифрование
+### 1. Simple encryption
 ```
-[Ввод] → [Шифр Цезаря] → [Вывод]
-```
-
-### 2. Сложная цепочка
-```
-[Ввод] → [Числа в слова] → [Шифр Цезаря] → [Код Морзе] → [Вывод]
+[Input] → [Caesar Cipher] → [Output]
 ```
 
-### 3. Шифр Виженера с ключевым словом
+### 2. Complex chain
 ```
-[Ввод] → [Текст]    ↘
-                     [Шифр Виженера] → [Вывод]
-[Секретное слово]  ↗
+[Input] → [Numbers to words] → [Caesar Cipher] → [Morse Code] →[Output]
 ```
 
-## Планы развития
-- **Мобильная версия** - добработаь адабтив и сделать поддержку тач-скринов
-- **Онлайн-функции** - облачное сохранение схем, галлерея схем шифрования
-- **Достижения/Пасхалки** - Добавить больше пасхалок и достижений
-- **Улушчения стркуктуры кода** - Переписать движок шифратора чтобы сделать его более гибкийм, стабильным и масштабируемым 
+### 3. Vigenère Cipher with a keyword
+```
+[Input] →[Text]    ↘
+                     [Vigenère Cipher] → [Output]
+[Secret word]  ↗
+```
+
+## Development Plans
+- **Mobile version** - improve adaptability and add touch screen support
+- **Online functions** - cloud saving of schemas, a gallery of encryption schemas
+- **Achievements/Easter eggs** - Add more easter eggs and achievements
+- **Code structure improvements** - Rewrite the cipher engine to make it more flexible, stable, and scalable 
 
 
-# Посетить демо
+# Visit demo
 - https://biolog-end.github.io/CipherFlow/
