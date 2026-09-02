@@ -1,101 +1,71 @@
-/* === Соединительные точки === */
-.connection-point {
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    background: var(--accent-primary);
-    border: 3px solid var(--bg-secondary);
-    border-radius: 50%;
-    cursor: crosshair;
-    transition: var(--transition);
-    z-index: 20;
-}
-
-.connection-point:hover {
-    background: var(--accent-secondary);
-    transform: scale(1.2);
-}
-
-.connection-point.input {
-    left: -8px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.connection-point.input.multiple {
-    position: absolute;
-    left: -8px;
-    transform: none;
-}
-
-.connection-point.output.multiple {
-    position: absolute;
-    right: -8px; 
-    transform: none; 
-}
-
-.connection-point.output {
-    right: -8px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.connection-point.connecting {
-    background: var(--success);
-    animation: pulse 1s infinite;
-}
-
-/* === Соединительные линии === */
+/* Connection lines, selection rectangle, cutting tool. */
 .connection-line {
-    stroke: var(--accent-primary);
-    stroke-width: 3;
     fill: none;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-    transition: var(--transition);
+    stroke: var(--border-hover);
+    stroke-width: 2;
+    stroke-linecap: round;
+    transition: stroke var(--transition);
 }
-
-.connection-line:hover {
-    stroke: var(--accent-secondary);
-    stroke-width: 4;
-}
-
 .connection-line.reverse {
     stroke: var(--success);
 }
-
+/* the link a dragged node is about to be spliced into */
+.connection-line.insert-target {
+    stroke: var(--accent-primary);
+    stroke-width: 4;
+    stroke-dasharray: 8 6;
+    animation: connection-dash 400ms linear infinite;
+}
 .connection-line.temporary {
-    stroke: var(--text-muted);
-    stroke-dasharray: 8, 4;
-    animation: dash 1s linear infinite;
+    stroke: var(--accent-primary);
+    stroke-dasharray: 6 4;
+    animation: connection-dash 600ms linear infinite;
+}
+@keyframes connection-dash {
+    to { stroke-dashoffset: -10; }
 }
 
-/* === Стили для соединений === */
-.connection-line {
-    transition: stroke-width 0.2s ease;
+.cut-line {
+    fill: none;
+    stroke: var(--error);
+    stroke-width: 2;
+    stroke-dasharray: 6 4;
+    stroke-linecap: round;
+    pointer-events: none;
 }
 
-.connection-line:hover {
-    stroke-width: 3 !important;
-    cursor: pointer;
+.selection-box {
+    position: absolute;
+    z-index: 30;
+    border: 1px solid var(--accent-primary);
+    background: var(--accent-soft);
+    pointer-events: none;
 }
 
-.connection-tooltip {
+.cutting-hint {
     position: fixed;
+    top: 58px;
+    left: 50%;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border: 1px solid var(--error);
+    border-radius: 20px;
     background: var(--bg-secondary);
     color: var(--text-primary);
-    padding: 4px 8px;
-    border-radius: 4px;
     font-size: 12px;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    transform: translate(-50%, -6px);
+    transition: opacity var(--transition), transform var(--transition);
     pointer-events: none;
-    z-index: 1000;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    border: 1px solid var(--border-color);
 }
-
-/* === Подсветка соединений при наведении в режиме резки === */
-.connection-line.cut-highlight {
-    stroke: #ef4444 !important;
-    stroke-width: 4 !important;
-    filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.8)) !important;
-    animation: pulse-red 1s ease-in-out infinite alternate;
+.cutting-hint.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+.cutting-hint i {
+    color: var(--error);
 }

@@ -1,229 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="./src/favicon.ico" type="image/x-icon">
-    <title data-i18n="app.title">CipherFlow - Нодовый Шифратор</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title data-i18n="app.title">CipherFlow — Нодовый шифратор</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./css/node-styles.css">
-    <link rel="stylesheet" href="./css/easter-egg-styles.css"> 
+    <link rel="stylesheet" href="./css/easter-egg-styles.css">
 </head>
-<body>
+<body class="theme-dark">
     <div class="app">
-        <header class="header">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-project-diagram"></i>
-                    <span>CipherFlow</span>
-                </div>
-                <button class="help-btn" onclick="window.showHelp()" data-i18n-title="header.help">
+        <header class="topbar">
+            <button class="icon-btn palette-btn" id="paletteBtn" type="button" data-i18n-title="nodes.title" title="Ноды шифрования">
+                <i class="fas fa-plus"></i>
+            </button>
+            <div class="brand" title="F1">
+                <img class="brand-logo" src="./src/favicon.ico" alt="">
+                <span>CipherFlow</span>
+            </div>
+
+            <label class="mode-switch" for="modeSwitch">
+                <input type="checkbox" id="modeSwitch">
+                <span class="mode-option mode-encrypt"><i class="fas fa-lock"></i><span data-i18n="header.encryption">Шифрование</span></span>
+                <span class="mode-option mode-decrypt"><i class="fas fa-unlock"></i><span data-i18n="header.decryption">Расшифровка</span></span>
+            </label>
+
+            <div class="topbar-actions">
+                <button class="btn" id="loadBtn" type="button">
+                    <i class="fas fa-folder-open"></i><span data-i18n="header.load_scheme">Загрузить схему</span>
+                </button>
+                <button class="btn" id="saveBtn" type="button">
+                    <i class="fas fa-save"></i><span data-i18n="header.save_scheme">Сохранить схему</span>
+                </button>
+                <button class="btn btn-quiet-danger" id="clearBtn" type="button">
+                    <i class="fas fa-trash"></i><span data-i18n="header.clear">Очистить</span>
+                </button>
+                <span class="topbar-divider"></span>
+                <button class="icon-btn help-btn" type="button" data-i18n-title="header.help" title="Справка (F1)">
                     <i class="fas fa-question-circle"></i>
                 </button>
-                <button class="settings-btn" onclick="window.settingsSystem?.show()" data-i18n-title="header.settings">
+                <button class="icon-btn settings-btn" type="button" data-i18n-title="header.settings" title="Настройки">
                     <i class="fas fa-cog"></i>
                 </button>
-                <div class="controls">
-                    <div class="mode-toggle">
-                        <span class="mode-label" data-i18n="header.encryption">Шифрование</span>
-                        <label class="switch">
-                            <input type="checkbox" id="modeSwitch">
-                            <span class="slider">
-                                <i class="fas fa-lock"></i>
-                                <i class="fas fa-unlock"></i>
-                            </span>
-                        </label>
-                        <span class="mode-label" data-i18n="header.decryption">Расшифровка</span>
-                    </div>
-                    <div class="file-controls">
-                        <button class="btn btn-outline" id="loadBtn">
-                            <i class="fas fa-folder-open"></i>
-                            <span data-i18n="header.load_scheme">Загрузить схему</span>
-                        </button>
-                        <button class="btn btn-outline" id="saveBtn">
-                            <i class="fas fa-save"></i>
-                            <span data-i18n="header.save_scheme">Сохранить схему</span>
-                        </button>
-                        <button class="btn btn-primary" id="clearBtn">
-                            <i class="fas fa-trash"></i>
-                            <span data-i18n="header.clear">Очистить</span>
-                        </button>
-                    </div>
-                </div>
             </div>
         </header>
 
         <div class="main-content">
             <aside class="nodes-panel">
                 <h3 data-i18n="nodes.title">Ноды шифрования</h3>
-                <div class="node-categories">
-                    <div class="category">
-                        <h4 data-i18n="nodes.input_output">Входные/Выходные</h4>
-                        <div class="node-item" data-type="input" draggable="true">
-                            <i class="fas fa-sign-in-alt"></i>
-                            <span data-i18n="node.text_input">Ввод текста</span>
-                        </div>
-                        <div class="node-item" data-type="output" draggable="true">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span data-i18n="node.text_output">Вывод текста</span>
-                        </div>
-                    </div>
-                    
-                    <div class="category">
-                        <h4 data-i18n="nodes.classic_ciphers">Классические шифры</h4>
-                        <div class="node-item" data-type="caesar" draggable="true">
-                            <i class="fas fa-exchange-alt"></i>
-                            <span data-i18n="node.caesar_cipher">Шифр Цезаря</span>
-                        </div>
-                        <div class="node-item" data-type="morse" draggable="true">
-                            <i class="fas fa-broadcast-tower"></i>
-                            <span data-i18n="node.morse_code">Код Морзе</span>
-                        </div>
-                        <div class="node-item" data-type="secret-word" draggable="true">
-                            <i class="fas fa-key"></i>
-                            <span data-i18n="node.secret_word">Секретное слово</span>
-                        </div>
-                        <div class="node-item" data-type="vigenere" draggable="true">
-                            <i class="fas fa-shield-alt"></i>
-                            <span data-i18n="node.vigenere_cipher">Шифр Виженера</span>
-                        </div>
-                        <div class="node-item" data-type="complex-substitution" draggable="true">
-                            <i class="fas fa-mask"></i>
-                            <span data-i18n="node.complex_substitution">Сложная замена</span>
-                        </div>
-                        <div class="node-item" data-type="simple-substitution" draggable="true">
-                            <i class="fas fa-random"></i>
-                            <span data-i18n="node.simple_substitution">Простая замена</span>
-                        </div>
-                        <div class="node-item" data-type="a1z26" draggable="true">
-                            <i class="fas fa-sort-numeric-up"></i>
-                            <span data-i18n="node.a1z26_cipher">Шифр A1Z26</span>
-                        </div>
-                    </div>
-                    
-                    <div class="category">
-                        <h4 data-i18n="nodes.transformations">Преобразования</h4>
-                        <div class="node-item" data-type="numbers-to-words" draggable="true">
-                            <i class="fas fa-hashtag"></i>
-                            <span data-i18n="node.numbers_to_words">Числа в слова</span>
-                        </div>
-                        <div class="node-item" data-type="math" draggable="true">
-                            <i class="fas fa-calculator"></i>
-                            <span data-i18n="node.math">Математика</span>
-                        </div>
-                        <div class="node-item" data-type="reverse" draggable="true">
-                            <i class="fas fa-undo"></i>
-                            <span data-i18n="node.reverse_text">Обратить текст</span>
-                        </div>
-                        <div class="node-item" data-type="case-transform" draggable="true">
-                            <i class="fas fa-text-height"></i>
-                            <span data-i18n="node.case_transform">Регистр</span>
-                        </div>
-                        <div class="node-item" data-type="binary" draggable="true">
-                            <i class="fas fa-microchip"></i>
-                            <span data-i18n="node.binary_code">Бинарный код</span>
-                        </div>
-                        <div class="node-item" data-type="rle-compression" draggable="true">
-                            <i class="fas fa-compress-arrows-alt"></i>
-                            <span data-i18n="node.rle_compression">Сжатие (RLE)</span>
-                        </div>
-                        <div class="node-item" data-type="braille-cat" draggable="true">
-                            <i class="fas fa-cat"></i>
-                            <span data-i18n="node.morse_cat">Морзе (Кошачий)</span>
-                        </div>
-                        <div class="node-item" data-type="planet-enchanter" draggable="true">
-                            <i class="fas fa-globe"></i>
-                            <span data-i18n="node.planet_enchanter">Зачаровыватель планет</span>
-                        </div>
-                    </div>
-                    <div class="category">
-                        <h4 data-i18n="nodes.advanced_processing">Продвинутая обработка</h4>
-                        <div class="node-item" data-type="multi-replacer" draggable="true">
-                            <i class="fas fa-exchange-alt"></i>
-                            <span data-i18n="node.multi_replace">Мульти-Замена</span>
-                        </div>
-                    </div>
-
-                    <div class="category">
-                        <h4 data-i18n="nodes.logical_operations">Логические операции</h4>
-                        <div class="node-item" data-type="text-router" draggable="true">
-                            <i class="fas fa-sitemap"></i>
-                            <span data-i18n="node.text_router">Маршрутизатор Текста</span>
-                        </div>
-                        <div class="node-item" data-type="stream-merger" draggable="true">
-                            <i class="fas fa-link"></i>
-                            <span data-i18n="node.stream_merger">Слияние Потоков</span>
-                        </div>
-                        <div class="node-item" data-type="stream-splitter" draggable="true">
-                            <i class="fas fa-cut"></i>
-                            <span data-i18n="node.stream_splitter">Разрез Потоков</span>
-                        </div>
-                    </div>
-
-                    <div class="category">
-                        <h4 data-i18n="nodes.modern_ciphers">Современные шифры</h4>
-                        <div class="node-item" data-type="atbash" draggable="true">
-                            <i class="fas fa-retweet"></i>
-                            <span data-i18n="node.atbash_cipher">Шифр Атбаш</span>
-                        </div>
-                        <div class="node-item" data-type="base64" draggable="true">
-                            <i class="fas fa-file-export"></i>
-                            <span data-i18n="node.base64">Base64 Кодировщик</span>
-                        </div>
-                    </div>
-
-                    <div class="category">
-                        <h4 data-i18n="nodes.fun_ciphers">Забавные шифры</h4>
-                        <div class="node-item" data-type="gawr-gura" draggable="true">
-                            <i class="fas fa-fish"></i>
-                            <span data-i18n="node.shark_cipher">Акулий Шифр</span>
-                        </div>
-                        <div class="node-item" data-type="uwu-ifier" draggable="true">
-                            <i class="fas fa-grin-stars"></i>
-                            <span data-i18n="node.uwu_cipher">UwU-фикатор</span>
-                        </div>
-                    </div>
-
-                    <div class="category">
-                        <h4 data-i18n="nodes.system_ciphers">Системные шифры</h4>
-                        <div class="node-item" data-type="navi-terminal" draggable="true">
-                            <i class="fas fa-terminal"></i>
-                            <span data-i18n="node.navi_terminal">NAVI Terminal</span>
-                        </div>
-                        <div class="node-item" data-type="knights-cipher" draggable="true">
-                            <i class="fas fa-chess-knight"></i>
-                            <span data-i18n="node.knights_cipher">Шифр Рыцарей</span>
-                        </div>
-                    </div>
-
-                    <div class="category">
-                        <h4 data-i18n="nodes.utilities">Утилиты</h4>
-                        <div class="node-item" data-type="monitor" draggable="true">
-                            <i class="fas fa-desktop"></i>
-                            <span data-i18n="node.monitor">Монитор</span>
-                        </div>
-                        <div class="node-item" data-type="comment" draggable="true">
-                            <i class="fas fa-comment-alt"></i>
-                            <span data-i18n="node.comment">Комментарий</span>
-                        </div>
-                    </div>
-                </div>
+                <div class="node-categories"></div>
             </aside>
 
             <main class="workspace">
                 <div class="canvas-controls">
-                    <button class="canvas-control-btn" id="zoomInBtn" data-i18n-title="canvas.zoom_in">
-                        <i class="fas fa-search-plus"></i>
-                    </button>
-                    <button class="canvas-control-btn" id="zoomOutBtn" data-i18n-title="canvas.zoom_out">
-                        <i class="fas fa-search-minus"></i>
-                    </button>
-                    <button class="canvas-control-btn" id="resetZoomBtn" data-i18n-title="canvas.zoom_reset">
-                        <i class="fas fa-expand-arrows-alt"></i>
-                    </button>
+                    <button class="canvas-control-btn" id="zoomInBtn" type="button" data-i18n-title="canvas.zoom_in" title="Увеличить"><i class="fas fa-plus"></i></button>
+                    <button class="canvas-control-btn" id="zoomOutBtn" type="button" data-i18n-title="canvas.zoom_out" title="Уменьшить"><i class="fas fa-minus"></i></button>
+                    <button class="canvas-control-btn" id="resetZoomBtn" type="button" data-i18n-title="canvas.zoom_reset" title="Сбросить масштаб"><i class="fas fa-compress"></i></button>
                     <span class="zoom-level" id="zoomLevel">100%</span>
+                    <span class="canvas-controls-divider"></span>
+                    <button class="canvas-control-btn" id="scissorBtn" type="button" data-i18n-title="canvas.cut_mode_tooltip" title="Режим ножниц (X)"><i class="fas fa-cut"></i></button>
                 </div>
                 <div class="canvas" id="canvas">
                     <div class="canvas-background"></div>
@@ -233,31 +69,66 @@
             </main>
         </div>
 
-        <footer class="input-output-panel">
-            <div class="input-section" id="inputSection">
-                <label for="inputText" id="inputLabel" data-i18n="io.input_label">Входной текст:</label>
-                <textarea id="inputText" data-i18n-placeholder="io.input_placeholder" placeholder="Введите текст для шифрования..."></textarea>
+        <footer class="io-panel">
+            <div class="io-section" id="inputSection">
+                <label for="inputText" id="inputLabel" data-i18n="io.input_label">Входной текст</label>
+                <textarea id="inputText" spellcheck="false" data-i18n-placeholder="io.input_placeholder" placeholder="Введите текст для шифрования..."></textarea>
+                <div class="io-notice" hidden>
+                    <i class="fas fa-info-circle"></i><span></span>
+                    <button type="button" class="btn btn-small io-copy-full"></button>
+                    <button type="button" class="btn btn-small io-download-full"></button>
+                </div>
             </div>
-            <div class="output-section" id="outputSection">
-                <label for="outputText" id="outputLabel" data-i18n="io.output_label">Результат:</label>
-                <textarea id="outputText" readonly data-i18n-placeholder="io.output_placeholder" placeholder="Результат появится здесь..."></textarea>
+            <div class="io-section" id="outputSection">
+                <label for="outputText" id="outputLabel" data-i18n="io.output_label">Результат</label>
+                <textarea id="outputText" spellcheck="false" readonly data-i18n-placeholder="io.output_placeholder" placeholder="Результат появится здесь..."></textarea>
+                <div class="io-notice" hidden>
+                    <i class="fas fa-info-circle"></i><span></span>
+                    <button type="button" class="btn btn-small io-copy-full"></button>
+                    <button type="button" class="btn btn-small io-download-full"></button>
+                </div>
             </div>
         </footer>
     </div>
 
-    <input type="file" id="fileInput" accept=".json" style="display: none;">
-    
-    <script src="js/i18n.js"></script>
-    <script src="js/easter-eggs.js"></script>
-    <script src="js/dynamic-node-styler.js"></script> 
-    <script src="js/help-system.js"></script>
-    <script src="js/settings-system.js"></script>
-    <script src="js/history-manager.js"></script>
-    <script src="js/nodes.js"></script>
-    <script src="js/connections.js"></script>
-    <script src="js/cipher-engine.js"></script>
-    <script src="js/file-manager.js"></script>
-    <script src="js/canvas-manager.js"></script>
-    <script src="js/main.js"></script>
+    <input type="file" id="fileInput" accept=".json" hidden>
+
+    <!-- core -->
+    <script src="js/core/modules.js"></script>
+    <script src="js/core/i18n.js"></script>
+    <script src="js/core/text-utils.js"></script>
+    <script src="js/core/morse.js"></script>
+    <script src="js/core/node-registry.js"></script>
+    <!-- node definitions: one file per category -->
+    <script src="js/nodes/io.js"></script>
+    <script src="js/nodes/classic.js"></script>
+    <script src="js/nodes/transform.js"></script>
+    <script src="js/nodes/planet-enchanter.js"></script>
+    <script src="js/nodes/compression.js"></script>
+    <script src="js/nodes/advanced.js"></script>
+    <script src="js/nodes/logic.js"></script>
+    <script src="js/nodes/modern.js"></script>
+    <script src="js/nodes/fun.js"></script>
+    <script src="js/nodes/system.js"></script>
+    <!-- application -->
+    <script src="js/app/executor.js"></script>
+    <script src="js/app/scheme.js"></script>
+    <script src="js/app/examples.js"></script>
+    <script src="js/app/ui.js"></script>
+    <script src="js/app/io-panel.js"></script>
+    <script src="js/app/canvas-manager.js"></script>
+    <script src="js/app/node-manager.js"></script>
+    <script src="js/app/connection-manager.js"></script>
+    <script src="js/app/selection-manager.js"></script>
+    <script src="js/app/history-manager.js"></script>
+    <script src="js/app/engine-worker.js"></script>
+    <script src="js/app/cipher-engine.js"></script>
+    <script src="js/app/file-manager.js"></script>
+    <script src="js/app/node-panel.js"></script>
+    <script src="js/app/help-system.js"></script>
+    <script src="js/app/settings-system.js"></script>
+    <script src="js/app/shortcuts.js"></script>
+    <script src="js/app/easter-eggs.js"></script>
+    <script src="js/app/main.js"></script>
 </body>
 </html>

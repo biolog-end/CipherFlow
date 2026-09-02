@@ -1,67 +1,57 @@
-/* === Основные переменные и сброс стилей === */
-:root {
-    --bg-primary: #0f0f23;
-    --bg-secondary: #1a1a2e;
-    --bg-tertiary: #16213e;
-    --accent-primary: #7c3aed;
-    --accent-secondary: #a855f7;
-    --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
-    --text-muted: #94a3b8;
-    --border-color: #334155;
-    --border-hover: #475569;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --error: #ef4444;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.5);
-    --radius: 8px;
-    --radius-lg: 12px;
-    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+/* Design tokens. Variable names are shared with easter-egg-styles.css, which re-themes them. */
+:root,
+.theme-dark {
+    --bg-primary: #131417;
+    --bg-secondary: #1b1d21;
+    --bg-tertiary: #24262b;
+    --bg-hover: #2c2f35;
+    --border-color: #33363d;
+    --border-hover: #474b54;
+    --text-primary: #e8e9ec;
+    --text-secondary: #a2a6ad;
+    --text-muted: #70747c;
+    --accent-primary: #4f8cff;
+    --accent-secondary: #6da0ff;
+    --accent-soft: rgba(79, 140, 255, 0.16);
+    --success: #3fb67a;
+    --warning: #d9a02b;
+    --error: #e5534b;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.45);
+    --radius: 6px;
+    --radius-lg: 10px;
+    --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, "Cascadia Mono", Consolas, "Courier New", monospace;
+    --transition: 120ms ease;
+    --node-pad: 10px;
+    --panel-width: 250px;
+    --io-height: 190px;
+    --grid-dot: rgba(255, 255, 255, 0.22);
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+.theme-light {
+    --bg-primary: #eef0f3;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f5f6f8;
+    --bg-hover: #e8eaee;
+    --border-color: #d5d9e0;
+    --border-hover: #b9bec8;
+    --text-primary: #1c1e24;
+    --text-secondary: #4f545d;
+    --text-muted: #868b95;
+    --accent-primary: #2f6fe0;
+    --accent-secondary: #1f5cc4;
+    --accent-soft: rgba(47, 111, 224, 0.12);
+    --success: #1f9d5a;
+    --warning: #b8860b;
+    --error: #d63b33;
+    --shadow: 0 1px 2px rgba(20, 24, 40, 0.08);
+    --shadow-lg: 0 12px 32px rgba(20, 24, 40, 0.18);
+    --grid-dot: rgba(0, 0, 0, 0.24);
 }
 
-body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    overflow: hidden;
-}
-
-/* === Основная структура приложения === */
-.app {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-}
-
-/* === Основной контент === */
-.main-content {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-}
-
-/* === Скроллбары === */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-primary);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--border-hover);
+.compact-mode {
+    --node-pad: 7px;
+    --panel-width: 210px;
+    --io-height: 150px;
 }
