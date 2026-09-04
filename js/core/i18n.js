@@ -85,11 +85,14 @@ class I18n {
                 'node.comment': 'Комментарий',
                 'node.compression': 'Сжатие',
                 'node.perfect_cipher': 'Идеальный шифр',
-                'node.route_transposition': 'Маршрутная перестановка', 
+                'node.route_transposition': 'Маршрутная перестановка',
+                'node.branch_merger': 'Слияние ветвей',
 
                 // Выходы и входы
                 'output.if_true': 'Если ДА',
                 'output.if_false': 'Если НЕТ',
+                'input.if_true': 'Из ветки ДА',
+                'input.if_false': 'Из ветки НЕТ',
                 'input.stream_a': 'Поток А',
                 'input.stream_b': 'Поток Б',
 
@@ -627,6 +630,18 @@ class I18n {
                 'help.algo.text_router.feature2': '• Данные идут только в один из выходов',
                 'help.algo.text_router.feature3': '• Если условие не выполнено, данные идут во второй выход',
 
+                'help.algo.branch_merger.title': 'Слияние ветвей',
+                'help.algo.branch_merger.desc': 'Собирает две ветки маршрутизатора обратно в один поток',
+                'help.algo.branch_merger.principle': 'Пара к «Маршрутизатору текста». В прямом режиме передаёт дальше ту из двух веток, где есть текст (в каждый момент активна ровно одна). В обратном — рассылает поступивший текст в обе ветки, а сам маршрутизатор на другом конце выбирает нужную по своему условию.',
+                'help.algo.branch_merger.example_title': 'Пример условной цепочки:',
+                'help.algo.branch_merger.example_input': 'Вход: "hello 5" (условие маршрутизатора: содержит цифры)',
+                'help.algo.branch_merger.example_yes': 'Ветка ДА → «Числа в слова» → "hello five"',
+                'help.algo.branch_merger.example_no': 'Ветка НЕТ → без изменений → ""',
+                'help.algo.branch_merger.example_output': 'Выход слияния: "hello five" (в обратном режиме — дублируется в обе ветки, маршрутизатор восстановит "hello 5")',
+                'help.algo.branch_merger.feature1': '• Два входа, один выход — зеркало маршрутизатора',
+                'help.algo.branch_merger.feature2': '• Условие живёт только в маршрутизаторе, слияние без параметров',
+                'help.algo.branch_merger.feature3': '• Полностью обратимо, если пара «маршрутизатор + слияние» замыкает условную цепочку',
+
                 'help.algo.stream_merger.title': 'Слияние Потоков',
                 'help.algo.stream_merger.desc': 'Объединяет несколько входных потоков в один выход',
                 'help.algo.stream_merger.principle': 'Принимает данные с нескольких входов и объединяет их в один поток согласно выбранному методу слияния.',
@@ -1066,10 +1081,13 @@ class I18n {
                 'node.compression': 'Compression',
                 'node.perfect_cipher': 'Perfect Cipher',
                 'node.route_transposition': 'Route Transposition',
+                'node.branch_merger': 'Branch Merger',
 
                 // Outputs and inputs
                 'output.if_true': 'If YES',
                 'output.if_false': 'If NO',
+                'input.if_true': 'From YES branch',
+                'input.if_false': 'From NO branch',
                 'input.stream_a': 'Stream A',
                 'input.stream_b': 'Stream B',
 
@@ -1605,6 +1623,18 @@ class I18n {
                 'help.algo.text_router.feature1': '• One input, two outputs',
                 'help.algo.text_router.feature2': '• Data goes to only one of the outputs',
                 'help.algo.text_router.feature3': '• If the condition is not met, data goes to the second output',
+
+                'help.algo.branch_merger.title': 'Branch Merger',
+                'help.algo.branch_merger.desc': 'Reunites the two branches of a router into a single stream',
+                'help.algo.branch_merger.principle': 'The mirror of Text Router. Forward: forwards whichever of the two branches carries text (exactly one is active at a time). Reverse: broadcasts the incoming text back into both branches, and the router at the other end picks the correct one using its own condition.',
+                'help.algo.branch_merger.example_title': 'Conditional chain example:',
+                'help.algo.branch_merger.example_input': 'Input: "hello 5" (router condition: contains numbers)',
+                'help.algo.branch_merger.example_yes': 'YES branch → Numbers to Words → "hello five"',
+                'help.algo.branch_merger.example_no': 'NO branch → passthrough → ""',
+                'help.algo.branch_merger.example_output': 'Merger output: "hello five" (on decrypt it is broadcast to both branches; the router restores "hello 5")',
+                'help.algo.branch_merger.feature1': '• Two inputs, one output — the mirror of Text Router',
+                'help.algo.branch_merger.feature2': '• No parameters: the condition lives only in the router',
+                'help.algo.branch_merger.feature3': '• Fully reversible when paired with a router to close a conditional chain',
 
                 'help.algo.stream_merger.title': 'Stream Merger',
                 'help.algo.stream_merger.desc': 'Combines multiple input streams into one output',

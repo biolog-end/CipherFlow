@@ -71,6 +71,47 @@ EngineModules.define(() => {
         },
     });
 
+    NodeRegistry.register({
+        type: 'branch-merger',
+        category: 'logic',
+        icon: 'fas fa-code-merge',
+        color: '#14b8a6',
+        title: 'node.branch_merger',
+        inputs: [
+            { name: 'true', label: 'input.if_true', color: '#22c55e' },
+            { name: 'false', label: 'input.if_false', color: '#ef4444' },
+        ],
+        process(ctx, entry) {
+            // Reunites the two branches of a Text Router. In reverse mode the same text is sent
+            // back into both branches; the Text Router at the far end picks the right one.
+            if (ctx.reverse) {
+                const text = typeof entry === 'string' ? entry : '';
+                return { true: text, false: text };
+            }
+            const viaTrue = entry.true || '';
+            const viaFalse = entry.false || '';
+            if (viaTrue && !viaFalse) return viaTrue;
+            if (viaFalse && !viaTrue) return viaFalse;
+            return viaTrue + viaFalse;
+        },
+        help: {
+            title: 'help.algo.branch_merger.title',
+            desc: 'help.algo.branch_merger.desc',
+            blocks: [
+                { kind: 'principle', text: 'help.algo.branch_merger.principle' },
+                { kind: 'example', title: 'help.algo.branch_merger.example_title', lines: [
+                    ['input', 'help.algo.branch_merger.example_input'],
+                    ['input', 'help.algo.branch_merger.example_yes'],
+                    ['input', 'help.algo.branch_merger.example_no'],
+                    ['output', 'help.algo.branch_merger.example_output'],
+                ] },
+                { kind: 'note', title: 'help.general.features', lines: [
+                    'help.algo.branch_merger.feature1', 'help.algo.branch_merger.feature2', 'help.algo.branch_merger.feature3',
+                ] },
+            ],
+        },
+    });
+
     const interleave = (a, b) => {
         const result = [];
         for (let i = 0; i < Math.max(a.length, b.length); i++) {

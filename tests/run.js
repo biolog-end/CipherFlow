@@ -198,6 +198,29 @@ test('executor routes text to one branch and merges it back', () => {
     assertEqual(executor.run({ ...graph, reverse: true, sourceText: 'cba' }).output, 'abc');
 });
 
+test('branch merger reunites router branches and stays reversible through numbers-to-words', () => {
+    const graph = {
+        nodes: [
+            node('in', 'input'),
+            node('r', 'text-router', { condition: 'contains_numbers' }),
+            node('n', 'numbers-to-words', { language: 'en', direction: 'to_words' }),
+            node('m', 'branch-merger'),
+            node('out', 'output'),
+        ],
+        connections: [
+            link('in', 'r'),
+            link('r', 'n', 'true', 'in'),
+            link('r', 'm', 'false', 'false'),
+            link('n', 'm', 'out', 'true'),
+            link('m', 'out'),
+        ],
+    };
+    assertEqual(executor.run({ ...graph, reverse: false, sourceText: 'hello 5' }).output, 'hello five');
+    assertEqual(executor.run({ ...graph, reverse: false, sourceText: 'hello' }).output, 'hello');
+    assertEqual(executor.run({ ...graph, reverse: true, sourceText: 'hello five' }).output, 'hello 5');
+    assertEqual(executor.run({ ...graph, reverse: true, sourceText: 'hello' }).output, 'hello');
+});
+
 test('executor splits, transforms and merges streams in both directions', () => {
     const graph = {
         nodes: [node('in', 'input'), node('s', 'stream-splitter'), node('c', 'caesar', { shift: 1 }), node('m', 'stream-merger'), node('out', 'output')],
