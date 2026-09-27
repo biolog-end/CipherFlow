@@ -128,6 +128,9 @@
     font-family: var(--font-mono);
     font-size: 12px;
 }
+.node-field textarea[rows="1"] {
+    min-height: 28px;
+}
 .node-field input[type="number"] {
     font-family: var(--font-mono);
 }

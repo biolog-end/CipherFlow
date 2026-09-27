@@ -57,7 +57,7 @@ EngineModules.define(() => {
         title: 'node.secret_word',
         inputs: [],
         fields: [
-            { name: 'keyword', type: 'text', label: 'param.keyword', value: () => i18n.t('param.default_keyword') },
+            { name: 'keyword', type: 'textarea', label: 'param.keyword', value: () => i18n.t('param.default_keyword'), rows: 1 },
         ],
         process(ctx) {
             return ctx.fields.keyword || '';
